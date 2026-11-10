@@ -1,0 +1,1 @@
+{% if i.tendencia is None %}<span class="muted">—</span>{% elif i.tendencia >= 0 %}<span class="pos">▲ {{ i.tendencia|floatformat:0 }}%</span>{% else %}<span class="neg">▼ {{ i.tendencia_abs|floatformat:0 }}%</span>{% endif %}

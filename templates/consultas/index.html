@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Consultas{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="section-label">Consulta para o proprietário</span>
+        <h1>Frequência e oportunidades</h1>
+        <p class="muted">Período: {{ inicio|date:"d/m/Y" }} a {{ fim|date:"d/m/Y" }} · ocupação = média de alunos <strong>presentes</strong> por aula ÷ capacidade da sala.</p>
+    </div>
+    <form method="get" class="filters" aria-label="Período">
+        <label for="semanas">Período</label>
+        <select name="semanas" id="semanas" onchange="this.form.submit()">
+            {% for p in periodos %}<option value="{{ p }}" {% if p == semanas %}selected{% endif %}>Últimas {{ p }} semanas</option>{% endfor %}
+        </select>
+        <noscript><button type="submit" class="btn btn-small">Ver</button></noscript>
+    </form>
+</section>
+
+<section class="summary" aria-label="Resumo do período">
+    <div class="summary-card temp-{{ resumo.faixa }}">
+        <span class="summary-icon" aria-hidden="true">🌡️</span>
+        <div><span>Ocupação média</span><strong>{% if resumo.ocupacao is not None %}{{ resumo.ocupacao|floatformat:0 }}%{% else %}—{% endif %}</strong></div>
+    </div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças no período</span><strong>{{ resumo.presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🪑</span><div><span>Lugares vazios por semana</span><strong>{{ resumo.lugares_livres }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📅</span><div><span>Aulas com chamada</span><strong>{{ resumo.aulas }}</strong></div></div>
+</section>
+
+<section class="panel">
+    <div class="panel-header"><h2>Termômetro da agenda</h2></div>
+    <ul class="temp-legenda" aria-label="Legenda">
+        <li><span class="temp-chip temp-quente">🔥 Quente</span> ≥ {{ faixas.quente }}% — quase lotada ({{ resumo.contagem.quente|default:0 }})</li>
+        <li><span class="temp-chip temp-morna">🌤️ Morna</span> {{ faixas.morna }}–{{ faixas.quente }}% — saudável ({{ resumo.contagem.morna|default:0 }})</li>
+        <li><span class="temp-chip temp-fria">❄️ Fria</span> {{ faixas.fria }}–{{ faixas.morna }}% — promoção ({{ resumo.contagem.fria|default:0 }})</li>
+        <li><span class="temp-chip temp-gelada">🧊 Gelada</span> &lt; {{ faixas.fria }}% — promoção forte ({{ resumo.contagem.gelada|default:0 }})</li>
+    </ul>
+    {% if mapa.linhas %}
+    <div class="table-wrap">
+        <table class="heatmap">
+            <thead><tr><th scope="col">Horário</th>{% for d in mapa.dias %}<th scope="col">{{ d }}</th>{% endfor %}</tr></thead>
+            <tbody>{% for linha in mapa.linhas %}
+            <tr><th scope="row">{{ linha.hora|time:"H:i" }}</th>
+                {% for celula in linha.celulas %}<td>
+                    {% for i in celula %}
+                    <a href="{{ i.turma.get_absolute_url }}" class="heat-cell temp-{{ i.faixa }}" title="{{ i.turma }} — {{ i.faixa_rotulo }}">
+                        <strong>{{ i.turma.nome|default:i.turma.modalidade }}</strong>
+                        <span>{% if i.ocupacao is not None %}{{ i.ocupacao|floatformat:0 }}%{% else %}sem chamada{% endif %} · {{ i.turma.sala.nome }}</span>
+                    </a>
+                    {% endfor %}
+                </td>{% endfor %}
+            </tr>{% endfor %}</tbody>
+        </table>
+    </div>
+    {% else %}<p class="empty">Nenhuma aula ativa na agenda.</p>{% endif %}
+</section>
+
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Aulas mais frequentadas</h2><span class="muted">média de presentes por aula</span></div>
+        {% for i, largura in ranking %}
+        <div class="bar-row">
+            <div class="bar-label"><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a>
+                <small>{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</small></div>
+            <div class="bar-track"><div class="bar-fill temp-{{ i.faixa }}" style="width: {{ largura }}%"></div></div>
+            <div class="bar-value">{{ i.media|floatformat:1 }}<small>/{{ i.capacidade }}</small></div>
+        </div>
+        {% empty %}<p class="empty">Sem chamadas no período.</p>{% endfor %}
+    </section>
+
+    <section class="panel">
+        <div class="panel-header"><h2>Presenças por semana</h2><span class="muted">todas as aulas</span></div>
+        {% if resumo.presencas %}
+        <div class="colchart" role="img" aria-label="Presenças por semana no período">
+            {% for s in semanal %}
+            <div class="col" title="Semana de {{ s.inicio|date:'d/m' }}: {{ s.total }} presenças">
+                <span class="col-value">{{ s.total }}</span>
+                <div class="col-bar" style="height: {{ s.altura }}%"></div>
+                <span class="col-label">{{ s.inicio|date:"d/m" }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}<p class="empty">Sem chamadas no período.</p>{% endif %}
+    </section>
+</div>
+
+<section class="section">
+    <div class="section-header"><div><span class="section-label">Onde vale promover</span><h2>Oportunidades de promoção</h2></div></div>
+    {% if oportunidades %}
+    <div class="op-grid">
+        {% for i in oportunidades %}
+        <article class="panel op-card">
+            <div class="op-top">
+                <div>
+                    <h3><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a></h3>
+                    <small class="muted">{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }} · {{ i.turma.professor }}</small>
+                </div>
+                <span class="temp-chip temp-{{ i.faixa }}">{{ i.faixa_icone }} {{ i.faixa_rotulo }}</span>
+            </div>
+            {% include "consultas/_termometro.html" %}
+            <dl class="op-stats">
+                <div><dt>Média presentes</dt><dd>{{ i.media|floatformat:1 }}/{{ i.capacidade }}</dd></div>
+                <div><dt>Lugares vazios</dt><dd>{{ i.lugares_livres|floatformat:0 }}</dd></div>
+                <div><dt>Inscritos</dt><dd>{{ i.inscritos }}</dd></div>
+                <div><dt>Tendência</dt><dd>{% include "consultas/_tendencia.html" %}</dd></div>
+            </dl>
+            {% include "consultas/_serie.html" %}
+            <p class="op-acao"><strong>Sugestão:</strong> {{ i.acao }}</p>
+            <ul class="op-recs">{% for r in i.recomendacoes %}<li>{{ r }}</li>{% endfor %}</ul>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}<div class="panel"><p class="empty">Nenhuma aula fria ou gelada no período — não há vacância que justifique promoção.</p></div>{% endif %}
+</section>
+
+{% if esfriando or lotando or sem_dados %}
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>🔥 Lotando — sem promoção</h2></div>
+        {% for i in lotando %}
+        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
+            <small>{{ i.ocupacao|floatformat:0 }}% de ocupação · {{ i.recomendacoes.0 }}</small></div></div>
+        {% empty %}<p class="empty">Nenhuma aula perto da lotação.</p>{% endfor %}
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>📉 Esfriando — atenção</h2></div>
+        {% for i in esfriando %}
+        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
+            <small>Ainda {{ i.faixa_rotulo|lower }} ({{ i.ocupacao|floatformat:0 }}%), mas a presença caiu {% include "consultas/_tendencia.html" %}.</small></div></div>
+        {% empty %}<p class="empty">Nenhuma aula boa perdendo alunos.</p>{% endfor %}
+        {% for i in sem_dados %}
+        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
+            <small>Sem chamada registrada no período.</small></div>
+            <a href="{% url 'aulas:chamada' i.turma.pk %}" class="btn btn-small">Fazer chamada</a></div>
+        {% endfor %}
+    </section>
+</div>
+{% endif %}
+
+<section class="panel">
+    <div class="panel-header"><h2>Por modalidade</h2></div>
+    {% for m in modalidades %}
+    <div class="bar-row">
+        <div class="bar-label"><strong>{{ m.nome }}</strong><small>{{ m.turmas }} turma{{ m.turmas|pluralize }} · {{ m.inscritos }} inscritos</small></div>
+        <div class="bar-track"><div class="bar-fill temp-{{ m.faixa }}" style="width: {{ m.barra }}%"></div></div>
+        <div class="bar-value">{{ m.ocupacao|floatformat:0 }}%<small> · {{ m.presencas }} pres.</small></div>
+    </div>
+    {% empty %}<p class="empty">Sem chamadas no período.</p>{% endfor %}
+</section>
+
+<section class="panel table-wrap">
+    <div class="panel-header"><h2>Todas as aulas</h2></div>
+    <table>
+        <thead><tr><th>Aula</th><th>Temperatura</th><th class="right">Ocupação</th><th class="right">Média</th><th class="right">Inscritos</th><th class="right">Frequência</th><th class="right">Avulsos</th><th class="right">Tendência</th><th>Sugestão</th></tr></thead>
+        <tbody>{% for i in indicadores %}
+        <tr>
+            <td><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a><br><small class="muted">{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }}</small></td>
+            <td><span class="temp-chip temp-{{ i.faixa }}">{{ i.faixa_icone }} {{ i.faixa_rotulo }}</span></td>
+            <td class="right">{% if i.ocupacao is not None %}{{ i.ocupacao|floatformat:0 }}%{% else %}—{% endif %}</td>
+            <td class="right">{% if i.media is not None %}{{ i.media|floatformat:1 }}{% else %}—{% endif %}</td>
+            <td class="right">{{ i.inscritos }}</td>
+            <td class="right">{% if i.frequencia is not None %}{{ i.frequencia|floatformat:0 }}%{% else %}—{% endif %}</td>
+            <td class="right">{{ i.pct_avulsos|floatformat:0 }}%</td>
+            <td class="right nowrap">{% include "consultas/_tendencia.html" %}</td>
+            <td>{{ i.acao }}</td>
+        </tr>{% endfor %}</tbody>
+    </table>
+</section>
+{% endblock %}

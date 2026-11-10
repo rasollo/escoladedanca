@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Despesas{% endblock %}
+{% block content %}
+{% include "financeiro/_header.html" with rotulo="RF12 · RN03" titulo="Despesas" %}
+<form method="get" class="filters panel">
+    <label class="sr-only" for="cat">Categoria</label>
+    <select name="categoria" id="cat"><option value="">Todas as categorias</option>{% for v, r in categorias %}<option value="{{ v }}" {% if categoria == v %}selected{% endif %}>{{ r }}</option>{% endfor %}</select>
+    <button class="btn">Filtrar</button>
+</form>
+{% include "financeiro/_tabela.html" with movs=pagina %}
+{% include "paginacao.html" %}
+{% endblock %}

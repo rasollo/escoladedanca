@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Administração{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RNF03 · RNF04</span><h1>Administração do acesso</h1>
+        <p class="muted">Somente usuários cadastrados aqui acessam os dados administrativos, financeiros e pessoais (LGPD).</p></div>
+    {% if user.is_staff %}<a href="{% url 'admin:auth_user_add' %}" class="btn btn-primary">+ Novo usuário</a>{% endif %}
+</section>
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Último acesso</th><th>Situação</th></tr></thead>
+    <tbody>{% for u in usuarios %}
+    <tr><td>{{ u.username }}</td><td>{{ u.get_full_name|default:"—" }}</td><td>{% if u.is_superuser %}Administrador{% elif u.is_staff %}Equipe{% else %}Responsável{% endif %}</td>
+        <td>{{ u.last_login|date:"d/m/Y H:i"|default:"nunca" }}</td><td>{% if u.is_active %}<span class="badge badge-green">Ativo</span>{% else %}<span class="badge">Bloqueado</span>{% endif %}</td></tr>
+    {% endfor %}</tbody>
+</table></div>
+{% if resumo %}
+<section class="section">
+    <div class="panel-header"><div><span class="section-label">Auditoria · últimos 30 dias</span><h2>Quem acessou o sistema</h2></div></div>
+    <section class="summary">
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">👥</span><div><span>Usuários que acessaram</span><strong>{{ resumo.total_usuarios }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">🌐</span><div><span>IPs distintos</span><strong>{{ resumo.total_ips }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">🔑</span><div><span>Logins</span><strong>{{ resumo.total_logins }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">⚠️</span><div><span>Falhas de login</span><strong>{{ resumo.total_falhas }}</strong></div></div>
+    </section>
+    <div class="panel table-wrap"><table>
+        <thead><tr><th>Usuário</th><th>Logins</th><th>Falhas</th><th>Páginas</th><th>IPs</th><th>Último acesso</th></tr></thead>
+        <tbody>{% for u in resumo.usuarios %}
+        <tr><td>{{ u.usuario }}</td><td>{{ u.logins }}</td><td>{% if u.falhas %}<span class="badge badge-red">{{ u.falhas }}</span>{% else %}0{% endif %}</td><td>{{ u.requisicoes }}</td><td>{{ u.ips|join:", " }}</td><td>{{ u.ultimo|date:"d/m/Y H:i" }}</td></tr>
+        {% empty %}<tr><td colspan="6" class="empty">Nenhum acesso registrado ainda.</td></tr>{% endfor %}</tbody>
+    </table></div>
+    <div class="two-cols">
+        <div class="panel"><div class="panel-header"><h2>Logins e logouts</h2></div>
+            {% for e in eventos %}<div class="list-row"><div><strong>{{ e.quem }}</strong><small>{{ e.quando|date:"d/m/Y H:i:s" }} · IP {{ e.ip }}</small></div>
+                {% if e.evento == "LOGIN_OK" %}<span class="badge badge-green">Login</span>{% elif e.evento == "LOGIN_FALHOU" %}<span class="badge badge-red">Falhou</span>{% else %}<span class="badge">Logout</span>{% endif %}</div>
+            {% empty %}<p class="empty">Nenhum evento.</p>{% endfor %}</div>
+        <div class="panel"><div class="panel-header"><h2>Alterações de dados</h2></div>
+            {% for e in alteracoes %}<div class="list-row"><div><strong>{{ e.evento|lower|capfirst }} · {{ e.modelo }} #{{ e.id }}</strong><small>{{ e.quando|date:"d/m/Y H:i:s" }} · {{ e.usuario }} · IP {{ e.ip }}</small></div></div>
+            {% empty %}<p class="empty">Nenhuma alteração.</p>{% endfor %}</div>
+    </div>
+    <p class="muted note">Arquivos completos em <code>logs/acessos.log</code> e <code>logs/auditoria.log</code>, com rotação diária. Resumo pelo terminal: <code>python manage.py relatorio_acessos</code>.</p>
+</section>
+{% endif %}
+{% if user.is_staff %}<p class="muted note">Para alterar senhas, bloquear usuários ou corrigir registros, use o <a class="link" href="{% url 'admin:index' %}">painel administrativo do Django</a>.</p>{% endif %}
+{% endblock %}

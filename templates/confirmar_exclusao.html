@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Confirmar remoção{% endblock %}
+{% block content %}
+<section class="page-header"><div><span class="section-label">Confirmação</span><h1>Remover registro</h1></div></section>
+<form method="post" class="panel">
+    {% csrf_token %}
+    <p>Tem certeza de que deseja remover <strong>{{ objeto }}</strong>? Esta ação não pode ser desfeita.</p>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-danger">Remover</button>
+        <a href="{{ voltar }}" class="btn btn-ghost">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

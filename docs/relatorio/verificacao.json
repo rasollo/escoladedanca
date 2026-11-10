@@ -1,0 +1,74 @@
+{
+  "data": "10/11/2026",
+  "testes_total": 150,
+  "testes_resultado": "150 aprovados, 0 falhas",
+  "testes_por_modulo": [
+    {
+      "modulo": "alunos",
+      "testes": 11,
+      "verifica": "Cadastro com nome obrigatório, busca, filtros, edição, situação da mensalidade (RF01, RF02, RN08)."
+    },
+    {
+      "modulo": "professores",
+      "testes": 5,
+      "verifica": "Cadastro, revisão de dados incompletos, valor por aluno não negativo, atualização (RF17)."
+    },
+    {
+      "modulo": "aulas",
+      "testes": 54,
+      "verifica": "Salas e modalidades iniciais, horário 18h–22h, conflitos de sala e professor, capacidade, matrículas com início e fim, chamada com aluno avulso, histórico protegido (RF03–RF05, RF18–RF21, RN08–RN10, RN13–RN15)."
+    },
+    {
+      "modulo": "financeiro",
+      "testes": 46,
+      "verifica": "Regras de entrada e saída, formas e categorias, validade, saldo, balanço mensal, salário por inscrição com todos os casos da RN16, correção de lançamentos (RF06–RF16, RF23, RN01–RN07, RN11, RN12, RN16)."
+    },
+    {
+      "modulo": "administradores",
+      "testes": 21,
+      "verifica": "Login obrigatório em todas as páginas, CSRF, auditoria de acessos e alterações sem senhas, relatório de acessos, documentação, dados de demonstração (RF22, RF24, RNF03, RNF04)."
+    },
+    {
+      "modulo": "proprietarios",
+      "testes": 2,
+      "verifica": "Resultado dos últimos seis meses e virada de ano (RF15, RF16)."
+    },
+    {
+      "modulo": "consultas",
+      "testes": 11,
+      "verifica": "Faixas de temperatura e limites configuráveis, ocupação pela presença e não pela inscrição, média por aula, alunos avulsos, tendência de queda, aula sem chamada, ranking e oportunidades, período inválido e login obrigatório (RF25, RN17)."
+    }
+  ],
+  "semgrep": "188 regras executadas, 0 problemas encontrados",
+  "migracoes": "nenhuma alteração pendente nos modelos",
+  "problemas": [
+    {
+      "problema": "Salário: um aluno que saiu e voltou para a mesma aula no mês era contado duas vezes (a ordenação padrão impedia o agrupamento).",
+      "correcao": "Agrupamento corrigido; caso coberto por teste (RN16)."
+    },
+    {
+      "problema": "Tela de Administração: erro ao exibir a auditoria quando havia uma falha de login no registro. O erro chegou a ocorrer em uso real durante a verificação.",
+      "correcao": "Exibição corrigida; teste com registro de exemplo contendo falha de login."
+    },
+    {
+      "problema": "A mudança do valor por presença para valor por aluno apagaria os valores já cadastrados dos professores.",
+      "correcao": "Campo renomeado em vez de recriado; valores preservados."
+    },
+    {
+      "problema": "Senha de demonstração e chave secreta gravadas no código-fonte (apontado pelo Semgrep).",
+      "correcao": "Movidas para variáveis de ambiente; senha gerada quando não informada."
+    },
+    {
+      "problema": "Implantação: rodando com o gunicorn, o sistema abria sem estilo (CSS), porque o gunicorn não serve arquivos estáticos.",
+      "correcao": "Arquivos estáticos servidos pelo WhiteNoise a partir de staticfiles/ (collectstatic)."
+    },
+    {
+      "problema": "Implantação: o serviço iniciava com o modo de depuração ligado, expondo detalhes internos do sistema nas páginas de erro.",
+      "correcao": "O serviço passou a ler a configuração do arquivo .env, com o modo de depuração desligado; verificado com uma página inexistente."
+    },
+    {
+      "problema": "Menu lateral: na tela de Consultas, o item Início também aparecia selecionado.",
+      "correcao": "Nome da rota da consulta ajustado."
+    }
+  ]
+}

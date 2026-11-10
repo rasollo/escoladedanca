@@ -1,0 +1,6 @@
+{% if i.serie %}
+<div class="mini-serie" role="img" aria-label="Presentes por aula no período">
+    {% for d, p, h in i.serie_barras %}<span class="mini-bar temp-{{ i.faixa }}" style="height: {{ h }}%" title="{{ d|date:'d/m' }}: {{ p }} presentes"></span>{% endfor %}
+</div>
+<small class="muted">presentes por aula, da mais antiga à mais recente</small>
+{% endif %}

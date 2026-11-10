@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Professores{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF17</span><h1>Professores</h1></div>
+    <a href="{% url 'professores:novo' %}" class="btn btn-primary">+ Novo professor</a>
+</section>
+<form method="get" class="filters panel"><label class="sr-only" for="q">Buscar</label><input type="search" id="q" name="q" placeholder="Nome do professor…" value="{{ q }}"><button class="btn">Pesquisar</button></form>
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Nome</th><th>Telefone</th><th>Aulas ativas</th><th>Valor por aluno</th><th>Situação</th><th></th></tr></thead>
+    <tbody>
+    {% for p in professores %}
+        <tr><td><a href="{{ p.get_absolute_url }}" class="link">{{ p.nome }}</a></td><td>{{ p.telefone|default:"—" }}</td><td>{{ p.qtd_turmas }}</td><td>{{ p.valor_por_aluno|brl }}</td>
+            <td>{% if p.ativo %}<span class="badge badge-green">Ativo</span>{% else %}<span class="badge">Inativo</span>{% endif %}</td>
+            <td class="right"><a href="{% url 'professores:editar' p.pk %}" class="link">Editar</a></td></tr>
+    {% empty %}<tr><td colspan="6" class="empty">Nenhum professor cadastrado.</td></tr>{% endfor %}
+    </tbody>
+</table></div>
+{% endblock %}

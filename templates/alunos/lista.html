@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Alunos{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF01 · RF02</span><h1>Alunos</h1><p class="muted">{{ total_ativos }} alunos ativos</p></div>
+    <a href="{% url 'alunos:novo' %}" class="btn btn-primary">+ Novo aluno</a>
+</section>
+<form method="get" class="filters panel">
+    <label class="sr-only" for="q">Buscar</label>
+    <input type="search" id="q" name="q" placeholder="Nome, e-mail ou telefone…" value="{{ q }}">
+    <label class="sr-only" for="status">Situação</label>
+    <select name="status" id="status">
+        <option value="ativos" {% if status == 'ativos' %}selected{% endif %}>Ativos</option>
+        <option value="inativos" {% if status == 'inativos' %}selected{% endif %}>Inativos</option>
+        <option value="todos" {% if status == 'todos' %}selected{% endif %}>Todos</option>
+    </select>
+    <button type="submit" class="btn">Pesquisar</button>
+</form>
+<div class="panel table-wrap">
+<table>
+    <thead><tr><th>Nome</th><th>Telefone</th><th>Aulas</th><th>Situação</th><th></th></tr></thead>
+    <tbody>
+    {% for aluno in pagina %}
+        <tr>
+            <td><a href="{{ aluno.get_absolute_url }}" class="link">{{ aluno.nome }}</a></td>
+            <td>{{ aluno.telefone|default:"—" }}</td>
+            <td>{{ aluno.turmas.all|length }}</td>
+            <td>{% if aluno.ativo %}<span class="badge badge-green">Ativo</span>{% else %}<span class="badge">Inativo</span>{% endif %}</td>
+            <td class="right"><a href="{% url 'alunos:editar' aluno.pk %}" class="link">Editar</a></td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="5" class="empty">Nenhum aluno encontrado.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% include "paginacao.html" %}
+{% endblock %}

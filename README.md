@@ -3,6 +3,65 @@
 # Escola de Dança - Projeto Integrador
 # Projeto – Sistema de Gestão para Escola de Dança
 
+## Sobre o projeto
+
+Este sistema é um projeto da disciplina **Projeto Integrador em Análise e Desenvolvimento de Sistemas I**, do curso de Análise e Desenvolvimento de Sistemas da **FATEC Rubens Lara**, desenvolvido no 2º semestre de 2026 sob a orientação da **Professora Rosemeire Cardozo Vidal**.
+
+É também um **projeto social**: um software produzido na FATEC e devolvido à sociedade. Pequenas escolas de dança, estúdios e outros negócios que organizam aulas por turmas costumam depender de planilhas e não têm acesso a sistemas de gestão pagos. Por isso o código é aberto e de **uso gratuito**, sob a licença MIT.
+
+O sistema foi feito para atender a Portal da Dança, mas foi organizado para poder ser adaptado por outras escolas e empresas, do estado, do país ou de qualquer lugar. Os módulos são separados, as regras de negócio estão documentadas e testadas, e salas, modalidades, horário de funcionamento e os limites da consulta de oportunidades são configuráveis.
+
+## Como instalar e testar
+
+Qualquer pessoa pode instalar e usar o sistema. É preciso ter o **Python 3.12 ou mais novo** ([python.org/downloads](https://www.python.org/downloads/)); no Windows, marque a opção "Add Python to PATH" ao instalar.
+
+**1. Baixe o projeto**, de um destes jeitos:
+
+* com o git: `git clone https://github.com/rasollo/escoladedanca.git`
+* sem o git: no GitHub, clique em **Code → Download ZIP** e descompacte
+
+**2. Abra o terminal na pasta do projeto** (no Windows: PowerShell ou Prompt de Comando) e instale:
+
+| Sistema | Comando |
+|---|---|
+| Windows | `py portal.py instalar` |
+| macOS e Linux | `python3 portal.py instalar` |
+
+O instalador cria o ambiente Python (`.venv`), instala as dependências, cria o banco de dados, carrega dados de demonstração e prepara os arquivos de estilo. No fim, ele mostra a **senha** do usuário `responsavel`: anote, porque ela só aparece uma vez.
+
+**3. Abra o sistema:**
+
+| Sistema | Comando |
+|---|---|
+| Windows | `py portal.py iniciar` |
+| macOS e Linux | `python3 portal.py iniciar` |
+
+Acesse **http://127.0.0.1:8000/** no navegador e entre com o usuário `responsavel`. Para parar, pressione Ctrl+C no terminal.
+
+**Outros comandos** (no Windows, troque `python3` por `py`):
+
+| Comando | O que faz |
+|---|---|
+| `python3 portal.py instalar --senha MINHA_SENHA` | instala usando uma senha escolhida por você |
+| `python3 portal.py instalar --sem-demo` | instala com o banco vazio, sem dados de demonstração |
+| `python3 portal.py iniciar --porta 8080` | usa outra porta |
+| `python3 portal.py iniciar --rede` | deixa outras máquinas da rede acessarem, pelo IP deste computador |
+| `python3 portal.py senha` | troca a senha do usuário `responsavel` |
+| `python3 portal.py senha --novo` | cria um novo usuário administrador |
+| `python3 portal.py testar` | roda os testes automatizados |
+
+O instalador pode ser executado de novo a qualquer momento, por exemplo depois de baixar uma versão nova: ele atualiza o que mudou e não duplica os dados.
+
+Problemas comuns:
+
+* **"python3 não encontrado"** (macOS/Linux) ou **"py não é reconhecido"** (Windows): o Python não está instalado ou não está no PATH. No Windows, tente também `python portal.py instalar`.
+* **Ubuntu/Debian, erro ao criar o ambiente:** instale o módulo venv (`sudo apt install python3-venv`) e rode o instalador de novo.
+* **"Port is already in use":** outra aplicação usa a porta 8000; use `iniciar --porta 8080`.
+
+Este modo é para testar e desenvolver. Para colocar o sistema em uso numa escola, com o modo de depuração desligado, veja "Em produção" em `docs/RESUMO.md`.
+
+## Origem do projeto
+
 Iniciamos o projeto a partir da sugestão de um colega da turma de **ADS – Primeiro Ciclo**, com a ideia de construir um sistema para a gestão de processos internos de uma escola de dança.
 
 A princípio, o sistema terá como prioridade o **controle de aulas e professores**, além de algumas informações importantes sobre alunos e colaboradores.
@@ -75,3 +134,33 @@ A ideia é que todos possam participar do desenvolvimento e também aprender dur
 
 No final, esperamos ter um sistema **simples, funcional e seguro**, que possa ajudar no controle dos processos internos da escola de dança e, ao mesmo tempo, servir como uma oportunidade para colocarmos em prática os conhecimentos adquiridos durante o curso.
 
+## Versão 1.0 (10/11/2026)
+
+O sistema está implementado e documentado:
+
+* **Relatório final:** `docs/relatorio/Relatorio_Portal_da_Danca_v1.0.pdf` (e `.docx`), com requisitos, rastreabilidade, protótipo e verificação.
+* **Fluxogramas:** `docs/fluxogramas/Portal_da_Danca_Fluxogramas_v1.0.pdf` (e `.drawio`, editável).
+* **Resumo e análise:** `docs/RESUMO.md` e `docs/ANALISE.md`, também disponíveis no menu Documentação do sistema.
+* **Como instalar:** veja "Como instalar e testar", acima.
+
+## Time
+
+FATEC Rubens Lara — Análise e Desenvolvimento de Sistemas — Projeto Integrador em Análise e Desenvolvimento de Sistemas I, 2º semestre de 2026. Professora orientadora: Rosemeire Cardozo Vidal.
+
+* Cauêt da Silva
+* Davi Andrade Zenha
+* Douglas Macedo
+* Fernando Luiz Branco Freire
+* Gabriel Lane Valiengo Regis
+* Gabriel Pinto Gonçalves
+* João Gabriel Couceiro Rampon
+* Maria Eduarda Inocencio Costa
+* Nícolas Vendramini Dutra
+* Rayck Barbosa Fernandes
+* Rodrigo Conde Attanasio
+
+## Licença
+
+Distribuído sob a **licença MIT** (veja o arquivo `LICENSE`). Qualquer pessoa ou empresa pode usar, copiar, modificar e distribuir o sistema gratuitamente, inclusive para fins comerciais, desde que mantenha o aviso de direitos autorais e a licença. O software é oferecido "como está", sem garantia.
+
+Quem adotar o sistema em outra escola deve revisar as regras configuráveis e cuidar das obrigações da LGPD no próprio uso, já que o sistema guarda dados pessoais de alunos.

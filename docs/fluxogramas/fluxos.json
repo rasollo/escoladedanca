@@ -1,0 +1,220 @@
+[
+  {
+    "numero": "00",
+    "titulo": "Acesso ao sistema",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF22",
+      "RF24",
+      "RNF03"
+    ],
+    "mudancas": "Fluxo novo: login obrigatório (RNF03), registro de login, falha e logout com usuário e IP."
+  },
+  {
+    "numero": "01",
+    "titulo": "Cadastro e consulta de alunos",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF01",
+      "RF02",
+      "RN08"
+    ],
+    "mudancas": "Correção: “Solicitar correção” volta para a entrada de dados (antes ia para “Cadastrar aluno”). Incluída a atualização dos dados."
+  },
+  {
+    "numero": "02",
+    "titulo": "Cadastro, consulta e atualização de professores",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF17",
+      "RN07"
+    ],
+    "mudancas": "Correção: laço “Não: revisar” com seta única. Incluído o valor por aluno inscrito, base do salário."
+  },
+  {
+    "numero": "03",
+    "titulo": "Modalidades e salas",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF18",
+      "RN09",
+      "RN15"
+    ],
+    "mudancas": "Correção: “Selecionar operação” passou a ser decisão (losango). Incluídas as salas e o bloqueio de remoção quando há aula usando o registro."
+  },
+  {
+    "numero": "04",
+    "titulo": "Agendamento de aulas",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF19",
+      "RF20",
+      "RN09",
+      "RN10",
+      "RN13",
+      "RN14",
+      "RN15"
+    ],
+    "mudancas": "Correção: verifica horário de funcionamento, choque de sala e de professor e capacidade; o ramo de erro volta para revisão; incluídos alterar, desativar e remover."
+  },
+  {
+    "numero": "05",
+    "titulo": "Matrícula de alunos nas aulas",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF20",
+      "RF21",
+      "RF24",
+      "RN07",
+      "RN08",
+      "RN09"
+    ],
+    "mudancas": "Fluxo novo: a inscrição abre uma matrícula com data de início; a saída encerra a matrícula com data de fim. É a base do salário (fluxo 11). Não é exigida para participar (RN08)."
+  },
+  {
+    "numero": "06",
+    "titulo": "Registro de presença e faltas",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF03",
+      "RF04",
+      "RF21",
+      "RN08"
+    ],
+    "mudancas": "Correção: incluídos os alunos avulsos (sem matrícula), vários de uma vez, com opção de retirar um incluído por engano; validação do dia da aula e da capacidade. A consulta passou para o fluxo 07."
+  },
+  {
+    "numero": "07",
+    "titulo": "Consulta de presenças e faltas",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF04"
+    ],
+    "mudancas": "Fluxo novo, separado do 06: consulta com filtros por aluno, aula, situação e período."
+  },
+  {
+    "numero": "08",
+    "titulo": "Registro de entradas financeiras",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF06",
+      "RF08",
+      "RF10",
+      "RN01",
+      "RN02",
+      "RN04",
+      "RN11",
+      "RN12"
+    ],
+    "mudancas": "Correção: decisões em losango; ramo de erro na validação; origem mensalidade exige o aluno."
+  },
+  {
+    "numero": "09",
+    "titulo": "Registro de saídas financeiras",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF07",
+      "RF09",
+      "RF10",
+      "RF12",
+      "RN01",
+      "RN03",
+      "RN04"
+    ],
+    "mudancas": "Correção: o cálculo do salário saiu deste fluxo e virou o fluxo 11; a categoria vem de lista fechada; ramo de erro na validação."
+  },
+  {
+    "numero": "10",
+    "titulo": "Mensalidades",
+    "situacao": "Corrigido",
+    "requisitos": [
+      "RF10",
+      "RF11",
+      "RN02",
+      "RN04",
+      "RN06",
+      "RN08",
+      "RN12"
+    ],
+    "mudancas": "Correção: pede forma de pagamento e validade; registrar e consultar viraram opções; situação é só informativa (RN08)."
+  },
+  {
+    "numero": "11",
+    "titulo": "Cálculo e pagamento do salário dos professores",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF07",
+      "RF13",
+      "RN07",
+      "RN16"
+    ],
+    "mudancas": "Fluxo novo: salário = alunos inscritos (matrículas ativas no mês) nas aulas do professor × valor por aluno. Cada par aluno–aula conta uma vez; avulsos não contam; faltas não reduzem o salário."
+  },
+  {
+    "numero": "12",
+    "titulo": "Consulta de movimentações e saldo",
+    "situacao": "Ajustado",
+    "requisitos": [
+      "RF14",
+      "RF15",
+      "RN01"
+    ],
+    "mudancas": "Ajuste: validação do período e filtros por tipo e texto."
+  },
+  {
+    "numero": "13",
+    "titulo": "Balanço financeiro mensal",
+    "situacao": "Ajustado",
+    "requisitos": [
+      "RF16",
+      "RN05",
+      "RN11"
+    ],
+    "mudancas": "Ajuste: verifica se há movimentações antes de somar; detalha entradas por origem e forma e saídas por categoria."
+  },
+  {
+    "numero": "14",
+    "titulo": "Consulta da agenda de aulas",
+    "situacao": "Mantido",
+    "requisitos": [
+      "RF05",
+      "RF20",
+      "RN10"
+    ],
+    "mudancas": "Mantido, mostrando também inscritos e capacidade de cada aula."
+  },
+  {
+    "numero": "15",
+    "titulo": "Correção de lançamentos financeiros",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF23",
+      "RF24",
+      "RNF05"
+    ],
+    "mudancas": "Fluxo novo: editar ou excluir um lançamento digitado errado; a alteração fica na auditoria."
+  },
+  {
+    "numero": "16",
+    "titulo": "Consulta da auditoria de acessos",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF24",
+      "RNF03",
+      "RNF04"
+    ],
+    "mudancas": "Fluxo novo: só a equipe vê a auditoria (IP e histórico de acesso são dados pessoais). Os registros são gravados nos fluxos 00, 05 e 15."
+  },
+  {
+    "numero": "17",
+    "titulo": "Consulta de frequência e oportunidades",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF25",
+      "RN17",
+      "RN08",
+      "RN09"
+    ],
+    "mudancas": "Fluxo novo: ocupação real (presentes ÷ capacidade), temperatura da aula e sugestão de promoção para o proprietário."
+  }
+]

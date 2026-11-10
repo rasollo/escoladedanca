@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Início{% endblock %}
+{% block content %}
+<section class="welcome">
+    <div>
+        <span class="welcome-label">{{ hoje|date:"l, d \d\e F" }}</span>
+        <h1>Bem-vindo ao <span>Portal da Dança</span>!</h1>
+        <p>Alunos, aulas, presenças e financeiro em um só lugar, sem planilhas espalhadas.</p>
+    </div>
+    <div class="welcome-decoration" aria-hidden="true"><div class="circle circle-one"></div><div class="circle circle-two"></div><div class="circle circle-three"></div></div>
+</section>
+
+<section class="summary" aria-label="Resumo">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🎓</span><div><span>Alunos ativos</span><strong>{{ total_alunos }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">👨‍🏫</span><div><span>Professores</span><strong>{{ total_professores }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📅</span><div><span>Aulas na agenda</span><strong>{{ total_turmas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças no mês</span><strong>{{ presencas_mes }}</strong></div></div>
+</section>
+
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Aulas de hoje</h2><a href="{% url 'aulas:agenda' %}" class="link">Ver agenda →</a></div>
+        {% for turma in aulas_hoje %}
+        <div class="list-row">
+            <div><strong>{{ turma.hora_inicio|time:"H:i" }}–{{ turma.hora_fim|time:"H:i" }} · {{ turma.nome|default:turma.modalidade }}</strong>
+                <small>{{ turma.sala.nome }} · {{ turma.professor }} · {{ turma.qtd_alunos }}/{{ turma.sala.capacidade }} alunos</small></div>
+            <a href="{% url 'aulas:chamada' turma.pk %}?data={{ hoje|date:'Y-m-d' }}" class="btn btn-small">Fazer chamada</a>
+        </div>
+        {% empty %}<p class="empty">Nenhuma aula agendada para hoje.</p>{% endfor %}
+    </section>
+
+    <section class="panel">
+        <div class="panel-header"><h2>Financeiro</h2><a href="{% url 'financeiro:painel' %}" class="link">Abrir →</a></div>
+        <dl class="stats">
+            <div><dt>Saldo atual</dt><dd class="{% if saldo.saldo < 0 %}neg{% else %}pos{% endif %}">{{ saldo.saldo|brl }}</dd></div>
+            <div><dt>Entradas no mês</dt><dd class="pos">{{ balanco.total_entradas|brl }}</dd></div>
+            <div><dt>Saídas no mês</dt><dd class="neg">{{ balanco.total_saidas|brl }}</dd></div>
+            <div><dt>Resultado do mês</dt><dd>{{ balanco.saldo|brl }}</dd></div>
+        </dl>
+        <div class="quick-actions">
+            <a href="{% url 'financeiro:nova_entrada' %}" class="btn btn-primary btn-small">+ Entrada</a>
+            <a href="{% url 'financeiro:nova_saida' %}" class="btn btn-small">− Saída</a>
+            <a href="{% url 'financeiro:nova_mensalidade' %}" class="btn btn-small">Mensalidade</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

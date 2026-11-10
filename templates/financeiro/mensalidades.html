@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Mensalidades{% endblock %}
+{% block content %}
+{% include "financeiro/_header.html" with rotulo="RF11 · RN06" titulo="Mensalidades" %}
+<div class="filters"><a href="{% url 'financeiro:nova_mensalidade' %}{% if aluno_id %}?aluno={{ aluno_id }}{% endif %}" class="btn btn-primary">+ Registrar mensalidade</a>{% if aluno_id %}<a href="{% url 'financeiro:mensalidades' %}" class="btn btn-ghost">Mostrar todos os alunos</a>{% endif %}</div>
+{% if total %}{% include "financeiro/_tabela.html" with movs=pagina %}{% else %}<div class="panel"><p class="empty">Não há mensalidades registradas no período consultado.</p></div>{% endif %}
+{% include "paginacao.html" %}
+{% endblock %}

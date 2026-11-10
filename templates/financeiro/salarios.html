@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Salários{% endblock %}
+{% block content %}
+{% include "financeiro/_header.html" with rotulo="RF13 · RN07" titulo="Salários dos professores" %}
+<form method="get" class="filters panel">
+    <label for="{{ form.professor.id_for_label }}">Professor</label>{{ form.professor }}
+    <label for="{{ form.mes.id_for_label }}">Mês</label>{{ form.mes }}
+    <button class="btn btn-primary">Calcular</button>
+    {% for e in form.mes.errors %}<small class="error">{{ e }}</small>{% endfor %}
+</form>
+{% if calculo %}
+<section class="panel calc">
+    <h2>{{ calculo.professor }} · {{ calculo.referencia|date:"F/Y" }}</h2>
+    <p class="calc-line">{{ calculo.inscricoes }} aluno{{ calculo.inscricoes|pluralize }} inscrito{{ calculo.inscricoes|pluralize }} × {{ calculo.valor_por_aluno|brl }} = <strong>{{ calculo.valor|brl }}</strong></p>
+    {% if calculo.por_aula %}
+    <div class="table-wrap mb"><table>
+        <thead><tr><th>Aula</th><th>Inscritos no mês</th><th class="right">Valor</th></tr></thead>
+        <tbody>{% for l in calculo.por_aula %}<tr><td>{{ l.turma }}</td><td>{{ l.inscritos }}</td><td class="right">{{ l.valor|brl }}</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% endif %}
+    <p class="muted note">Conta cada aluno matriculado em cada aula do professor em algum dia do mês. Alunos avulsos, sem matrícula, não entram no cálculo.</p>
+    {% if calculo.ja_pago %}<p class="message message-warning">Já foram registrados {{ calculo.ja_pago|brl }} de salário para esta referência. Falta pagar {{ calculo.pendente|brl }}.</p>{% endif %}
+    {% if calculo.valor > 0 %}
+    <a class="btn btn-primary" href="{% url 'financeiro:registrar_salario' %}?professor={{ calculo.professor.pk }}&valor={{ calculo.valor|stringformat:'s' }}&referencia={{ calculo.referencia|date:'Y-m-d' }}&descricao=Salário {{ calculo.referencia|date:'m/Y'|urlencode }}">Registrar pagamento como saída</a>
+    {% else %}<p class="muted">Nenhum aluno inscrito nas aulas deste professor no mês (ou valor por aluno zerado no cadastro do professor).</p>{% endif %}
+</section>
+{% endif %}
+<div class="panel-header"><h2>Salários pagos</h2></div>
+{% include "financeiro/_tabela.html" with movs=pagina %}
+{% include "paginacao.html" %}
+{% endblock %}

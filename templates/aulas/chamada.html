@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Chamada{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF03 · RF04</span><h1>Chamada · {{ turma.nome|default:turma.modalidade }}</h1>
+        <p class="muted">{{ turma.get_dia_semana_display }} {{ turma.hora_inicio|time:"H:i" }} · {{ turma.sala.nome }}</p></div>
+    <a href="{{ turma.get_absolute_url }}" class="btn btn-ghost">← Voltar</a>
+</section>
+<form method="get" class="filters panel">
+    <label for="id_data">Data da aula</label>{{ form.data }}
+    <button class="btn">Abrir</button>
+    {% for e in form.data.errors %}<small class="error">{{ e }}</small>{% endfor %}
+</form>
+{% if data %}
+<form method="post" class="panel">
+    {% csrf_token %}
+    <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
+    <div class="panel-header"><h2>{{ data|date:"l, d/m/Y" }}</h2><span class="muted">{{ presentes }} presente{{ presentes|pluralize }} · {{ faltas }} falta{{ faltas|pluralize }} registradas</span></div>
+    <div class="table-wrap"><table>
+        <thead><tr><th>Aluno</th><th>Presente</th><th>Falta</th><th><span class="sr-only">Ações</span></th></tr></thead>
+        <tbody>
+        {% for l in linhas %}
+        <tr>
+            <td>{{ l.aluno.nome }}{% if not l.vinculado %} <span class="badge">avulso</span>{% endif %}</td>
+            <td><label class="radio"><input type="radio" name="aluno_{{ l.aluno.pk }}" value="P" {% if l.registro.presente %}checked{% endif %}><span class="sr-only">Presente: {{ l.aluno.nome }}</span></label></td>
+            <td><label class="radio"><input type="radio" name="aluno_{{ l.aluno.pk }}" value="F" {% if l.registro and not l.registro.presente %}checked{% endif %}><span class="sr-only">Falta: {{ l.aluno.nome }}</span></label></td>
+            <td class="right">{% if not l.vinculado %}<label class="remover-avulso"><input type="checkbox" name="remover_{{ l.aluno.pk }}" value="1"> Remover da chamada</label>{% endif %}</td>
+        </tr>
+        {% empty %}<tr><td colspan="4" class="empty">Nenhum aluno inscrito nesta aula.</td></tr>{% endfor %}
+        </tbody>
+    </table></div>
+    <fieldset class="avulsos">
+        <legend>Alunos avulsos <span class="muted">(sem matrícula; entram como presentes)</span></legend>
+        <div id="avulsos-lista" class="avulsos-lista">
+            <div class="avulso-linha">
+                <label class="sr-only" for="avulso-1">Aluno avulso 1</label>
+                <select name="avulso" id="avulso-1"><option value="">Selecione um aluno…</option>{% for a in candidatos_avulsos %}<option value="{{ a.pk }}">{{ a.nome }}</option>{% endfor %}</select>
+                <button type="button" class="btn btn-small btn-icone" data-remover aria-label="Retirar esta linha" title="Retirar esta linha">×</button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-small" id="avulso-mais">+ Adicionar aluno avulso</button>
+        <p class="muted note" id="avulsos-resumo" aria-live="polite"></p>
+    </fieldset>
+    <div class="form-actions">
+        <button type="button" class="btn" onclick="document.querySelectorAll('input[value=P]').forEach(r=>r.checked=true)">Marcar todos presentes</button>
+        <button type="submit" class="btn btn-primary">Salvar registros da aula</button>
+    </div>
+</form>
+<script>
+(function () {
+    const lista = document.getElementById('avulsos-lista');
+    const mais = document.getElementById('avulso-mais');
+    const resumo = document.getElementById('avulsos-resumo');
+    if (!lista) return;
+    const modelo = lista.querySelector('.avulso-linha');
+    let contador = 1;
+
+    // Um aluno escolhido numa linha some das outras (evita repetição).
+    function atualizar() {
+        const linhas = [...lista.querySelectorAll('.avulso-linha')];
+        const escolhidos = linhas.map(l => l.querySelector('select').value).filter(Boolean);
+        linhas.forEach(l => {
+            const sel = l.querySelector('select');
+            [...sel.options].forEach(o => {
+                o.hidden = o.disabled = !!o.value && o.value !== sel.value && escolhidos.includes(o.value);
+            });
+        });
+        const total = modelo.querySelector('select').options.length - 1;
+        mais.disabled = linhas.length >= total;
+        resumo.textContent = escolhidos.length
+            ? (escolhidos.length > 1
+                ? `${escolhidos.length} avulsos serão incluídos ao salvar.`
+                : '1 avulso será incluído ao salvar.')
+            : '';
+    }
+
+    mais.addEventListener('click', () => {
+        contador += 1;
+        const nova = modelo.cloneNode(true);
+        const sel = nova.querySelector('select');
+        sel.id = `avulso-${contador}`;
+        sel.value = '';
+        nova.querySelector('label').htmlFor = sel.id;
+        nova.querySelector('label').textContent = `Aluno avulso ${contador}`;
+        lista.appendChild(nova);
+        atualizar();
+        sel.focus();
+    });
+
+    lista.addEventListener('click', (ev) => {
+        const botao = ev.target.closest('[data-remover]');
+        if (!botao) return;
+        const linhas = lista.querySelectorAll('.avulso-linha');
+        const linha = botao.closest('.avulso-linha');
+        if (linhas.length > 1) {
+            linha.remove();
+            lista.querySelector('select').focus();
+        } else {
+            linha.querySelector('select').value = '';  // a última linha só é limpa
+        }
+        atualizar();
+    });
+    lista.addEventListener('change', atualizar);
+    atualizar();
+})();
+</script>
+{% endif %}
+{% endblock %}

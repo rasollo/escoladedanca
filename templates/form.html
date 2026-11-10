@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">{{ secao }}</span><h1>{{ titulo }}</h1></div>
+    <a href="{{ voltar }}" class="btn btn-ghost">← Voltar</a>
+</section>
+<form method="post" class="panel form-panel">
+    {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    {% if form.non_field_errors %}<div class="message message-error">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+    {% include "_campos.html" %}
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{{ voltar }}" class="btn btn-ghost">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

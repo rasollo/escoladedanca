@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1117" height="1467" viewBox="0 0 1117 1467" font-family="Liberation Sans, Arial, sans-serif">
+<rect x="0" y="0" width="1117" height="1467" fill="#ffffff"/>
+<text x="36" y="46" font-size="22" font-weight="bold" fill="#22202a">Fluxo 00 — Acesso ao sistema</text>
+<text x="36" y="72" font-size="12.5" fill="#5a5768">Requisitos: RF22, RF24, RNF03   ·   Situação: Novo</text>
+<polyline points="465.0,197.0 465.0,264.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,264.0 460.5,255.0 469.5,255.0" fill="#55536a"/>
+<polyline points="465.0,320.0 465.0,364.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,364.0 460.5,355.0 469.5,355.0" fill="#55536a"/>
+<polyline points="465.0,452.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,844.0 460.5,835.0 469.5,835.0" fill="#55536a"/>
+<polyline points="572.0,408.0 715.0,408.0 715.0,496.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,496.0 710.5,487.0 719.5,487.0" fill="#55536a"/>
+<polyline points="715.0,552.0 715.0,596.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,596.0 710.5,587.0 719.5,587.0" fill="#55536a"/>
+<polyline points="822.0,640.0 863.0,640.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="863.0,640.0 854.0,635.5 854.0,644.5" fill="#55536a"/>
+<polyline points="965.0,612.0 965.0,524.0 822.0,524.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="822.0,524.0 831.0,519.5 831.0,528.5" fill="#55536a"/>
+<polyline points="715.0,684.0 715.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,728.0 710.5,719.0 719.5,719.0" fill="#55536a"/>
+<polyline points="715.0,784.0 715.0,824.0 465.0,824.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,844.0 460.5,835.0 469.5,835.0" fill="#55536a"/>
+<polyline points="465.0,900.0 465.0,960.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,960.0 460.5,951.0 469.5,951.0" fill="#55536a"/>
+<polyline points="465.0,1016.0 465.0,1060.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1060.0 460.5,1051.0 469.5,1051.0" fill="#55536a"/>
+<polyline points="358.0,1104.0 328.0,1104.0 328.0,292.0 363.0,292.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="363.0,292.0 354.0,287.5 354.0,296.5" fill="#55536a"/>
+<polyline points="465.0,1148.0 465.0,1192.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1192.0 460.5,1183.0 469.5,1183.0" fill="#55536a"/>
+<polyline points="465.0,1248.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<ellipse cx="465.0" cy="176.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="180.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Início</text>
+<rect x="363.0" y="264.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="296.0" font-size="11.5" text-anchor="middle" fill="#22202a">Acessar uma página do sistema</text>
+<polygon points="465.0,364.0 572.0,408.0 465.0,452.0 358.0,408.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Usuário já</text>
+<text x="465.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">autenticado?</text>
+<polygon points="624.0,496.0 822.0,496.0 806.0,552.0 608.0,552.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="715.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a">Informar usuário e senha</text>
+<polygon points="715.0,596.0 822.0,640.0 715.0,684.0 608.0,640.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="715.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Usuário e senha</text>
+<text x="715.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">válidos?</text>
+<rect x="863.0" y="612.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="965.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar LOGIN_FALHOU e exibir</text>
+<text x="965.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">aviso</text>
+<rect x="613.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="715.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar LOGIN_OK (usuário e</text>
+<text x="715.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">IP)</text>
+<polygon points="374.0,844.0 572.0,844.0 556.0,900.0 358.0,900.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="876.0" font-size="11.5" text-anchor="middle" fill="#22202a">Exibir página solicitada</text>
+<rect x="363.0" y="960.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar acesso (usuário, IP,</text>
+<text x="465.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a">página)</text>
+<polygon points="465.0,1060.0 572.0,1104.0 465.0,1148.0 358.0,1104.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="1108.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Clicou em Sair?</text>
+<rect x="363.0" y="1192.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="1217.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar LOGOUT e encerrar</text>
+<text x="465.0" y="1230.8" font-size="11.5" text-anchor="middle" fill="#22202a">sessão</text>
+<ellipse cx="465.0" cy="1336.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="1340.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Fim</text>
+<rect x="470.0" y="461.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="472.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="585.7" y="391.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="598.0" y="402.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="835.7" y="623.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="848.0" y="634.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="720.0" y="693.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="723.0" y="704.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="319.7" y="1087.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="1098.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="1157.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="1168.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<text x="36" y="1445" font-size="11.5" fill="#5a5768">O que mudou: Fluxo novo: login obrigatório (RNF03), registro de login, falha e logout com usuário e IP.</text>
+</svg>

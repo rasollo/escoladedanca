@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Balanço mensal{% endblock %}
+{% block content %}
+{% include "financeiro/_header.html" with rotulo="RF16 · RN05" titulo="Balanço mensal" %}
+<form method="get" class="filters panel"><label for="mes">Mês e ano</label><input type="month" id="mes" name="mes" value="{{ mes_valor }}"><button class="btn">Consultar</button></form>
+<h2 class="mb">{{ mes_nome }}</h2>
+{% if balanco.tem_movimentacoes %}
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">⬆️</span><div><span>Entradas</span><strong class="pos">{{ balanco.total_entradas|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">⬇️</span><div><span>Saídas</span><strong class="neg">{{ balanco.total_saidas|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📊</span><div><span>Saldo do mês</span><strong class="{% if balanco.saldo < 0 %}neg{% else %}pos{% endif %}">{{ balanco.saldo|brl }}</strong></div></div>
+</section>
+<div class="three-cols">
+    <section class="panel"><h3>Entradas por origem</h3>{% for l in balanco.entradas_por_origem %}<div class="list-row"><span>{{ l.rotulo }} <small>({{ l.qtd }})</small></span><strong>{{ l.total|brl }}</strong></div>{% empty %}<p class="empty">—</p>{% endfor %}</section>
+    <section class="panel"><h3>Entradas por forma de pagamento</h3>{% for l in balanco.entradas_por_forma %}<div class="list-row"><span>{{ l.rotulo }} <small>({{ l.qtd }})</small></span><strong>{{ l.total|brl }}</strong></div>{% empty %}<p class="empty">—</p>{% endfor %}</section>
+    <section class="panel"><h3>Saídas por categoria</h3>{% for l in balanco.saidas_por_categoria %}<div class="list-row"><span>{{ l.rotulo }} <small>({{ l.qtd }})</small></span><strong>{{ l.total|brl }}</strong></div>{% empty %}<p class="empty">—</p>{% endfor %}</section>
+</div>
+{% else %}
+<div class="panel"><p class="empty">Período sem movimentações registradas.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Modalidades e salas{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF18 · RN09</span><h1>Modalidades e salas</h1></div>
+    <a href="{% url 'aulas:agenda' %}" class="btn btn-ghost">← Agenda</a>
+</section>
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Modalidades</h2><a href="{% url 'aulas:modalidade_nova' %}" class="btn btn-small btn-primary">+ Nova</a></div>
+        {% for m in modalidades %}
+        <div class="list-row"><div><strong>{{ m.nome }}</strong><small>{{ m.qtd_turmas }} aula{{ m.qtd_turmas|pluralize }} agendada{{ m.qtd_turmas|pluralize }}</small></div>
+            <div class="actions"><a class="link" href="{% url 'aulas:modalidade_editar' m.pk %}">Editar</a>{% if not m.qtd_turmas %}<a class="link danger" href="{% url 'aulas:modalidade_excluir' m.pk %}">Remover</a>{% endif %}</div></div>
+        {% empty %}<p class="empty">Nenhuma modalidade.</p>{% endfor %}
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>Salas</h2><a href="{% url 'aulas:sala_nova' %}" class="btn btn-small">+ Nova</a></div>
+        {% for s in salas %}
+        <div class="list-row"><div><strong>{{ s.nome }}</strong><small>Capacidade: {{ s.capacidade }} alunos · {{ s.qtd_turmas }} aula{{ s.qtd_turmas|pluralize }}</small></div><a class="link" href="{% url 'aulas:sala_editar' s.pk %}">Editar</a></div>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

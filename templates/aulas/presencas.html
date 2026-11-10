@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Presenças e faltas{% endblock %}
+{% block content %}
+<section class="page-header"><div><span class="section-label">RF03 · RF04</span><h1>Presenças e faltas</h1></div></section>
+<form method="get" class="filters panel">
+    <label class="sr-only" for="f-aluno">Aluno</label>
+    <select name="aluno" id="f-aluno"><option value="">Todos os alunos</option>{% for a in alunos %}<option value="{{ a.pk }}" {% if filtros.aluno == a.pk|stringformat:"d" %}selected{% endif %}>{{ a.nome }}</option>{% endfor %}</select>
+    <label class="sr-only" for="f-turma">Aula</label>
+    <select name="turma" id="f-turma"><option value="">Todas as aulas</option>{% for t in turmas %}<option value="{{ t.pk }}" {% if filtros.turma == t.pk|stringformat:"d" %}selected{% endif %}>{{ t }}</option>{% endfor %}</select>
+    <label class="sr-only" for="f-status">Situação</label>
+    <select name="status" id="f-status"><option value="">Presenças e faltas</option><option value="presente" {% if filtros.status == 'presente' %}selected{% endif %}>Somente presenças</option><option value="falta" {% if filtros.status == 'falta' %}selected{% endif %}>Somente faltas</option></select>
+    <label class="sr-only" for="f-ini">De</label><input type="date" name="inicio" id="f-ini" value="{{ filtros.inicio }}">
+    <label class="sr-only" for="f-fim">Até</label><input type="date" name="fim" id="f-fim" value="{{ filtros.fim }}">
+    <button class="btn">Filtrar</button>
+</form>
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças</span><strong>{{ total_presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✖️</span><div><span>Faltas</span><strong>{{ total_faltas }}</strong></div></div>
+</section>
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Data</th><th>Aluno</th><th>Aula</th><th>Situação</th></tr></thead>
+    <tbody>
+    {% for p in pagina %}
+        <tr><td>{{ p.data|date:"d/m/Y" }}</td><td><a class="link" href="{{ p.aluno.get_absolute_url }}">{{ p.aluno }}</a></td><td>{{ p.turma.nome|default:p.turma.modalidade }} · {{ p.turma.sala.nome }}</td>
+            <td>{% if p.presente %}<span class="badge badge-green">Presente</span>{% else %}<span class="badge badge-red">Falta</span>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="4" class="empty">Nenhum registro encontrado.</td></tr>{% endfor %}
+    </tbody>
+</table></div>
+{% include "paginacao.html" %}
+{% endblock %}

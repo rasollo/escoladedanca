@@ -1,0 +1,17 @@
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Data</th><th>Tipo</th><th>Classificação</th><th>Forma</th><th>Referente a</th><th>Validade</th><th class="right">Valor</th><th></th></tr></thead>
+    <tbody>
+    {% for m in movs %}
+    <tr>
+        <td>{{ m.data_pagamento|date:"d/m/Y" }}</td>
+        <td>{% if m.tipo == 'entrada' %}<span class="badge badge-green">Entrada</span>{% else %}<span class="badge badge-red">Saída</span>{% endif %}</td>
+        <td>{{ m.classificacao }}</td>
+        <td>{{ m.get_forma_pagamento_display|default:"—" }}</td>
+        <td>{% if m.aluno %}<a class="link" href="{{ m.aluno.get_absolute_url }}">{{ m.aluno }}</a>{% elif m.professor %}<a class="link" href="{{ m.professor.get_absolute_url }}">{{ m.professor }}</a>{% else %}{{ m.descricao|default:"—" }}{% endif %}</td>
+        <td>{{ m.validade|date:"d/m/Y"|default:"—" }}</td>
+        <td class="right {% if m.tipo == 'entrada' %}pos{% else %}neg{% endif %}">{{ m.valor_com_sinal|brl }}</td>
+        <td class="right nowrap"><a class="link" href="{% url 'financeiro:editar' m.pk %}">Editar</a> <a class="link danger" href="{% url 'financeiro:excluir' m.pk %}">Excluir</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="8" class="empty">Nenhuma movimentação registrada.</td></tr>{% endfor %}
+    </tbody>
+</table></div>

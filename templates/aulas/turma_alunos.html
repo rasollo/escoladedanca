@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Vincular alunos{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF20 · RF21</span><h1>Alunos de {{ turma.nome|default:turma.modalidade }}</h1>
+        <p class="muted">Capacidade da {{ turma.sala.nome }}: {{ turma.capacidade }} alunos. Selecionar um aluno abre a matrícula dele nesta aula a partir de hoje; desmarcar encerra a matrícula. A matrícula conta para o salário do professor, mas não é exigida para participar da aula (RN08).</p></div>
+    <a href="{{ turma.get_absolute_url }}" class="btn btn-ghost">← Voltar</a>
+</section>
+<form method="post" class="panel">
+    {% csrf_token %}
+    {% for error in form.alunos.errors %}<div class="message message-error">{{ error }}</div>{% endfor %}
+    <label class="sr-only" for="filtro-alunos">Filtrar alunos</label>
+    <input type="search" id="filtro-alunos" placeholder="Filtrar pelo nome…" class="mb" oninput="document.querySelectorAll('.checklist li').forEach(li=>li.hidden=!li.textContent.toLowerCase().includes(this.value.toLowerCase()))">
+    <p class="muted">Selecionados: <strong id="contador">0</strong> / {{ turma.capacidade }}</p>
+    <div class="checklist">{{ form.alunos }}</div>
+    <div class="form-actions"><button type="submit" class="btn btn-primary">Salvar vínculos</button></div>
+</form>
+<script>
+(function () {
+    const boxes = document.querySelectorAll('.checklist input[type=checkbox]');
+    const out = document.getElementById('contador');
+    const update = () => { out.textContent = [...boxes].filter(b => b.checked).length; };
+    boxes.forEach(b => b.addEventListener('change', update)); update();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Financeiro{% endblock %}
+{% block content %}
+{% include "financeiro/_header.html" with rotulo="RF06–RF16" titulo="Financeiro" %}
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🏦</span><div><span>Saldo atual</span><strong class="{% if saldo.saldo < 0 %}neg{% endif %}">{{ saldo.saldo|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">⬆️</span><div><span>Entradas em {{ mes_nome }}</span><strong class="pos">{{ balanco.total_entradas|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">⬇️</span><div><span>Saídas em {{ mes_nome }}</span><strong class="neg">{{ balanco.total_saidas|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📊</span><div><span>Resultado de {{ mes_nome }}</span><strong>{{ balanco.saldo|brl }}</strong></div></div>
+</section>
+<div class="panel-header"><h2>Últimos lançamentos</h2><a class="link" href="{% url 'financeiro:movimentacoes' %}">Ver todos →</a></div>
+{% include "financeiro/_tabela.html" with movs=ultimas %}
+{% endblock %}

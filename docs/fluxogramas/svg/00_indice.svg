@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800" font-family="Liberation Sans, Arial, sans-serif">
+<rect width="1000" height="800" fill="#ffffff"/>
+<text x="50" y="62" font-size="28" font-weight="bold" fill="#22202a">Portal da Dança — Fluxogramas</text>
+<text x="50" y="92" font-size="14" fill="#5a5768">Versão 1.0 · 10/11/2026 · revisada conforme as observações da professora e o sistema implementado</text>
+<text x="50" y="138" font-size="12" font-weight="bold" fill="#5a5768">Nº</text>
+<text x="100" y="138" font-size="12" font-weight="bold" fill="#5a5768">FLUXO</text>
+<text x="520" y="138" font-size="12" font-weight="bold" fill="#5a5768">REQUISITOS</text>
+<text x="860" y="138" font-size="12" font-weight="bold" fill="#5a5768">SITUAÇÃO</text>
+<rect x="40" y="139" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="160" font-size="14" font-weight="bold" fill="#22202a">00</text>
+<text x="100" y="160" font-size="14" fill="#22202a">Acesso ao sistema</text>
+<text x="520" y="160" font-size="12" fill="#5a5768">RF22, RF24, RNF03</text>
+<text x="860" y="160" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<text x="50" y="193" font-size="14" font-weight="bold" fill="#22202a">01</text>
+<text x="100" y="193" font-size="14" fill="#22202a">Cadastro e consulta de alunos</text>
+<text x="520" y="193" font-size="12" fill="#5a5768">RF01, RF02, RN08</text>
+<text x="860" y="193" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<rect x="40" y="205" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="226" font-size="14" font-weight="bold" fill="#22202a">02</text>
+<text x="100" y="226" font-size="14" fill="#22202a">Cadastro, consulta e atualização de professores</text>
+<text x="520" y="226" font-size="12" fill="#5a5768">RF17, RN07</text>
+<text x="860" y="226" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<text x="50" y="259" font-size="14" font-weight="bold" fill="#22202a">03</text>
+<text x="100" y="259" font-size="14" fill="#22202a">Modalidades e salas</text>
+<text x="520" y="259" font-size="12" fill="#5a5768">RF18, RN09, RN15</text>
+<text x="860" y="259" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<rect x="40" y="271" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="292" font-size="14" font-weight="bold" fill="#22202a">04</text>
+<text x="100" y="292" font-size="14" fill="#22202a">Agendamento de aulas</text>
+<text x="520" y="292" font-size="12" fill="#5a5768">RF19, RF20, RN09, RN10, RN13, RN14, RN15</text>
+<text x="860" y="292" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<text x="50" y="325" font-size="14" font-weight="bold" fill="#22202a">05</text>
+<text x="100" y="325" font-size="14" fill="#22202a">Matrícula de alunos nas aulas</text>
+<text x="520" y="325" font-size="12" fill="#5a5768">RF20, RF21, RF24, RN07, RN08, RN09</text>
+<text x="860" y="325" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<rect x="40" y="337" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="358" font-size="14" font-weight="bold" fill="#22202a">06</text>
+<text x="100" y="358" font-size="14" fill="#22202a">Registro de presença e faltas</text>
+<text x="520" y="358" font-size="12" fill="#5a5768">RF03, RF04, RF21, RN08</text>
+<text x="860" y="358" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<text x="50" y="391" font-size="14" font-weight="bold" fill="#22202a">07</text>
+<text x="100" y="391" font-size="14" fill="#22202a">Consulta de presenças e faltas</text>
+<text x="520" y="391" font-size="12" fill="#5a5768">RF04</text>
+<text x="860" y="391" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<rect x="40" y="403" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="424" font-size="14" font-weight="bold" fill="#22202a">08</text>
+<text x="100" y="424" font-size="14" fill="#22202a">Registro de entradas financeiras</text>
+<text x="520" y="424" font-size="12" fill="#5a5768">RF06, RF08, RF10, RN01, RN02, RN04, RN11, RN12</text>
+<text x="860" y="424" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<text x="50" y="457" font-size="14" font-weight="bold" fill="#22202a">09</text>
+<text x="100" y="457" font-size="14" fill="#22202a">Registro de saídas financeiras</text>
+<text x="520" y="457" font-size="12" fill="#5a5768">RF07, RF09, RF10, RF12, RN01, RN03, RN04</text>
+<text x="860" y="457" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<rect x="40" y="469" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="490" font-size="14" font-weight="bold" fill="#22202a">10</text>
+<text x="100" y="490" font-size="14" fill="#22202a">Mensalidades</text>
+<text x="520" y="490" font-size="12" fill="#5a5768">RF10, RF11, RN02, RN04, RN06, RN08, RN12</text>
+<text x="860" y="490" font-size="13" font-weight="bold" fill="#a8461a">Corrigido</text>
+<text x="50" y="523" font-size="14" font-weight="bold" fill="#22202a">11</text>
+<text x="100" y="523" font-size="14" fill="#22202a">Cálculo e pagamento do salário dos professores</text>
+<text x="520" y="523" font-size="12" fill="#5a5768">RF07, RF13, RN07, RN16</text>
+<text x="860" y="523" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<rect x="40" y="535" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="556" font-size="14" font-weight="bold" fill="#22202a">12</text>
+<text x="100" y="556" font-size="14" fill="#22202a">Consulta de movimentações e saldo</text>
+<text x="520" y="556" font-size="12" fill="#5a5768">RF14, RF15, RN01</text>
+<text x="860" y="556" font-size="13" font-weight="bold" fill="#a8761a">Ajustado</text>
+<text x="50" y="589" font-size="14" font-weight="bold" fill="#22202a">13</text>
+<text x="100" y="589" font-size="14" fill="#22202a">Balanço financeiro mensal</text>
+<text x="520" y="589" font-size="12" fill="#5a5768">RF16, RN05, RN11</text>
+<text x="860" y="589" font-size="13" font-weight="bold" fill="#a8761a">Ajustado</text>
+<rect x="40" y="601" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="622" font-size="14" font-weight="bold" fill="#22202a">14</text>
+<text x="100" y="622" font-size="14" fill="#22202a">Consulta da agenda de aulas</text>
+<text x="520" y="622" font-size="12" fill="#5a5768">RF05, RF20, RN10</text>
+<text x="860" y="622" font-size="13" font-weight="bold" fill="#5a5768">Mantido</text>
+<text x="50" y="655" font-size="14" font-weight="bold" fill="#22202a">15</text>
+<text x="100" y="655" font-size="14" fill="#22202a">Correção de lançamentos financeiros</text>
+<text x="520" y="655" font-size="12" fill="#5a5768">RF23, RF24, RNF05</text>
+<text x="860" y="655" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<rect x="40" y="667" width="920" height="33" fill="#f4f3f8"/>
+<text x="50" y="688" font-size="14" font-weight="bold" fill="#22202a">16</text>
+<text x="100" y="688" font-size="14" fill="#22202a">Consulta da auditoria de acessos</text>
+<text x="520" y="688" font-size="12" fill="#5a5768">RF24, RNF03, RNF04</text>
+<text x="860" y="688" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<text x="50" y="721" font-size="14" font-weight="bold" fill="#22202a">17</text>
+<text x="100" y="721" font-size="14" fill="#22202a">Consulta de frequência e oportunidades</text>
+<text x="520" y="721" font-size="12" fill="#5a5768">RF25, RN17, RN08, RN09</text>
+<text x="860" y="721" font-size="13" font-weight="bold" fill="#2f7a55">Novo</text>
+<text x="50" y="780" font-size="12" fill="#5a5768">Legenda: elipse = início/fim · retângulo = processo · paralelogramo = entrada/saída de dados · losango = decisão.</text>
+</svg>

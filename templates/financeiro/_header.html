@@ -1,0 +1,8 @@
+<section class="page-header">
+    <div><span class="section-label">{{ rotulo }}</span><h1>{{ titulo }}</h1></div>
+    <div class="actions">
+        <a href="{% url 'financeiro:nova_entrada' %}" class="btn btn-primary">+ Entrada</a>
+        <a href="{% url 'financeiro:nova_saida' %}" class="btn">− Saída</a>
+    </div>
+</section>
+{% include "financeiro/_abas.html" %}

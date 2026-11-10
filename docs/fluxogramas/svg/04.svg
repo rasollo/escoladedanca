@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1367" height="1467" viewBox="0 0 1367 1467" font-family="Liberation Sans, Arial, sans-serif">
+<rect x="0" y="0" width="1367" height="1467" fill="#ffffff"/>
+<text x="36" y="46" font-size="22" font-weight="bold" fill="#22202a">Fluxo 04 — Agendamento de aulas</text>
+<text x="36" y="72" font-size="12.5" fill="#5a5768">Requisitos: RF19, RF20, RN09, RN10, RN13, RN14, RN15   ·   Situação: Corrigido</text>
+<polyline points="465.0,197.0 465.0,264.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,264.0 460.5,255.0 469.5,255.0" fill="#55536a"/>
+<polyline points="465.0,320.0 465.0,364.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,364.0 460.5,355.0 469.5,355.0" fill="#55536a"/>
+<polyline points="358.0,408.0 215.0,408.0 215.0,496.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="215.0,496.0 210.5,487.0 219.5,487.0" fill="#55536a"/>
+<polyline points="572.0,408.0 715.0,408.0 715.0,496.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,496.0 710.5,487.0 719.5,487.0" fill="#55536a"/>
+<polyline points="215.0,552.0 215.0,592.0 465.0,592.0 465.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,612.0 460.5,603.0 469.5,603.0" fill="#55536a"/>
+<polyline points="715.0,552.0 715.0,596.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,596.0 710.5,587.0 719.5,587.0" fill="#55536a"/>
+<polyline points="608.0,640.0 572.0,640.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="572.0,640.0 581.0,635.5 581.0,644.5" fill="#55536a"/>
+<polyline points="715.0,684.0 715.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,728.0 710.5,719.0 719.5,719.0" fill="#55536a"/>
+<polyline points="822.0,640.0 965.0,640.0 965.0,712.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,712.0 960.5,703.0 969.5,703.0" fill="#55536a"/>
+<polyline points="465.0,668.0 465.0,712.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,712.0 460.5,703.0 469.5,703.0" fill="#55536a"/>
+<polyline points="358.0,756.0 215.0,756.0 215.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="215.0,844.0 210.5,835.0 219.5,835.0" fill="#55536a"/>
+<polyline points="465.0,800.0 465.0,828.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,828.0 460.5,819.0 469.5,819.0" fill="#55536a"/>
+<polyline points="358.0,872.0 317.0,872.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="317.0,872.0 326.0,867.5 326.0,876.5" fill="#55536a"/>
+<polyline points="465.0,916.0 465.0,944.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,944.0 460.5,935.0 469.5,935.0" fill="#55536a"/>
+<polyline points="358.0,988.0 215.0,988.0 215.0,900.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="215.0,900.0 210.5,909.0 219.5,909.0" fill="#55536a"/>
+<polyline points="465.0,1032.0 465.0,1076.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1076.0 460.5,1067.0 469.5,1067.0" fill="#55536a"/>
+<polyline points="113.0,872.0 83.0,872.0 83.0,640.0 358.0,640.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="358.0,640.0 349.0,635.5 349.0,644.5" fill="#55536a"/>
+<polyline points="465.0,1132.0 465.0,1192.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1192.0 460.5,1183.0 469.5,1183.0" fill="#55536a"/>
+<polyline points="465.0,1248.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="965.0,800.0 965.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,844.0 960.5,835.0 969.5,835.0" fill="#55536a"/>
+<polyline points="1072.0,756.0 1215.0,756.0 1215.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="1215.0,844.0 1210.5,835.0 1219.5,835.0" fill="#55536a"/>
+<polyline points="715.0,784.0 715.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="965.0,900.0 965.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="1215.0,900.0 1215.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<ellipse cx="465.0" cy="176.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="180.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Início</text>
+<rect x="363.0" y="264.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="296.0" font-size="11.5" text-anchor="middle" fill="#22202a">Acessar agenda de aulas</text>
+<polygon points="465.0,364.0 572.0,408.0 465.0,452.0 358.0,408.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Nova aula ou aula</text>
+<text x="465.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">existente?</text>
+<rect x="113.0" y="496.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="215.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a">Iniciar novo agendamento</text>
+<polygon points="624.0,496.0 822.0,496.0 806.0,552.0 608.0,552.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="715.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a">Selecionar aula existente</text>
+<polygon points="715.0,596.0 822.0,640.0 715.0,684.0 608.0,640.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="715.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Alterar, desativar ou</text>
+<text x="715.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">remover?</text>
+<polygon points="374.0,612.0 572.0,612.0 556.0,668.0 358.0,668.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Informar modalidade, dia,</text>
+<text x="465.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">horário, sala e professor</text>
+<polygon points="465.0,712.0 572.0,756.0 465.0,800.0 358.0,756.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Entre 18h e 22h e</text>
+<text x="465.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">término após o início?</text>
+<polygon points="465.0,828.0 572.0,872.0 465.0,916.0 358.0,872.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Sala e professor</text>
+<text x="465.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">livres no horário?</text>
+<polygon points="465.0,944.0 572.0,988.0 465.0,1032.0 358.0,988.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Inscritos cabem na</text>
+<text x="465.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">sala (até 40)?</text>
+<rect x="113.0" y="844.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="215.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Revisar dados ou organizar outra</text>
+<text x="215.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">turma</text>
+<rect x="363.0" y="1076.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="1108.0" font-size="11.5" text-anchor="middle" fill="#22202a">Salvar agendamento</text>
+<polygon points="374.0,1192.0 572.0,1192.0 556.0,1248.0 358.0,1248.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="1224.0" font-size="11.5" text-anchor="middle" fill="#22202a">Aula disponível na agenda</text>
+<rect x="613.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="715.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Desativar aula e encerrar as</text>
+<text x="715.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">matrículas</text>
+<polygon points="965.0,712.0 1072.0,756.0 965.0,800.0 858.0,756.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="965.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Aula tem presenças ou</text>
+<text x="965.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">matrículas?</text>
+<polygon points="874.0,844.0 1072.0,844.0 1056.0,900.0 858.0,900.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="965.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Orientar a desativar</text>
+<text x="965.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">(histórico protegido)</text>
+<rect x="1113.0" y="844.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="1215.0" y="876.0" font-size="11.5" text-anchor="middle" fill="#22202a">Remover aula</text>
+<ellipse cx="465.0" cy="1336.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="1340.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Fim</text>
+<rect x="316.6" y="391.0" width="30.8" height="14" fill="#ffffff"/>
+<text x="332.0" y="402.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Nova</text>
+<rect x="567.1" y="391.0" width="61.8" height="14" fill="#ffffff"/>
+<text x="598.0" y="402.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Existente</text>
+<rect x="557.3" y="623.0" width="49.4" height="14" fill="#ffffff"/>
+<text x="582.0" y="634.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Alterar</text>
+<rect x="720.0" y="693.0" width="61.8" height="14" fill="#ffffff"/>
+<text x="723.0" y="704.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Desativar</text>
+<rect x="823.3" y="623.0" width="49.4" height="14" fill="#ffffff"/>
+<text x="848.0" y="634.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Remover</text>
+<rect x="319.7" y="739.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="750.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="809.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="820.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="319.7" y="855.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="866.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="925.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="936.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="319.7" y="971.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="982.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="1041.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="1052.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="970.0" y="809.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="973.0" y="820.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="1085.7" y="739.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="1098.0" y="750.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<text x="36" y="1445" font-size="11.5" fill="#5a5768">O que mudou: Correção: verifica horário de funcionamento, choque de sala e de professor e capacidade; o ramo de erro volta para revisão; incluídos alterar, desativar e remover.</text>
+</svg>

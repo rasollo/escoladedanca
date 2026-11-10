@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Saldo{% endblock %}
+{% block content %}
+{% include "financeiro/_header.html" with rotulo="RF15" titulo="Saldo financeiro" %}
+<section class="panel big-number">
+    <span>Saldo atual da escola</span>
+    <strong class="{% if saldo.saldo < 0 %}neg{% else %}pos{% endif %}">{{ saldo.saldo|brl }}</strong>
+    <p class="muted">Total de entradas {{ saldo.entradas|brl }} − total de saídas {{ saldo.saidas|brl }}</p>
+</section>
+{% endblock %}

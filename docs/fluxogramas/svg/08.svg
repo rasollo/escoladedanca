@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="872" height="1583" viewBox="0 0 872 1583" font-family="Liberation Sans, Arial, sans-serif">
+<rect x="0" y="0" width="872" height="1583" fill="#ffffff"/>
+<text x="36" y="46" font-size="22" font-weight="bold" fill="#22202a">Fluxo 08 — Registro de entradas financeiras</text>
+<text x="36" y="72" font-size="12.5" fill="#5a5768">Requisitos: RF06, RF08, RF10, RN01, RN02, RN04, RN11, RN12   ·   Situação: Corrigido</text>
+<polyline points="465.0,197.0 465.0,264.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,264.0 460.5,255.0 469.5,255.0" fill="#55536a"/>
+<polyline points="465.0,320.0 465.0,380.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,380.0 460.5,371.0 469.5,371.0" fill="#55536a"/>
+<polyline points="465.0,436.0 465.0,496.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,496.0 460.5,487.0 469.5,487.0" fill="#55536a"/>
+<polyline points="465.0,552.0 465.0,596.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,596.0 460.5,587.0 469.5,587.0" fill="#55536a"/>
+<polyline points="572.0,640.0 715.0,640.0 715.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,728.0 710.5,719.0 719.5,719.0" fill="#55536a"/>
+<polyline points="465.0,684.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,844.0 460.5,835.0 469.5,835.0" fill="#55536a"/>
+<polyline points="715.0,784.0 715.0,824.0 465.0,824.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,844.0 460.5,835.0 469.5,835.0" fill="#55536a"/>
+<polyline points="465.0,900.0 465.0,960.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,960.0 460.5,951.0 469.5,951.0" fill="#55536a"/>
+<polyline points="465.0,1016.0 465.0,1060.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1060.0 460.5,1051.0 469.5,1051.0" fill="#55536a"/>
+<polyline points="358.0,1104.0 317.0,1104.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="317.0,1104.0 326.0,1099.5 326.0,1108.5" fill="#55536a"/>
+<polyline points="113.0,1104.0 83.0,1104.0 83.0,408.0 358.0,408.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="358.0,408.0 349.0,403.5 349.0,412.5" fill="#55536a"/>
+<polyline points="465.0,1148.0 465.0,1192.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1192.0 460.5,1183.0 469.5,1183.0" fill="#55536a"/>
+<polyline points="465.0,1248.0 465.0,1308.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1308.0 460.5,1299.0 469.5,1299.0" fill="#55536a"/>
+<polyline points="465.0,1364.0 465.0,1431.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1431.0 460.5,1422.0 469.5,1422.0" fill="#55536a"/>
+<ellipse cx="465.0" cy="176.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="180.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Início</text>
+<rect x="363.0" y="264.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="296.0" font-size="11.5" text-anchor="middle" fill="#22202a">Iniciar registro de entrada</text>
+<polygon points="374.0,380.0 572.0,380.0 556.0,436.0 358.0,436.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a">Informar valor e data do</text>
+<text x="465.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a">pagamento</text>
+<polygon points="374.0,496.0 572.0,496.0 556.0,552.0 358.0,552.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="514.5" font-size="11.5" text-anchor="middle" fill="#22202a">Selecionar origem:</text>
+<text x="465.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a">mensalidade, aluguel de sala,</text>
+<text x="465.0" y="541.5" font-size="11.5" text-anchor="middle" fill="#22202a">bebidas ou camisetas</text>
+<polygon points="465.0,596.0 572.0,640.0 465.0,684.0 358.0,640.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="644.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Origem é mensalidade?</text>
+<polygon points="624.0,728.0 822.0,728.0 806.0,784.0 608.0,784.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="715.0" y="760.0" font-size="11.5" text-anchor="middle" fill="#22202a">Selecionar o aluno</text>
+<polygon points="374.0,844.0 572.0,844.0 556.0,900.0 358.0,900.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Selecionar forma de pagamento:</text>
+<text x="465.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">Pix, dinheiro ou cartão</text>
+<polygon points="374.0,960.0 572.0,960.0 556.0,1016.0 358.0,1016.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a">Informar validade, se</text>
+<text x="465.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a">aplicável</text>
+<polygon points="465.0,1060.0 572.0,1104.0 465.0,1148.0 358.0,1104.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="1101.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Valor &gt; 0 e validade ≥</text>
+<text x="465.0" y="1114.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">data do pagamento?</text>
+<rect x="113.0" y="1076.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="215.0" y="1108.0" font-size="11.5" text-anchor="middle" fill="#22202a">Exibir erros e corrigir</text>
+<rect x="363.0" y="1192.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="1224.0" font-size="11.5" text-anchor="middle" fill="#22202a">Salvar entrada</text>
+<polygon points="374.0,1308.0 572.0,1308.0 556.0,1364.0 358.0,1364.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="1333.3" font-size="11.5" text-anchor="middle" fill="#22202a">Entrada disponível nas</text>
+<text x="465.0" y="1346.8" font-size="11.5" text-anchor="middle" fill="#22202a">movimentações e no balanço</text>
+<ellipse cx="465.0" cy="1452.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="1456.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Fim</text>
+<rect x="585.7" y="623.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="598.0" y="634.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="470.0" y="693.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="704.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Não</text>
+<rect x="319.7" y="1087.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="1098.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="1157.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="1168.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<text x="36" y="1561" font-size="11.5" fill="#5a5768">O que mudou: Correção: decisões em losango; ramo de erro na validação; origem mensalidade exige o aluno.</text>
+</svg>

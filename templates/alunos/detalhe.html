@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ aluno.nome }}{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Aluno</span><h1>{{ aluno.nome }}</h1>
+        <p class="muted">{{ aluno.telefone|default:"Sem telefone" }} · {{ aluno.email|default:"sem e-mail" }}{% if not aluno.ativo %} · <span class="badge">Inativo</span>{% endif %}</p></div>
+    <div class="actions">
+        <a href="{% url 'financeiro:nova_mensalidade' %}?aluno={{ aluno.pk }}&next={{ request.path|urlencode }}" class="btn btn-primary">Registrar mensalidade</a>
+        <a href="{% url 'alunos:editar' aluno.pk %}" class="btn">Editar</a>
+    </div>
+</section>
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças</span><strong>{{ aluno.total_presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✖️</span><div><span>Faltas</span><strong>{{ aluno.total_faltas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">💳</span><div><span>Mensalidade</span><strong class="small">{% if em_dia %}Em dia{% else %}Sem mensalidade vigente{% endif %}</strong></div></div>
+</section>
+<p class="muted note">A situação da mensalidade é apenas informativa: a escola não bloqueia a participação nas aulas (RN08).</p>
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Aulas que frequenta</h2></div>
+        {% for t in turmas %}<div class="list-row"><div><a class="link" href="{{ t.get_absolute_url }}"><strong>{{ t.nome|default:t.modalidade }}</strong></a><small>{{ t.get_dia_semana_display }} {{ t.hora_inicio|time:"H:i" }} · {{ t.sala.nome }} · {{ t.professor }}</small></div></div>
+        {% empty %}<p class="empty">Não está vinculado a nenhuma aula.</p>{% endfor %}
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>Mensalidades</h2><a class="link" href="{% url 'financeiro:mensalidades' %}?aluno={{ aluno.pk }}">Ver todas →</a></div>
+        {% for m in mensalidades %}<div class="list-row"><div><strong>{{ m.valor|brl }}</strong><small>Pago em {{ m.data_pagamento|date:"d/m/Y" }} · {{ m.get_forma_pagamento_display }}{% if m.validade %} · válida até {{ m.validade|date:"d/m/Y" }}{% endif %}</small></div></div>
+        {% empty %}<p class="empty">Nenhuma mensalidade registrada.</p>{% endfor %}
+    </section>
+</div>
+<section class="panel">
+    <div class="panel-header"><h2>Últimas presenças e faltas</h2><a class="link" href="{% url 'aulas:presencas' %}?aluno={{ aluno.pk }}">Histórico completo →</a></div>
+    <div class="table-wrap"><table><thead><tr><th>Data</th><th>Aula</th><th>Situação</th></tr></thead><tbody>
+    {% for p in presencas %}<tr><td>{{ p.data|date:"d/m/Y" }}</td><td>{{ p.turma.nome|default:p.turma.modalidade }}</td><td>{% if p.presente %}<span class="badge badge-green">Presente</span>{% else %}<span class="badge badge-red">Falta</span>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="3" class="empty">Sem registros.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+{% endblock %}

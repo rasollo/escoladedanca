@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Agenda de aulas{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF05 · RF19 · RF20</span><h1>Agenda de aulas</h1><p class="muted">{{ total }} aula{{ total|pluralize }} encontrada{{ total|pluralize }}{% if inativas %} · {{ inativas }} inativa{{ inativas|pluralize }}{% endif %}</p></div>
+    <div class="actions">
+        <a href="{% url 'aulas:modalidades' %}" class="btn">Modalidades e salas</a>
+        <a href="{% url 'aulas:turma_nova' %}" class="btn btn-primary">+ Agendar aula</a>
+    </div>
+</section>
+<form method="get" class="filters panel">
+    {% for field in form %}<label class="sr-only" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endfor %}
+    <button class="btn">Filtrar</button>
+</form>
+{% for dia in dias %}
+<section class="panel">
+    <div class="panel-header"><h2>{{ dia.rotulo }}</h2></div>
+    <div class="table-wrap"><table>
+        <thead><tr><th>Horário</th><th>Aula</th><th>Sala</th><th>Professor</th><th>Alunos</th><th></th></tr></thead>
+        <tbody>
+        {% for t in dia.turmas %}
+        <tr>
+            <td>{{ t.hora_inicio|time:"H:i" }}–{{ t.hora_fim|time:"H:i" }}</td>
+            <td><a class="link" href="{{ t.get_absolute_url }}">{{ t.nome|default:t.modalidade }}</a>{% if t.nome %}<small class="muted"> · {{ t.modalidade }}</small>{% endif %}</td>
+            <td>{{ t.sala.nome }}</td>
+            <td>{{ t.professor }}</td>
+            <td><span class="badge {% if t.qtd_alunos >= t.sala.capacidade %}badge-red{% endif %}">{{ t.qtd_alunos }}/{{ t.sala.capacidade }}</span></td>
+            <td class="right"><a class="link" href="{% url 'aulas:chamada' t.pk %}">Chamada</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table></div>
+</section>
+{% empty %}
+<div class="panel"><p class="empty">Não há aulas correspondentes aos critérios.</p></div>
+{% endfor %}
+{% endblock %}

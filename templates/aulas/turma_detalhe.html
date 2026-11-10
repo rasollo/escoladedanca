@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ turma.nome|default:turma.modalidade }}<section class="panel">
+    <div class="panel-header"><h2>Histórico de matrículas</h2><span class="muted">Base do salário do professor (RN07)</span></div>
+    <div class="table-wrap"><table>
+        <thead><tr><th>Aluno</th><th>Início</th><th>Fim</th><th>Situação</th></tr></thead>
+        <tbody>{% for m in matriculas %}
+        <tr><td>{{ m.aluno }}</td><td>{{ m.data_inicio|date:"d/m/Y" }}</td><td>{{ m.data_fim|date:"d/m/Y"|default:"—" }}</td>
+            <td>{% if m.ativa %}<span class="badge badge-green">Ativa</span>{% else %}<span class="badge">Encerrada</span>{% endif %}</td></tr>
+        {% empty %}<tr><td colspan="4" class="empty">Nenhuma matrícula.</td></tr>{% endfor %}</tbody>
+    </table></div>
+</section>
+{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Aula agendada</span><h1>{{ turma.nome|default:turma.modalidade }}</h1>
+        <p class="muted">{{ turma.modalidade }} · {{ turma.get_dia_semana_display }} {{ turma.hora_inicio|time:"H:i" }}–{{ turma.hora_fim|time:"H:i" }} · {{ turma.sala.nome }} · Prof. {{ turma.professor }}{% if not turma.ativa %} · <span class="badge">Inativa</span>{% endif %}</p></div>
+    <div class="actions">
+        <a href="{% url 'aulas:chamada' turma.pk %}" class="btn btn-primary">Fazer chamada</a>
+        <a href="{% url 'aulas:turma_alunos' turma.pk %}" class="btn">Vincular alunos</a>
+        <a href="{% url 'aulas:turma_editar' turma.pk %}" class="btn">Editar</a>
+        <a href="{% url 'aulas:turma_excluir' turma.pk %}" class="btn btn-danger-ghost">Remover</a>
+    </div>
+</section>
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">👥</span><div><span>Alunos vinculados</span><strong>{{ turma.quantidade_alunos }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🏠</span><div><span>Capacidade da sala</span><strong>{{ turma.capacidade }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🪑</span><div><span>Vagas restantes</span><strong>{{ turma.vagas_restantes }}</strong></div></div>
+</section>
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Alunos vinculados</h2></div>
+        {% for a in alunos %}<div class="list-row"><a class="link" href="{{ a.get_absolute_url }}">{{ a.nome }}</a></div>
+        {% empty %}<p class="empty">Nenhum aluno vinculado. Alunos avulsos podem ser incluídos na chamada.</p>{% endfor %}
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>Últimos registros</h2><a class="link" href="{% url 'aulas:presencas' %}?turma={{ turma.pk }}">Ver todos →</a></div>
+        {% for p in ultimas_presencas %}<div class="list-row"><div><strong>{{ p.aluno }}</strong><small>{{ p.data|date:"d/m/Y" }}</small></div>{% if p.presente %}<span class="badge badge-green">Presente</span>{% else %}<span class="badge badge-red">Falta</span>{% endif %}</div>
+        {% empty %}<p class="empty">Nenhuma chamada registrada.</p>{% endfor %}
+    </section>
+</div>
+{% endblock %}

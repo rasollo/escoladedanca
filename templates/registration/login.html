@@ -1,0 +1,22 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Portal da Dança</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body class="login-body">
+<main class="login-card">
+    <div class="brand"><div class="brand-icon" aria-hidden="true">P</div><div><h2>Portal da Dança</h2><span>Acesso restrito ao responsável</span></div></div>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}<div class="message message-error">Usuário ou senha inválidos.</div>{% endif %}
+        <div class="field"><label for="id_username">Usuário</label>{{ form.username }}</div>
+        <div class="field"><label for="id_password">Senha</label>{{ form.password }}</div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+    </form>
+</main>
+</body>
+</html>

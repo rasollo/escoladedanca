@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Documentação do projeto</span><h1>{{ titulo }}</h1></div>
+</section>
+<nav class="tabs" aria-label="Documentos">
+    {% for s, t in documentos %}<a href="{% url 'documentacao_doc' s %}" class="{% if s == slug %}active{% endif %}" {% if s == slug %}aria-current="page"{% endif %}>{{ t }}</a>{% endfor %}
+</nav>
+<article class="panel markdown">{{ html }}</article>
+{% endblock %}

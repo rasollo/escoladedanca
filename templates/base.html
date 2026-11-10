@@ -1,0 +1,63 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Painel{% endblock %} | Portal da Dança</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+<div class="dashboard">
+    {% with nome=request.resolver_match.namespace url=request.resolver_match.url_name %}
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon" aria-hidden="true">P</div>
+            <div><h2>Portal da Dança</h2><span>Painel de gestão</span></div>
+        </div>
+        <nav class="navigation" aria-label="Menu principal">
+            <a href="{% url 'index' %}" class="nav-item {% if url == 'index' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Início</span></a>
+            <a href="{% url 'alunos:lista' %}" class="nav-item {% if nome == 'alunos' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎓</span><span>Alunos</span></a>
+            <a href="{% url 'professores:lista' %}" class="nav-item {% if nome == 'professores' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">👨‍🏫</span><span>Professores</span></a>
+            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
+            <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">✅</span><span>Presenças e faltas</span></a>
+            <a href="{% url 'financeiro:painel' %}" class="nav-item {% if nome == 'financeiro' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">💰</span><span>Financeiro</span></a>
+            <a href="{% url 'proprietarios:proprietarios' %}" class="nav-item {% if nome == 'proprietarios' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🏢</span><span>Proprietário</span></a>
+            <a href="{% url 'consultas:painel' %}" class="nav-item {% if nome == 'consultas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🌡️</span><span>Consultas</span></a>
+            <a href="{% url 'documentacao' %}" class="nav-item {% if url == 'documentacao' or url == 'documentacao_doc' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📄</span><span>Documentação</span></a>
+            <a href="{% url 'administradores:administradores' %}" class="nav-item {% if nome == 'administradores' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⚙️</span><span>Administração</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="nav-item logout"><span class="nav-icon" aria-hidden="true">↪</span><span>Sair</span></button>
+            </form>
+        </div>
+    </aside>
+    {% endwith %}
+
+    <main class="main-content" id="conteudo">
+        <header class="topbar">
+            <div class="user-profile">
+                <div class="avatar" aria-hidden="true">{{ user.get_username|slice:":1"|upper }}</div>
+                <div class="user-info">
+                    <strong>{{ user.get_full_name|default:user.get_username }}</strong>
+                    <span>Responsável</span>
+                </div>
+            </div>
+        </header>
+
+        {% if messages %}
+        <div class="messages" role="status">
+            {% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}</div>{% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>

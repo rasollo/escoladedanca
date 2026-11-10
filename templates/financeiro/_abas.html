@@ -1,0 +1,11 @@
+<nav class="tabs" aria-label="Seções do financeiro">
+    {% with u=request.resolver_match.url_name %}
+    <a href="{% url 'financeiro:painel' %}" class="{% if u == 'painel' %}active{% endif %}">Visão geral</a>
+    <a href="{% url 'financeiro:movimentacoes' %}" class="{% if u == 'movimentacoes' %}active{% endif %}">Movimentações</a>
+    <a href="{% url 'financeiro:mensalidades' %}" class="{% if u == 'mensalidades' %}active{% endif %}">Mensalidades</a>
+    <a href="{% url 'financeiro:despesas' %}" class="{% if u == 'despesas' %}active{% endif %}">Despesas</a>
+    <a href="{% url 'financeiro:salarios' %}" class="{% if u == 'salarios' %}active{% endif %}">Salários</a>
+    <a href="{% url 'financeiro:saldo' %}" class="{% if u == 'saldo' %}active{% endif %}">Saldo</a>
+    <a href="{% url 'financeiro:balanco' %}" class="{% if u == 'balanco' %}active{% endif %}">Balanço mensal</a>
+    {% endwith %}
+</nav>
