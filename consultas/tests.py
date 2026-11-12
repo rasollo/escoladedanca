@@ -102,12 +102,42 @@ class ConsultaTests(TestCase):
         criar_presenca(vazia, grupo[0])
 
         dados = consulta(8, hoje=HOJE)
-        self.assertEqual([i.turma for i, _ in dados["ranking"]], [cheia, vazia])
+        self.assertEqual([i.turma for i in dados["ranking"]], [cheia, vazia])
         self.assertEqual([i.turma for i in dados["oportunidades"]], [vazia])
         self.assertEqual([i.turma for i in dados["lotando"]], [cheia])
         self.assertNotIn(inativa, [i.turma for i in dados["indicadores"]])
         self.assertEqual(dados["resumo"]["ocupacao"], 50)   # 10 presentes / 20 lugares
         self.assertEqual(dados["resumo"]["lugares_livres"], 10)
+
+
+class OcupacaoSemanalTests(TestCase):
+    def test_semana_com_menos_aulas_nao_parece_queda(self):
+        """Mesma lotação nas duas semanas; a segunda tem uma aula a menos."""
+        sala().__class__.objects.update(capacidade=10)
+        a = criar_turma(nome="A")
+        b = criar_turma(nome="B", inicio="20:00", fim="21:00")
+        grupo = alunos(5)
+        semana1, semana2 = SEGUNDA - timedelta(weeks=1), SEGUNDA
+        for turma in (a, b):
+            for aluno in grupo:
+                criar_presenca(turma, aluno, data=semana1)
+        for aluno in grupo:                       # semana 2: só a aula A teve chamada
+            criar_presenca(a, aluno, data=semana2)
+        criar_presenca(a, criar_aluno("Faltou"), data=semana2, presente=False)
+
+        semanas = {s["inicio"]: s for s in consulta(2, hoje=HOJE)["semanal"]}
+        s1 = next(s for d, s in semanas.items() if d <= semana1 < d + timedelta(weeks=1))
+        s2 = next(s for d, s in semanas.items() if d <= semana2 < d + timedelta(weeks=1))
+        self.assertEqual((s1["presencas"], s2["presencas"]), (10, 5))   # total cai à metade
+        self.assertEqual((s1["aulas"], s2["aulas"]), (2, 1))
+        self.assertEqual(s1["ocupacao"], 50)                             # ocupação igual
+        self.assertEqual(s2["ocupacao"], 50)
+        self.assertAlmostEqual(s2["frequencia"], 100 * 5 / 6)
+
+    def test_semana_sem_chamada(self):
+        s = consulta(1, hoje=HOJE)["semanal"][0]
+        self.assertIsNone(s["ocupacao"])
+        self.assertEqual(s["altura"], 0)
 
 
 class ConsultaViewTests(LogadoTestCase):
@@ -118,6 +148,8 @@ class ConsultaViewTests(LogadoTestCase):
         criar_presenca(turma, criar_aluno())
         resposta = self.client.get(url, {"semanas": "12"})
         self.assertContains(resposta, "Termômetro da agenda")
+        self.assertContains(resposta, "Ocupação por semana")
+        self.assertNotContains(resposta, "/40<")      # nada de "18,7/40"
         self.assertEqual(resposta.context["semanas"], 12)
 
     def test_periodo_invalido_usa_padrao(self):

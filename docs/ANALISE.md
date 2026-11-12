@@ -85,8 +85,9 @@ Os dois requisitos estão no relatório final (seção 4.5) e no fluxo 17.
 | Indicador | Cálculo | Para que serve |
 |---|---|---|
 | Aulas no período | datas com chamada registrada | base das médias; aula sem chamada aparece como "sem dados" |
-| Média de presentes | presenças ÷ aulas no período | ranking das aulas mais frequentadas |
-| Ocupação real | média de presentes ÷ capacidade da sala | temperatura da aula (RN17) |
+| Média de presentes | presenças ÷ aulas no período | exibida arredondada ("~19 de 40"), para não parecer contagem de pessoas |
+| Ocupação real | média de presentes ÷ capacidade da sala | temperatura da aula (RN17) e ranking das aulas mais frequentadas |
+| Ocupação da semana | presenças da semana ÷ lugares das aulas que tiveram chamada nela | gráfico semanal; em % as semanas ficam comparáveis mesmo com feriado ou chamada esquecida |
 | Lugares vazios | capacidade − média de presentes | vacância por aula; somada, dá os lugares vazios por semana |
 | Frequência | presenças ÷ (presenças + faltas) | separa falta de vaga de falta de engajamento |
 | Avulsos | presenças de alunos sem matrícula ativa na data (RN08) | demanda que pode virar matrícula |

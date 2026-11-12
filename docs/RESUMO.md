@@ -89,7 +89,7 @@ As tabelas completas estão em `docs/ANALISE.md`.
   - Salário do professor = alunos inscritos (matrículas ativas no mês) nas aulas dele × valor por aluno, registrado como saída (RF13, RN07, RN16).
 - **consultas/:** consulta de frequência e oportunidades para o proprietário (RF25, RN17).
   - Ocupação real = média de alunos *presentes* por aula ÷ capacidade da sala. Cada aula ganha uma temperatura: 🔥 quente (≥ 85%), 🌤️ morna (70–85%), ❄️ fria (40–70%) ou 🧊 gelada (< 40%).
-  - Mapa de calor da agenda, ranking das aulas mais frequentadas, presenças por semana, ocupação por modalidade e cartões com sugestão de promoção para as aulas frias e geladas.
+  - Mapa de calor da agenda, ranking das aulas mais frequentadas e ocupação por semana (ambos em %), ocupação por modalidade e cartões com sugestão de promoção para as aulas frias e geladas.
   - Não grava nada: tudo vem das chamadas e matrículas. Limites ajustáveis em `CONSULTAS_FAIXAS`, no `settings.py`.
 - **Segurança:** todas as páginas exigem login, os formulários são protegidos contra envios forjados (CSRF) e o link de "voltar" não pode levar para sites externos.
 - **Decisões de projeto:**
