@@ -229,15 +229,31 @@ def indicadores_por_turma(inicio: date, fim: date) -> list[IndicadorTurma]:
 
 
 def presencas_por_semana(inicio: date, fim: date) -> list[dict]:
-    semanas = (fim - inicio).days // 7 + 1
-    totais = [0] * semanas
-    for data in (Presenca.objects.filter(presente=True, turma__ativa=True,
-                                         data__range=(inicio, fim))
-                 .values_list("data", flat=True)):
-        totais[(data - inicio).days // 7] += 1
-    maximo = max(totais) or 1
-    return [{"inicio": inicio + timedelta(weeks=n), "total": t,
-             "altura": round(100 * t / maximo)} for n, t in enumerate(totais)]
+    """Ocupação de cada semana: presentes ÷ lugares das aulas que tiveram chamada.
+
+    Comparar semanas pelo total de presenças engana: uma semana com feriado ou
+    com chamada esquecida tem menos aulas, e o total cai sem que a frequência
+    tenha caído. Em porcentagem, as semanas ficam comparáveis.
+    """
+    qtd = (fim - inicio).days // 7 + 1
+    semanas = [{"inicio": inicio + timedelta(weeks=n), "presencas": 0, "faltas": 0,
+                "aulas": set(), "lugares": 0} for n in range(qtd)]
+    registros = (Presenca.objects.filter(turma__ativa=True, data__range=(inicio, fim))
+                 .values_list("turma_id", "data", "presente", "turma__sala__capacidade"))
+    for turma_id, data, presente, capacidade in registros:
+        s = semanas[(data - inicio).days // 7]
+        if (turma_id, data) not in s["aulas"]:
+            s["aulas"].add((turma_id, data))
+            s["lugares"] += capacidade or 0
+        s["presencas" if presente else "faltas"] += 1
+    for s in semanas:
+        s["aulas"] = len(s["aulas"])
+        registrados = s["presencas"] + s["faltas"]
+        s["ocupacao"] = 100 * s["presencas"] / s["lugares"] if s["lugares"] else None
+        s["frequencia"] = 100 * s["presencas"] / registrados if registrados else None
+        s["faixa"] = classificar(s["ocupacao"])
+        s["altura"] = round(min(s["ocupacao"] or 0, 100))
+    return semanas
 
 
 def por_modalidade(indicadores) -> list[dict]:
@@ -277,8 +293,9 @@ def consulta(semanas: int = PERIODO_PADRAO, hoje: date | None = None) -> dict:
 
     presencas = sum(i.presencas for i in com_dados)
     lugares = sum(i.aulas * i.capacidade for i in com_dados)
-    ranking = sorted(com_dados, key=lambda i: i.media, reverse=True)
-    maior_media = ranking[0].media if ranking else 1
+    # Ordena pela ocupação (e não pela média de presentes) para comparar salas de
+    # capacidades diferentes; a barra usa a escala absoluta de 0 a 100%.
+    ranking = sorted(com_dados, key=lambda i: i.ocupacao or 0, reverse=True)
     contagem = defaultdict(int)
     for i in indicadores:
         contagem[i.faixa] += 1
@@ -290,7 +307,7 @@ def consulta(semanas: int = PERIODO_PADRAO, hoje: date | None = None) -> dict:
         "fim": fim,
         "faixas": faixas(),
         "indicadores": indicadores,
-        "ranking": [(i, round(100 * i.media / maior_media)) for i in ranking],
+        "ranking": ranking,
         # Promoção: turmas frias/geladas, da mais vazia para a menos vazia.
         "oportunidades": sorted((i for i in com_dados if i.faixa in ("fria", "gelada")),
                                 key=lambda i: i.ocupacao),

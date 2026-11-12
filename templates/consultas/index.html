@@ -56,29 +56,30 @@
 
 <div class="two-cols">
     <section class="panel">
-        <div class="panel-header"><h2>Aulas mais frequentadas</h2><span class="muted">média de presentes por aula</span></div>
-        {% for i, largura in ranking %}
+        <div class="panel-header"><h2>Aulas mais frequentadas</h2><span class="muted">ocupação média por aula</span></div>
+        {% for i in ranking %}
         <div class="bar-row">
             <div class="bar-label"><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a>
                 <small>{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</small></div>
-            <div class="bar-track"><div class="bar-fill temp-{{ i.faixa }}" style="width: {{ largura }}%"></div></div>
-            <div class="bar-value">{{ i.media|floatformat:1 }}<small>/{{ i.capacidade }}</small></div>
+            <div class="bar-track"><div class="bar-fill temp-{{ i.faixa }}" style="width: {{ i.termometro }}%"></div></div>
+            <div class="bar-value" title="em média {{ i.media|floatformat:1 }} presentes por aula">{{ i.ocupacao|floatformat:0 }}%<small> · ~{{ i.media|floatformat:0 }} de {{ i.capacidade }}</small></div>
         </div>
         {% empty %}<p class="empty">Sem chamadas no período.</p>{% endfor %}
     </section>
 
     <section class="panel">
-        <div class="panel-header"><h2>Presenças por semana</h2><span class="muted">todas as aulas</span></div>
+        <div class="panel-header"><h2>Ocupação por semana</h2><span class="muted">presentes ÷ lugares das aulas com chamada</span></div>
         {% if resumo.presencas %}
-        <div class="colchart" role="img" aria-label="Presenças por semana no período">
+        <div class="colchart" role="img" aria-label="Ocupação por semana no período">
             {% for s in semanal %}
-            <div class="col" title="Semana de {{ s.inicio|date:'d/m' }}: {{ s.total }} presenças">
-                <span class="col-value">{{ s.total }}</span>
-                <div class="col-bar" style="height: {{ s.altura }}%"></div>
+            <div class="col" title="Semana de {{ s.inicio|date:'d/m' }}: {{ s.presencas }} presenças em {{ s.aulas }} aula{{ s.aulas|pluralize }}{% if s.frequencia is not None %} · frequência {{ s.frequencia|floatformat:0 }}%{% endif %}">
+                <span class="col-value">{% if s.ocupacao is not None %}{{ s.ocupacao|floatformat:0 }}%{% else %}—{% endif %}</span>
+                <div class="col-bar temp-{{ s.faixa }}" style="height: {{ s.altura }}%"></div>
                 <span class="col-label">{{ s.inicio|date:"d/m" }}</span>
             </div>
             {% endfor %}
         </div>
+        <p class="muted chart-note">Em porcentagem, semanas com feriado ou chamada esquecida não parecem queda de público. Passe o mouse para ver presenças e frequência.</p>
         {% else %}<p class="empty">Sem chamadas no período.</p>{% endif %}
     </section>
 </div>
@@ -98,7 +99,7 @@
             </div>
             {% include "consultas/_termometro.html" %}
             <dl class="op-stats">
-                <div><dt>Média presentes</dt><dd>{{ i.media|floatformat:1 }}/{{ i.capacidade }}</dd></div>
+                <div><dt>Presentes por aula</dt><dd title="média de {{ i.media|floatformat:1 }}">~{{ i.media|floatformat:0 }} de {{ i.capacidade }}</dd></div>
                 <div><dt>Lugares vazios</dt><dd>{{ i.lugares_livres|floatformat:0 }}</dd></div>
                 <div><dt>Inscritos</dt><dd>{{ i.inscritos }}</dd></div>
                 <div><dt>Tendência</dt><dd>{% include "consultas/_tendencia.html" %}</dd></div>
@@ -150,13 +151,13 @@
 <section class="panel table-wrap">
     <div class="panel-header"><h2>Todas as aulas</h2></div>
     <table>
-        <thead><tr><th>Aula</th><th>Temperatura</th><th class="right">Ocupação</th><th class="right">Média</th><th class="right">Inscritos</th><th class="right">Frequência</th><th class="right">Avulsos</th><th class="right">Tendência</th><th>Sugestão</th></tr></thead>
+        <thead><tr><th>Aula</th><th>Temperatura</th><th class="right">Ocupação</th><th class="right">Presentes/aula</th><th class="right">Inscritos</th><th class="right">Frequência</th><th class="right">Avulsos</th><th class="right">Tendência</th><th>Sugestão</th></tr></thead>
         <tbody>{% for i in indicadores %}
         <tr>
             <td><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a><br><small class="muted">{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }}</small></td>
             <td><span class="temp-chip temp-{{ i.faixa }}">{{ i.faixa_icone }} {{ i.faixa_rotulo }}</span></td>
             <td class="right">{% if i.ocupacao is not None %}{{ i.ocupacao|floatformat:0 }}%{% else %}—{% endif %}</td>
-            <td class="right">{% if i.media is not None %}{{ i.media|floatformat:1 }}{% else %}—{% endif %}</td>
+            <td class="right" {% if i.media is not None %}title="média de {{ i.media|floatformat:1 }}"{% endif %}>{% if i.media is not None %}~{{ i.media|floatformat:0 }} de {{ i.capacidade }}{% else %}—{% endif %}</td>
             <td class="right">{{ i.inscritos }}</td>
             <td class="right">{% if i.frequencia is not None %}{{ i.frequencia|floatformat:0 }}%{% else %}—{% endif %}</td>
             <td class="right">{{ i.pct_avulsos|floatformat:0 }}%</td>
