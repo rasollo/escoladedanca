@@ -95,10 +95,8 @@ As tabelas completas estão em `docs/ANALISE.md`.
 - **Decisões de projeto:**
   - Uma aula com histórico de presenças não pode ser excluída, porque isso apagaria a base dos salários já pagos. A tela orienta a marcá-la como inativa.
   - O arquivo CSS original estava cortado no meio; foi completado, incluindo o layout para celular.
-- **Dados do protótipo:** `python manage.py popular_demo` cria 60 alunos, 4 professores, 10 aulas, cerca de 2.170 registros de presença e 3 meses de financeiro. Também cria o login de demonstração (usuário `responsavel`), como administrador. A senha vem de `--senha` ou da variável `DJANGO_DEMO_SENHA`; sem nenhuma das duas, uma senha aleatória é gerada e exibida uma única vez no terminal.
+- **Dados do protótipo:** `python manage.py popular_demo` cria 60 alunos, 4 professores, 10 aulas, cerca de 2 mil registros de presença e 3 meses de financeiro. Também cria o login de demonstração (usuário `responsavel`), como administrador. A senha vem de `--senha` ou da variável `DJANGO_DEMO_SENHA`; sem nenhuma das duas, uma senha aleatória é gerada e exibida uma única vez no terminal.
 - **Testes:** cada teste indica o requisito (RF/RN) que verifica. Rode com `.venv/bin/python manage.py test`.
-
-A pasta do projeto não é um repositório git, então nada disso está versionado ainda.
 
 ## Como rodar
 
@@ -128,23 +126,29 @@ O repositório traz só o código e a documentação. Alguns arquivos ficam de f
 | `logs/` | auditoria, com usuários e IPs | criada sozinha no primeiro uso |
 | `staticfiles/` | cópia dos arquivos de estilo, gerada | `collectstatic` |
 
-É preciso Python 3.12 ou mais novo (o servidor usa o 3.14). Passo a passo:
+É preciso Python 3.12 ou mais novo (o servidor usa o 3.14). Os comandos abaixo são para Linux e macOS; no Windows, use o `portal.py` (veja "Instalação rápida").
+
+O código está no branch `testes`, por isso o `-b testes`:
 
 ```bash
-git clone <endereço-do-repositório> project
+git clone -b testes https://github.com/rasollo/escoladedanca.git project
 cd project
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python manage.py migrate
 DJANGO_DEMO_SENHA='escolha-uma-senha' .venv/bin/python manage.py popular_demo   # dados de demonstração (opcional)
 .venv/bin/python manage.py collectstatic --noinput
-.venv/bin/python manage.py test          # opcional: confere se está tudo certo
-.venv/bin/python manage.py runserver 0.0.0.0:3010
+.venv/bin/python manage.py test          # opcional: roda os 150 testes
+.venv/bin/python manage.py runserver 0.0.0.0:8000
 ```
 
-Se a máquina tiver firewall, libere a porta antes: `sudo ufw allow 3010/tcp`.
+Sem a variável `DJANGO_DEMO_SENHA`, o `popular_demo` gera uma senha aleatória e a mostra uma única vez.
 
-Acesse `http://<ip-da-máquina>:3010/` e entre com o usuário `responsavel` e a senha definida acima. Para trocar depois: `.venv/bin/python manage.py changepassword responsavel`. Sem o `popular_demo`, o banco começa vazio; crie um usuário com `.venv/bin/python manage.py createsuperuser`.
+Se outras máquinas forem acessar e houver firewall, libere a porta antes de iniciar: `sudo ufw allow 8000/tcp`. Não use a porta 3010 no servidor: ela já é ocupada pelo serviço de produção.
+
+Acesse `http://<ip-da-máquina>:8000/` (ou `http://127.0.0.1:8000/` na própria máquina) e entre com o usuário `responsavel` e a senha definida acima. Para trocar depois: `.venv/bin/python manage.py changepassword responsavel`. Sem o `popular_demo`, o banco começa vazio; crie um usuário com `.venv/bin/python manage.py createsuperuser`.
+
+O sistema em produção fica em `http://192.168.88.10:3010/` (rede local da escola) ou `http://10.8.0.1:3010/` (pela VPN).
 
 Nunca envie para o repositório o `db.sqlite3`, o `.env`, o `.secret_key` nem a pasta `logs/`. Antes de cada commit, confira com `git status`.
 
@@ -159,10 +163,11 @@ journalctl -u escoladedanca -f          # acompanhar o log
 sudo systemctl enable escoladedanca     # iniciar junto com o servidor
 ```
 
-O gunicorn não serve arquivos estáticos; quem serve o CSS é o WhiteNoise, a partir de `project/staticfiles/`. Depois de mudar qualquer CSS, rode:
+O gunicorn não serve arquivos estáticos; quem serve o CSS é o WhiteNoise, a partir de `project/staticfiles/`. O projeto no servidor fica em `/home/escoladanca/project` e pertence ao usuário `escoladanca`, então os comandos do `manage.py` rodam como ele. Depois de mudar qualquer CSS, rode:
 
 ```bash
-.venv/bin/python manage.py collectstatic --noinput
+cd /home/escoladanca/project
+sudo -u escoladanca .venv/bin/python manage.py collectstatic --noinput
 sudo systemctl restart escoladedanca
 ```
 

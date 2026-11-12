@@ -58,16 +58,16 @@ Versão 1.0 (10/11/2026). A seção 2 descreve os problemas dos fluxogramas da v
 ## 4. Como rodar
 
 ```bash
+git clone -b testes https://github.com/rasollo/escoladedanca.git project
 cd project
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # se necessário
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python manage.py migrate
 DJANGO_DEMO_SENHA='escolha-uma-senha' .venv/bin/python manage.py popular_demo   # usuário: responsavel
 .venv/bin/python manage.py collectstatic --noinput   # arquivos de estilo
 .venv/bin/python manage.py test                # suíte completa
-sudo ufw allow 3010/tcp                        # liberar a porta no firewall
-.venv/bin/python manage.py runserver 0.0.0.0:3010
+.venv/bin/python manage.py runserver 0.0.0.0:8000
 ```
-Acesse `http://<ip-da-máquina>:3010/`. Depois de clonar o repositório, siga o passo a passo do Resumo ("Depois de clonar o repositório"): ele explica o que fica fora do git e como recriar.
+Acesse `http://<ip-da-máquina>:8000/`. A porta 3010 é a do serviço de produção (`http://192.168.88.10:3010/`); não a use para testes no servidor. O passo a passo completo, com o que fica fora do git e como recriar, está no Resumo ("Depois de clonar o repositório").
 
 ## 5. Módulo Consultas — frequência e oportunidades de promoção
 
