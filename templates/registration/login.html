@@ -3,20 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3157d5">
     <title>Entrar | Portal da Dança</title>
+    <script>try { if (localStorage.getItem("tema") === "escuro") document.documentElement.dataset.theme = "dark"; } catch (e) {}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 <body class="login-body">
-<main class="login-card">
-    <div class="brand"><div class="brand-icon" aria-hidden="true">P</div><div><h2>Portal da Dança</h2><span>Acesso restrito ao responsável</span></div></div>
-    <form method="post">
-        {% csrf_token %}
-        {% if form.errors %}<div class="message message-error">Usuário ou senha inválidos.</div>{% endif %}
-        <div class="field"><label for="id_username">Usuário</label>{{ form.username }}</div>
-        <div class="field"><label for="id_password">Senha</label>{{ form.password }}</div>
-        <input type="hidden" name="next" value="{{ next }}">
-        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-    </form>
-</main>
+<div class="login-page">
+    <section class="login-brand" aria-hidden="true">
+        <div class="login-orbit"></div>
+        <div class="login-brand-texto">
+            <div class="brand brand-claro"><div class="brand-icon">P</div><div><h2>Portal da Dança</h2></div></div>
+            <p class="login-eyebrow">Gestão escolar integrada</p>
+            <p class="login-headline">Toda a escola em um só ritmo.</p>
+            <p class="login-sub">Alunos, professores, aulas, frequência e finanças conectados em um ambiente simples.</p>
+        </div>
+    </section>
+    <main class="login-form-area">
+        <form method="post" class="login-card">
+            {% csrf_token %}
+            <p class="eyebrow">Bem-vindo de volta</p>
+            <h1>Acesse sua conta</h1>
+            <p class="muted">Use o acesso associado ao seu cadastro: administração, professor ou aluno.</p>
+            {% if form.errors %}<div class="message message-error">Usuário ou senha inválidos.</div>{% endif %}
+            <div class="field"><label for="id_username" class="form-label">Usuário</label>{{ form.username }}</div>
+            <div class="field"><label for="id_password" class="form-label">Senha</label>
+                <div class="senha-campo">{{ form.password }}
+                    <button type="button" class="senha-ver" aria-label="Mostrar senha" aria-pressed="false" data-ver-senha>{% include "_icone.html" with nome="eye" tamanho=18 %}</button>
+                </div>
+            </div>
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="btn btn-primary btn-block btn-grande">Entrar</button>
+            <p class="muted note">Esqueceu a senha? Fale com a administração da escola.</p>
+        </form>
+    </main>
+</div>
+<script>
+document.querySelector("[data-ver-senha]").addEventListener("click", function () {
+    var campo = document.getElementById("id_password"), ver = campo.type === "password";
+    campo.type = ver ? "text" : "password";
+    this.setAttribute("aria-pressed", ver ? "true" : "false");
+    this.setAttribute("aria-label", ver ? "Ocultar senha" : "Mostrar senha");
+});
+</script>
 </body>
 </html>

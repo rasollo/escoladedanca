@@ -1,0 +1,6 @@
+<section class="panel">
+    <div class="panel-header"><h2>Comunicados recentes</h2><a class="link" href="{% url 'comunicacao:comunicados' %}">Ver todos →</a></div>
+    {% for c in comunicados %}
+    <div class="list-row"><div><strong>{{ c.titulo }}</strong><small>{{ c.turma.nome|default:c.turma.modalidade }} · {{ c.criado_em|date:"d/m/Y" }} — {{ c.mensagem|truncatechars:90 }}</small></div></div>
+    {% empty %}<p class="empty">Nenhum comunicado por enquanto.</p>{% endfor %}
+</section>

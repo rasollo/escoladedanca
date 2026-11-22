@@ -120,6 +120,15 @@ class DemoAniversariosTests(TestCase):
         self.assertIsNotNone(authenticate(username=aluno.usuario.username, password="senha-de-teste-123"))
         self.assertTrue(aluno.usuario.username.isascii())
 
+    def test_limpar_reaproveita_os_logins_de_demonstracao(self):
+        from django.contrib.auth import authenticate, get_user_model
+        call_command("popular_demo", "--senha", "senha-antiga-123", stdout=StringIO())
+        logins = set(get_user_model().objects.values_list("username", flat=True))
+        call_command("popular_demo", "--limpar", "--senha", "senha-nova-456", stdout=StringIO())
+        self.assertEqual(set(get_user_model().objects.values_list("username", flat=True)), logins)
+        prof = Professor.objects.exclude(usuario=None).get()
+        self.assertIsNotNone(authenticate(username=prof.usuario.username, password="senha-nova-456"))
+
     def test_reinstalar_completa_so_os_dados_de_demonstracao(self):
         call_command("popular_demo", "--senha", "x" * 20, stdout=StringIO())
         Aluno.objects.update(data_nascimento=None)

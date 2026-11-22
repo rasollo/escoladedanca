@@ -102,7 +102,8 @@ def _logout(sender, request, user, **kwargs):
 # ---------------------------------------------------------------------------
 MODELOS_AUDITADOS = {
     "alunos.Aluno", "professores.Professor", "aulas.Modalidade", "aulas.Sala",
-    "aulas.Turma", "aulas.Presenca", "financeiro.Movimentacao", "auth.User",
+    "aulas.Turma", "aulas.Presenca", "aulas.Matricula", "financeiro.Movimentacao",
+    "financeiro.Cobranca", "comunicacao.Comunicado", "comunicacao.Solicitacao", "auth.User",
 }
 
 

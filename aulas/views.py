@@ -14,9 +14,9 @@ from escoladedanca.rbac import (ALUNO, PROFESSOR, aluno_do, exigir_turma_propria
                                 permitir, professor_do)
 from escoladedanca.utils import ler_data, redirecionar
 
-from .forms import (ChamadaForm, FiltroAgendaForm, ModalidadeForm, SalaForm, TurmaForm,
-                    TurmaProfessorForm, VinculoAlunosForm)
-from .models import Modalidade, Presenca, Sala, Turma
+from .forms import (ChamadaForm, FiltroAgendaForm, MatriculaFinanceiroForm, ModalidadeForm,
+                    SalaForm, TurmaForm, TurmaProfessorForm, VinculoAlunosForm)
+from .models import Matricula, Modalidade, Presenca, Sala, Turma
 
 
 # ---------------------------------------------------------------------------
@@ -153,6 +153,20 @@ def turma_alunos(request, pk):
         messages.success(request, "Alunos vinculados atualizados.")
         return redirect(turma)
     return render(request, "aulas/turma_alunos.html", {"turma": turma, "form": form})
+
+
+def matricula_editar(request, pk):
+    """Mensalidade e desconto da matrícula (somente Administrativo)."""
+    matricula = get_object_or_404(Matricula.objects.select_related("aluno", "turma"), pk=pk)
+    form = MatriculaFinanceiroForm(request.POST or None, instance=matricula)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Mensalidade da matrícula atualizada. Vale para as próximas cobranças.")
+        return redirect(matricula.aluno)
+    return render(request, "form.html", {
+        "form": form, "titulo": f"Mensalidade de {matricula.aluno} em {matricula.turma}",
+        "secao": "Matrícula", "voltar": matricula.aluno.get_absolute_url(),
+    })
 
 
 # ---------------------------------------------------------------------------

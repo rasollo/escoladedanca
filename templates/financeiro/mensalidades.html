@@ -1,8 +1,36 @@
 {% extends "base.html" %}
 {% block title %}Mensalidades{% endblock %}
 {% block content %}
-{% include "financeiro/_header.html" with rotulo="RF11 · RN06" titulo="Mensalidades" %}
-<div class="filters"><a href="{% url 'financeiro:nova_mensalidade' %}{% if aluno_id %}?aluno={{ aluno_id }}{% endif %}" class="btn btn-primary">+ Registrar mensalidade</a>{% if aluno_id %}<a href="{% url 'financeiro:mensalidades' %}" class="btn btn-ghost">Mostrar todos os alunos</a>{% endif %}</div>
-{% if total %}{% include "financeiro/_tabela.html" with movs=pagina %}{% else %}<div class="panel"><p class="empty">Não há mensalidades registradas no período consultado.</p></div>{% endif %}
-{% include "paginacao.html" %}
+{% include "financeiro/_header.html" with rotulo="RF11 · RN06 · RN08" titulo="Mensalidades" %}
+<p class="muted mb">Cobranças previstas não alteram o caixa: o saldo só muda quando um recebimento é confirmado. A situação é informativa — nenhum aluno é bloqueado (RN08).</p>
+<form method="get" class="filters panel">
+    <label for="f-mes">Competência</label>
+    <input type="text" id="f-mes" name="mes" value="{{ mes_valor }}" placeholder="mm/aaaa" inputmode="numeric" maxlength="7" pattern="\d{2}/\d{4}" title="Mês no formato mm/aaaa">
+    <label class="sr-only" for="f-sit">Situação</label>
+    <select id="f-sit" name="situacao"><option value="">Todas as situações</option>{% for v, r in situacoes %}<option value="{{ v }}" {% if v == situacao %}selected{% endif %}>{{ r }}</option>{% endfor %}</select>
+    {% if aluno_id %}<input type="hidden" name="aluno" value="{{ aluno_id }}">{% endif %}
+    <button class="btn">Filtrar</button>
+</form>
+<section class="summary" aria-label="Resumo da competência">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="receipt" %}</span><div><span>Previsto · {{ mes_valor }}</span><strong>{{ resumo.previsto|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Recebido</span><strong class="pos">{{ resumo.recebido|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="clock" %}</span><div><span>Em aberto</span><strong>{{ resumo.em_aberto|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="alert" %}</span><div><span>Em atraso ({{ resumo.atrasadas }})</span><strong class="neg">{{ resumo.atrasado|brl }}</strong></div></div>
+</section>
+<div class="filters">
+    <form method="post" action="{% url 'financeiro:gerar_cobrancas' %}">{% csrf_token %}<input type="hidden" name="mes" value="{{ mes_valor }}"><button class="btn btn-primary">+ Gerar cobranças de {{ mes_valor }}</button></form>
+    <a href="{% url 'financeiro:nova_mensalidade' %}{% if aluno_id %}?aluno={{ aluno_id }}{% endif %}" class="btn">Mensalidade avulsa</a>
+    {% if aluno_id %}<a href="{% url 'financeiro:mensalidades' %}?mes={{ mes_valor }}" class="btn btn-ghost">Mostrar todos os alunos</a>{% endif %}
+</div>
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Aluno</th><th>Aula</th><th>Vencimento</th><th class="right">Valor</th><th class="right">Recebido</th><th class="right">Saldo</th><th>Situação</th><th></th></tr></thead>
+    <tbody>{% for c in cobrancas %}
+    <tr><td><a class="link" href="{{ c.aluno.get_absolute_url }}">{{ c.aluno }}</a></td>
+        <td>{{ c.matricula.turma.nome|default:c.matricula.turma.modalidade }}</td>
+        <td>{{ c.vencimento|date:"d/m/Y" }}</td>
+        <td class="right">{{ c.valor|brl }}</td><td class="right">{{ c.recebido|brl }}</td><td class="right">{{ c.saldo|brl }}</td>
+        <td>{% include "financeiro/_situacao.html" with s=c.situacao_atual %}</td>
+        <td class="right nowrap"><a class="link" href="{% url 'financeiro:cobranca' c.pk %}">{% if c.saldo %}Receber{% else %}Detalhes{% endif %}</a></td></tr>
+    {% empty %}<tr><td colspan="8" class="empty">Nenhuma cobrança em {{ mes_valor }}. Use “Gerar cobranças” para criar as cobranças das matrículas ativas.</td></tr>{% endfor %}</tbody>
+</table></div>
 {% endblock %}

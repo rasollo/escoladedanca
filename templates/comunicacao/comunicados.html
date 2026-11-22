@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Comunicados{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Comunicados</span><h1>Comunicados</h1>
+        <p class="muted">{% if eh_aluno %}Avisos das aulas em que você está matriculado.{% elif eh_professor %}Avisos das suas aulas.{% else %}Avisos publicados para as turmas.{% endif %}</p></div>
+    {% if pode_publicar %}<a href="{% url 'comunicacao:comunicado_novo' %}" class="btn btn-primary">+ Novo comunicado</a>{% endif %}
+</section>
+{% for c in comunicados %}
+<article class="panel comunicado">
+    <div class="panel-header"><div><span class="tag">{{ c.turma.nome|default:c.turma.modalidade }}</span><h2>{{ c.titulo }}</h2></div>
+        <small class="muted">{{ c.criado_em|date:"d/m/Y H:i" }}{% if c.autor %} · {{ c.autor.get_full_name|default:c.autor.get_username }}{% endif %}</small></div>
+    <p class="comunicado-texto">{{ c.mensagem|linebreaksbr }}</p>
+</article>
+{% empty %}
+<div class="panel"><p class="empty">Nenhum comunicado publicado.</p></div>
+{% endfor %}
+{% endblock %}

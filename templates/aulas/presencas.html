@@ -14,8 +14,8 @@
     <button class="btn">Filtrar</button>
 </form>
 <section class="summary">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças</span><strong>{{ total_presencas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✖️</span><div><span>Faltas</span><strong>{{ total_faltas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Presenças</span><strong>{{ total_presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="close" %}</span><div><span>Faltas</span><strong>{{ total_faltas }}</strong></div></div>
 </section>
 <div class="panel table-wrap"><table>
     <thead><tr><th>Data</th><th>Aluno</th><th>Aula</th><th>Situação</th></tr></thead>

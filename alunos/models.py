@@ -43,12 +43,22 @@ class Aluno(models.Model):
             .first()
         )
 
-    def mensalidade_em_dia(self, data=None):
-        """Informativo apenas: RN08 proíbe bloquear o aluno por pagamento."""
+    def situacao_mensalidade(self, data=None) -> str:
+        """Informativo apenas: RN08 proíbe bloquear o aluno por pagamento.
+
+        Com cobranças: "Em atraso" se alguma tem saldo e já venceu, senão "Em dia".
+        Sem cobranças: "Em dia" se há mensalidade avulsa vigente (validade).
+        """
         data = data or timezone.localdate()
-        return self.movimentacoes.filter(
-            origem="mensalidade", validade__gte=data
-        ).exists()
+        cobrancas = list(self.cobrancas.filter(cancelada=False).com_totais())
+        if cobrancas:
+            atrasada = any(c.saldo > 0 and c.vencimento < data for c in cobrancas)
+            return "Em atraso" if atrasada else "Em dia"
+        vigente = self.movimentacoes.filter(origem="mensalidade", validade__gte=data).exists()
+        return "Em dia" if vigente else "Sem mensalidade vigente"
+
+    def mensalidade_em_dia(self, data=None):
+        return self.situacao_mensalidade(data) == "Em dia"
 
     def total_presencas(self):
         return self.presencas.filter(presente=True).count()

@@ -49,7 +49,8 @@ class MovimentacaoRegrasTests(TestCase):
     def test_categorias_de_saida(self):
         """RF09 / RN03 — categorias usadas pela escola."""
         self.assertEqual(set(Movimentacao.Categoria.values), {
-            "contas_gerais", "manutencao", "luz", "agua", "taxas", "prefeitura", "salario"})
+            "contas_gerais", "manutencao", "luz", "agua", "taxas", "prefeitura", "salario",
+            "estorno"})  # estorno: só a partir de um recebimento de cobrança
 
     def test_saida_exige_categoria_e_nao_aceita_origem(self):
         with self.assertRaises(ValidationError) as ctx:
@@ -298,13 +299,14 @@ class FinanceiroViewTests(LogadoTestCase):
             "forma_pagamento": "pix", "validade": "2026-12-02",
         })
         self.assertEqual(Movimentacao.objects.get().origem, "mensalidade")
-        resp = self.client.get(reverse("financeiro:mensalidades"), {"aluno": aluno.pk})
-        self.assertContains(resp, "Carla Lima")
+        # Mensalidade avulsa (sem cobrança) aparece no cadastro do aluno.
+        resp = self.client.get(aluno.get_absolute_url())
+        self.assertContains(resp, "Mensalidades avulsas: R$ 150,00")
 
     def test_mensalidade_sem_registro(self):
         """Fluxo 10 — exibir ausência de registro."""
         resp = self.client.get(reverse("financeiro:mensalidades"))
-        self.assertContains(resp, "Não há mensalidades registradas")
+        self.assertContains(resp, "Nenhuma cobrança em")
 
     def test_next_externo_e_ignorado(self):
         """Segurança — evita redirecionamento para sites externos."""

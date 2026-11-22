@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django import forms
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 
@@ -5,7 +7,7 @@ from alunos.models import Aluno
 from escoladedanca.utils import DataBR
 from professores.models import Professor
 
-from .models import Modalidade, Sala, Turma
+from .models import Matricula, Modalidade, Sala, Turma
 
 TIME = forms.TimeInput(attrs={"type": "time"}, format="%H:%M")
 
@@ -28,13 +30,18 @@ class TurmaForm(forms.ModelForm):
     class Meta:
         model = Turma
         fields = ["nome", "modalidade", "dia_semana", "hora_inicio", "hora_fim", "sala",
-                  "professor", "ativa"]
+                  "professor", "valor_mensal", "ativa"]
         widgets = {"hora_inicio": TIME, "hora_fim": TIME}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if "professor" in self.fields:
             self.fields["professor"].queryset = Professor.objects.filter(ativo=True)
+        if "valor_mensal" in self.fields:
+            self.fields["valor_mensal"].required = False
+
+    def clean_valor_mensal(self):
+        return self.cleaned_data.get("valor_mensal") or Decimal("0.00")
 
 
 class TurmaProfessorForm(TurmaForm):
@@ -61,6 +68,14 @@ class TurmaProfessorForm(TurmaForm):
             mensagens = errors.error_dict.pop("professor")
             errors.error_dict.setdefault(NON_FIELD_ERRORS, []).extend(mensagens)
         super()._update_errors(errors)
+
+
+class MatriculaFinanceiroForm(forms.ModelForm):
+    """Mensalidade combinada e desconto de uma matrícula (base das cobranças)."""
+
+    class Meta:
+        model = Matricula
+        fields = ["valor_mensal", "desconto_tipo", "desconto"]
 
 
 class VinculoAlunosForm(forms.Form):

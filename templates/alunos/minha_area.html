@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Minha área{% endblock %}
 {% block content %}
-<section class="page-header">
-    <div><span class="section-label">RF25 · Portal do aluno</span><h1>Olá, {{ aluno.nome }}</h1>
-        <p class="muted">Suas aulas, presenças e mensalidades na Portal da Dança.</p></div>
-    <a href="{% url 'aulas:agenda' %}" class="btn">Ver agenda completa</a>
+<section class="welcome">
+    <div>
+        <span class="welcome-label">Seu painel de aluno</span>
+        <h1>Olá, {{ aluno.nome }}.</h1>
+        <p>Suas aulas, presenças, mensalidades e os avisos da escola em um só lugar.</p>
+        <div class="hero-actions">
+            <a href="{% url 'aulas:agenda' %}" class="hero-button">{% include "_icone.html" with nome="calendar" tamanho=16 %}Ver agenda completa</a>
+            <a href="{% url 'comunicacao:solicitacao_nova' %}" class="hero-button hero-button-secundario">{% include "_icone.html" with nome="message" tamanho=16 %}Nova solicitação</a>
+        </div>
+    </div>
+    <div class="welcome-decoration" aria-hidden="true"><span class="circle circle-one"></span><span class="circle circle-two"></span><span class="circle circle-three"></span></div>
 </section>
 <section class="summary">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📅</span><div><span>Aulas matriculadas</span><strong>{{ turmas|length }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças</span><strong>{{ aluno.total_presencas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✖️</span><div><span>Faltas</span><strong>{{ aluno.total_faltas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">💳</span><div><span>Mensalidade</span><strong class="small">{% if em_dia %}Em dia{% else %}Sem mensalidade vigente{% endif %}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="calendar" %}</span><div><span>Aulas matriculadas</span><strong>{{ turmas|length }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Presenças</span><strong>{{ aluno.total_presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="close" %}</span><div><span>Faltas</span><strong>{{ aluno.total_faltas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="receipt" %}</span><div><span>Mensalidade</span><strong class="small {% if situacao == "Em atraso" %}neg{% endif %}">{{ situacao }}</strong></div></div>
 </section>
 <p class="muted note">A situação da mensalidade é apenas informativa: você pode participar das aulas normalmente (RN08).</p>
 <div class="two-cols">
@@ -20,12 +27,13 @@
         {% empty %}<p class="empty">Você ainda não está matriculado em nenhuma aula. Alunos avulsos também podem participar.</p>{% endfor %}
     </section>
     <section class="panel">
-        <div class="panel-header"><h2>Mensalidades</h2></div>
-        {% for m in mensalidades %}<div class="list-row"><div><strong>{{ m.valor|brl }}</strong><small>Pago em {{ m.data_pagamento|date:"d/m/Y" }} · {{ m.get_forma_pagamento_display }}{% if m.validade %} · válida até {{ m.validade|date:"d/m/Y" }}{% endif %}</small></div></div>
-        {% empty %}<p class="empty">Nenhuma mensalidade registrada.</p>{% endfor %}
+        <div class="panel-header"><h2>Situação financeira</h2></div>
+        <p class="calc-line"><strong class="{% if situacao == "Em atraso" %}neg{% endif %}">{{ situacao }}</strong></p>
+        <p class="muted">A situação é apenas informativa: você pode participar das aulas normalmente (RN08). Dúvidas sobre valores? Abra uma solicitação.</p>
     </section>
 </div>
-{% include "_aniversariantes.html" %}
+{% include "alunos/_cobrancas.html" with titulo="Minhas mensalidades" %}
+<div class="two-cols">{% include "comunicacao/_recentes.html" %}{% include "_aniversariantes.html" %}</div>
 <section class="panel">
     <div class="panel-header"><h2>Presenças e faltas</h2><span class="muted">Últimos 30 registros</span></div>
     <div class="table-wrap"><table><thead><tr><th>Data</th><th>Aula</th><th>Sala</th><th>Situação</th></tr></thead><tbody>

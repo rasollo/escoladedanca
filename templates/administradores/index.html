@@ -20,10 +20,10 @@
 <section class="section">
     <div class="panel-header"><div><span class="section-label">Auditoria · últimos 30 dias</span><h2>Quem acessou o sistema</h2></div></div>
     <section class="summary">
-        <div class="summary-card"><span class="summary-icon" aria-hidden="true">👥</span><div><span>Usuários que acessaram</span><strong>{{ resumo.total_usuarios }}</strong></div></div>
-        <div class="summary-card"><span class="summary-icon" aria-hidden="true">🌐</span><div><span>IPs distintos</span><strong>{{ resumo.total_ips }}</strong></div></div>
-        <div class="summary-card"><span class="summary-icon" aria-hidden="true">🔑</span><div><span>Logins</span><strong>{{ resumo.total_logins }}</strong></div></div>
-        <div class="summary-card"><span class="summary-icon" aria-hidden="true">⚠️</span><div><span>Falhas de login</span><strong>{{ resumo.total_falhas }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="students" %}</span><div><span>Usuários que acessaram</span><strong>{{ resumo.total_usuarios }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="globe" %}</span><div><span>IPs distintos</span><strong>{{ resumo.total_ips }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="key" %}</span><div><span>Logins</span><strong>{{ resumo.total_logins }}</strong></div></div>
+        <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="alert" %}</span><div><span>Falhas de login</span><strong>{{ resumo.total_falhas }}</strong></div></div>
     </section>
     <div class="panel table-wrap"><table>
         <thead><tr><th>Usuário</th><th>Logins</th><th>Falhas</th><th>Páginas</th><th>IPs</th><th>Último acesso</th></tr></thead>

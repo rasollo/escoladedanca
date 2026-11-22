@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Solicitação{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Solicitação · {{ s.criado_em|date:"d/m/Y" }}</span><h1>{{ s.get_tipo_display }}</h1>
+        <p class="muted"><a class="link" href="{{ s.aluno.get_absolute_url }}">{{ s.aluno }}</a> · {% include "comunicacao/_status.html" %}</p></div>
+    <a href="{% url 'comunicacao:solicitacoes' %}" class="btn btn-ghost">← Voltar</a>
+</section>
+<div class="panel"><p class="comunicado-texto">{{ s.mensagem|linebreaksbr }}</p></div>
+<form method="post" class="panel form-panel">{% csrf_token %}
+    {% include "_campos.html" %}
+    <div class="form-actions"><button class="btn btn-primary">Salvar resposta</button></div>
+</form>
+{% endblock %}

@@ -3,6 +3,88 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q, Sum
+from django.utils import timezone
+
+ZERO = Decimal("0.00")
+
+
+class CobrancaQuerySet(models.QuerySet):
+    def com_totais(self):
+        """Anota o valor recebido (sem os recebimentos estornados)."""
+        return self.annotate(
+            total_recebido=Sum("recebimentos__valor",
+                               filter=Q(recebimentos__estorno__isnull=True)),
+        )
+
+
+class Cobranca(models.Model):
+    """Cobrança mensal de uma matrícula (mensalidade prevista).
+
+    A cobrança não altera o caixa: só os recebimentos (entradas de origem
+    mensalidade ligadas a ela) entram no saldo. A situação é calculada e tem
+    caráter informativo — a escola não bloqueia o aluno (RN08).
+    """
+
+    class Situacao(models.TextChoices):
+        PENDENTE = "pendente", "Pendente"
+        PARCIAL = "parcial", "Parcial"
+        ATRASADA = "atrasada", "Atrasada"
+        PAGA = "paga", "Paga"
+        CANCELADA = "cancelada", "Cancelada"
+
+    matricula = models.ForeignKey(
+        "aulas.Matricula", on_delete=models.PROTECT, related_name="cobrancas",
+    )
+    aluno = models.ForeignKey("alunos.Aluno", on_delete=models.PROTECT, related_name="cobrancas")
+    competencia = models.DateField("competência", help_text="Primeiro dia do mês cobrado.")
+    valor = models.DecimalField(max_digits=8, decimal_places=2,
+                                validators=[MinValueValidator(Decimal("0.01"))])
+    vencimento = models.DateField()
+    cancelada = models.BooleanField(default=False)
+    motivo_cancelamento = models.CharField("motivo do cancelamento", max_length=200, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    objects = CobrancaQuerySet.as_manager()
+
+    class Meta:
+        ordering = ["-competencia", "aluno__nome"]
+        constraints = [
+            models.UniqueConstraint(fields=["matricula", "competencia"],
+                                    name="uma_cobranca_por_matricula_e_mes"),
+        ]
+        verbose_name = "cobrança"
+        verbose_name_plural = "cobranças"
+
+    def __str__(self):
+        return f"{self.aluno} — {self.matricula.turma} — {self.competencia:%m/%Y}"
+
+    @property
+    def recebido(self) -> Decimal:
+        if hasattr(self, "total_recebido"):  # anotado por com_totais()
+            return self.total_recebido or ZERO
+        return self.recebimentos.filter(estorno__isnull=True).aggregate(
+            t=Sum("valor"))["t"] or ZERO
+
+    @property
+    def saldo(self) -> Decimal:
+        if self.cancelada:
+            return ZERO
+        return max(self.valor - self.recebido, ZERO)
+
+    def situacao(self, hoje=None) -> str:
+        if self.cancelada:
+            return self.Situacao.CANCELADA
+        if self.saldo == 0:
+            return self.Situacao.PAGA
+        if self.recebido > 0:
+            return self.Situacao.PARCIAL
+        hoje = hoje or timezone.localdate()
+        return self.Situacao.ATRASADA if self.vencimento < hoje else self.Situacao.PENDENTE
+
+    def get_situacao_display(self):
+        return self.Situacao(self.situacao()).label
+
 
 
 class Movimentacao(models.Model):
@@ -35,6 +117,7 @@ class Movimentacao(models.Model):
         TAXAS = "taxas", "Taxas"
         PREFEITURA = "prefeitura", "Prefeitura"
         SALARIO = "salario", "Salário de professor"
+        ESTORNO = "estorno", "Estorno de mensalidade"
 
     tipo = models.CharField(max_length=7, choices=Tipo.choices)
     valor = models.DecimalField(
@@ -64,6 +147,14 @@ class Movimentacao(models.Model):
     referencia = models.DateField(
         "mês de referência", null=True, blank=True,
         help_text="Para salários: primeiro dia do mês calculado.",
+    )
+    # Recebimento de uma cobrança (entrada de mensalidade) e estorno com histórico.
+    cobranca = models.ForeignKey(
+        Cobranca, on_delete=models.PROTECT, null=True, blank=True, related_name="recebimentos",
+    )
+    estorno_de = models.OneToOneField(
+        "self", on_delete=models.PROTECT, null=True, blank=True, related_name="estorno",
+        verbose_name="estorno do recebimento",
     )
     criado_em = models.DateTimeField(auto_now_add=True)
 
@@ -114,8 +205,15 @@ class Movimentacao(models.Model):
                 erros["professor"] = "Selecione o professor do salário."
             if self.categoria != self.Categoria.SALARIO and self.professor_id:
                 erros["professor"] = "Professor só é informado na categoria salário."
+            if self.categoria == self.Categoria.ESTORNO and not self.estorno_de_id:
+                erros["categoria"] = "Estornos são feitos a partir do recebimento, em Mensalidades."
         else:
             erros["tipo"] = "A movimentação deve ser uma entrada ou uma saída."  # RN01
+        if self.cobranca_id:
+            if self.tipo != self.Tipo.ENTRADA or self.origem != self.Origem.MENSALIDADE:
+                erros["origem"] = "O recebimento de uma cobrança é uma entrada de mensalidade."
+            elif self.aluno_id != self.cobranca.aluno_id:
+                erros["aluno"] = "O aluno deve ser o mesmo da cobrança."
 
         # RN04 — validade não pode ser anterior ao pagamento
         if self.validade and self.data_pagamento and self.validade < self.data_pagamento:

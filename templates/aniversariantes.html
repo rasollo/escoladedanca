@@ -15,7 +15,7 @@
     <button class="btn">Ver</button>
 </form>
 <section class="summary">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🎂</span><div><span>Aniversariantes no mês</span><strong>{{ lista|length }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="cake" %}</span><div><span>Aniversariantes no mês</span><strong>{{ lista|length }}</strong></div></div>
 </section>
 <div class="panel table-wrap"><table>
     <thead><tr><th>Dia</th><th>Nome</th><th>Perfil</th>{% if not eh_aluno %}<th>Idade</th>{% endif %}<th></th></tr></thead>

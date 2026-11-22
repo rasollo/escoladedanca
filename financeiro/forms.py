@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 from django import forms
 from django.utils import timezone
@@ -125,3 +126,47 @@ class FiltroMovimentacoesForm(forms.Form):
         if dados.get("inicio") and dados.get("fim") and dados["inicio"] > dados["fim"]:
             raise forms.ValidationError("A data inicial deve ser anterior à final.")
         return dados
+
+
+class RecebimentoForm(forms.Form):
+    """Recebimento total ou parcial de uma cobrança (nunca acima do saldo)."""
+
+    valor = forms.DecimalField(label="Valor recebido (R$)", max_digits=8, decimal_places=2,
+                               min_value=Decimal("0.01"))
+    data_pagamento = forms.DateField(label="Data do pagamento", widget=DataBR())
+    forma_pagamento = forms.ChoiceField(label="Forma de pagamento",
+                                        choices=Movimentacao.FormaPagamento.choices)
+
+    def __init__(self, *args, cobranca, **kwargs):
+        self.cobranca = cobranca
+        super().__init__(*args, **kwargs)
+        if not self.is_bound:
+            self.initial.setdefault("valor", cobranca.saldo)
+            self.initial.setdefault("data_pagamento", timezone.localdate())
+        self.fields["valor"].help_text = f"Saldo em aberto: R$ {cobranca.saldo:.2f}".replace(".", ",")
+
+    def clean_valor(self):
+        valor = self.cleaned_data["valor"]
+        if valor > self.cobranca.saldo:
+            raise forms.ValidationError("O valor não pode ser maior que o saldo da cobrança.")
+        return valor
+
+
+class EstornoForm(forms.Form):
+    motivo = forms.CharField(label="Motivo do estorno", max_length=150,
+                             help_text="Obrigatório. Fica registrado no histórico.")
+
+
+class CancelamentoCobrancaForm(forms.Form):
+    motivo = forms.CharField(label="Motivo do cancelamento", max_length=150)
+
+
+class GerarCobrancasForm(forms.Form):
+    mes = forms.CharField(label="Competência", widget=forms.TextInput(attrs=ATTRS_MES))
+
+    def clean_mes(self):
+        try:
+            ano, mes = ler_mes(self.cleaned_data["mes"])
+            return date(ano, mes, 1)
+        except ValueError:
+            raise forms.ValidationError("Informe o mês no formato mm/aaaa.")

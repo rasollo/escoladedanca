@@ -1,0 +1,13 @@
+<section class="panel">
+    <div class="panel-header"><h2>{{ titulo|default:"Mensalidades" }}</h2>{% if eh_admin %}<a class="link" href="{% url 'financeiro:mensalidades' %}?aluno={{ aluno.pk }}">Ver no financeiro →</a>{% endif %}</div>
+    <div class="table-wrap"><table>
+        <thead><tr><th>Competência</th><th>Aula</th><th>Vencimento</th><th class="right">Valor</th><th class="right">Saldo</th><th>Situação</th></tr></thead>
+        <tbody>{% for c in cobrancas %}
+        <tr><td>{% if eh_admin %}<a class="link" href="{% url 'financeiro:cobranca' c.pk %}">{{ c.competencia|date:"m/Y" }}</a>{% else %}{{ c.competencia|date:"m/Y" }}{% endif %}</td>
+            <td>{{ c.matricula.turma.nome|default:c.matricula.turma.modalidade }}</td><td>{{ c.vencimento|date:"d/m/Y" }}</td>
+            <td class="right">{{ c.valor|brl }}</td><td class="right">{{ c.saldo|brl }}</td>
+            <td>{% include "financeiro/_situacao.html" with s=c.situacao_atual %}</td></tr>
+        {% empty %}<tr><td colspan="6" class="empty">Nenhuma cobrança registrada.</td></tr>{% endfor %}</tbody>
+    </table></div>
+    {% if mensalidades %}<p class="muted note">Mensalidades avulsas: {% for m in mensalidades %}{{ m.valor|brl }} em {{ m.data_pagamento|date:"d/m/Y" }}{% if not forloop.last %}; {% endif %}{% endfor %}.</p>{% endif %}
+</section>

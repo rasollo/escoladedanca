@@ -1,16 +1,23 @@
 {% extends "base.html" %}
 {% block title %}Minha área{% endblock %}
 {% block content %}
-<section class="page-header">
-    <div><span class="section-label">RF25 · Portal do professor</span><h1>Olá, {{ professor.nome }}</h1>
-        <p class="muted">Suas aulas, alunos inscritos e a estimativa de remuneração do mês.</p></div>
-    <a href="{% url 'aulas:turma_nova' %}" class="btn btn-primary">+ Agendar aula</a>
+<section class="welcome">
+    <div>
+        <span class="welcome-label">Seu painel de professor</span>
+        <h1>Olá, {{ professor.nome }}.</h1>
+        <p>Você tem {{ turmas|length }} aula{{ turmas|length|pluralize }} ativa{{ turmas|length|pluralize }} vinculada{{ turmas|length|pluralize }} ao seu perfil.</p>
+        <div class="hero-actions">
+            <a href="{% url 'aulas:turma_nova' %}" class="hero-button">{% include "_icone.html" with nome="plus" tamanho=16 %}Agendar aula</a>
+            <a href="{% url 'comunicacao:comunicado_novo' %}" class="hero-button hero-button-secundario">{% include "_icone.html" with nome="megaphone" tamanho=16 %}Novo comunicado</a>
+        </div>
+    </div>
+    <div class="welcome-decoration" aria-hidden="true"><span class="circle circle-one"></span><span class="circle circle-two"></span><span class="circle circle-three"></span></div>
 </section>
 <section class="summary">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📅</span><div><span>Aulas ativas</span><strong>{{ turmas|length }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Inscrições no mês</span><strong>{{ calculo.inscricoes }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">💲</span><div><span>Valor por aluno</span><strong>{{ professor.valor_por_aluno|brl }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🧮</span><div><span>Salário estimado</span><strong>{{ calculo.valor|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="calendar" %}</span><div><span>Aulas ativas</span><strong>{{ turmas|length }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Inscrições no mês</span><strong>{{ calculo.inscricoes }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="finance" %}</span><div><span>Valor por aluno</span><strong>{{ professor.valor_por_aluno|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="calc" %}</span><div><span>Salário estimado</span><strong>{{ calculo.valor|brl }}</strong></div></div>
 </section>
 <div class="two-cols">
     <section class="panel">
@@ -25,7 +32,7 @@
         {% empty %}<p class="empty">Nenhum pagamento registrado.</p>{% endfor %}
     </section>
 </div>
-{% include "_aniversariantes.html" %}
+<div class="two-cols">{% include "comunicacao/_recentes.html" %}{% include "_aniversariantes.html" %}</div>
 <section class="panel">
     <div class="panel-header"><h2>Minhas aulas</h2><span class="muted">Lotação conforme a capacidade da sala (RN09)</span></div>
     <div class="table-wrap"><table>

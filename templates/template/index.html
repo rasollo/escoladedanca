@@ -3,18 +3,22 @@
 {% block content %}
 <section class="welcome">
     <div>
-        <span class="welcome-label">{{ hoje|date:"l, d/m/Y" }}</span>
-        <h1>Bem-vindo ao <span>Portal da Dança</span>!</h1>
-        <p>Alunos, aulas, presenças e financeiro em um só lugar, sem planilhas espalhadas.</p>
+        <span class="welcome-label">Visão geral da escola · {{ hoje|date:"l, d/m/Y" }}</span>
+        <h1>Olá, {{ user.first_name|default:"Administração" }}.</h1>
+        <p>Acompanhe a operação da Portal da Dança: aulas, presenças, mensalidades e finanças em um só lugar.</p>
+        <div class="hero-actions">
+            <a href="{% url 'aulas:agenda' %}" class="hero-button">{% include "_icone.html" with nome="calendar" tamanho=16 %}Ver aulas</a>
+            <a href="{% url 'financeiro:mensalidades' %}" class="hero-button hero-button-secundario">{% include "_icone.html" with nome="receipt" tamanho=16 %}Mensalidades</a>
+        </div>
     </div>
-    <div class="welcome-decoration" aria-hidden="true"><div class="circle circle-one"></div><div class="circle circle-two"></div><div class="circle circle-three"></div></div>
+    <div class="welcome-decoration" aria-hidden="true"><span class="circle circle-one"></span><span class="circle circle-two"></span><span class="circle circle-three"></span></div>
 </section>
 
 <section class="summary" aria-label="Resumo">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🎓</span><div><span>Alunos ativos</span><strong>{{ total_alunos }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">👨‍🏫</span><div><span>Professores</span><strong>{{ total_professores }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📅</span><div><span>Aulas na agenda</span><strong>{{ total_turmas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças no mês</span><strong>{{ presencas_mes }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="students" %}</span><div><span>Alunos ativos</span><strong>{{ total_alunos }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="teachers" %}</span><div><span>Professores</span><strong>{{ total_professores }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="calendar" %}</span><div><span>Aulas na agenda</span><strong>{{ total_turmas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Presenças no mês</span><strong>{{ presencas_mes }}</strong></div></div>
 </section>
 
 <div class="two-cols">

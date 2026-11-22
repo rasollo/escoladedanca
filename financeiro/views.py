@@ -1,16 +1,19 @@
+from datetime import date
+
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from escoladedanca.utils import ler_mes, redirecionar
 
-from .forms import (CalculoSalarioForm, EntradaForm, FiltroMovimentacoesForm,
-                    MensalidadeForm, SaidaForm)
-from .models import Movimentacao
-from .services import (balanco_mensal, calcular_salario, calcular_saldo,
-                       filtrar_movimentacoes)
+from .forms import (CalculoSalarioForm, CancelamentoCobrancaForm, EntradaForm, EstornoForm,
+                    FiltroMovimentacoesForm, MensalidadeForm, RecebimentoForm, SaidaForm)
+from .models import Cobranca, Movimentacao
+from .services import (balanco_mensal, calcular_salario, calcular_saldo, estornar,
+                       filtrar_movimentacoes, gerar_cobrancas, receber, resumir_cobrancas)
 
 MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
          "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
@@ -89,8 +92,21 @@ def nova_saida(request):
                                 sucesso="Saída registrada.")
 
 
+def _bloquear_vinculado(request, mov):
+    """Recebimentos de cobrança e estornos não são editados nem excluídos:
+    a correção é feita por estorno, preservando o histórico."""
+    if mov.cobranca_id or mov.estorno_de_id:
+        messages.error(request, "Este lançamento pertence a uma cobrança. Para corrigir, "
+                                "use o estorno em Mensalidades.")
+        alvo = mov.cobranca_id or mov.estorno_de.cobranca_id
+        return redirect("financeiro:cobranca", alvo)
+    return None
+
+
 def editar(request, pk):
     mov = get_object_or_404(Movimentacao, pk=pk)
+    if bloqueio := _bloquear_vinculado(request, mov):
+        return bloqueio
     if mov.tipo == Movimentacao.Tipo.SAIDA:
         form_class = SaidaForm
     elif mov.origem == Movimentacao.Origem.MENSALIDADE:
@@ -103,6 +119,8 @@ def editar(request, pk):
 
 def excluir(request, pk):
     mov = get_object_or_404(Movimentacao, pk=pk)
+    if bloqueio := _bloquear_vinculado(request, mov):
+        return bloqueio
     if request.method == "POST":
         mov.delete()
         messages.success(request, "Movimentação excluída.")
@@ -112,15 +130,98 @@ def excluir(request, pk):
     })
 
 
+def _competencia(request):
+    hoje = timezone.localdate()
+    try:
+        ano, mes = ler_mes(request.GET.get("mes", "") or request.POST.get("mes", ""))
+        return date(ano, mes, 1)
+    except ValueError:
+        return hoje.replace(day=1)
+
+
 def mensalidades(request):
-    """RF11 — consulta das mensalidades (fluxo 10)."""
-    qs = Movimentacao.objects.filter(origem=Movimentacao.Origem.MENSALIDADE).select_related("aluno")
-    aluno_id = request.GET.get("aluno")
-    if aluno_id and aluno_id.isdigit():
+    """RF11 — cobranças de mensalidade da competência (situação informativa, RN08)."""
+    competencia = _competencia(request)
+    hoje = timezone.localdate()
+    qs = (Cobranca.objects.filter(competencia=competencia).com_totais()
+          .select_related("aluno", "matricula__turma__modalidade"))
+    aluno_id = request.GET.get("aluno", "")
+    if aluno_id.isdigit():
         qs = qs.filter(aluno_id=aluno_id)
+    cobrancas = list(qs)
+    situacao = request.GET.get("situacao", "")
+    resumo = resumir_cobrancas(cobrancas, hoje)
+    if situacao in Cobranca.Situacao.values:
+        cobrancas = [c for c in cobrancas if c.situacao(hoje) == situacao]
+    for c in cobrancas:
+        c.situacao_atual = c.situacao(hoje)
     return render(request, "financeiro/mensalidades.html", {
-        "pagina": _paginar(request, qs), "total": qs.count(), "aluno_id": aluno_id,
+        "cobrancas": cobrancas, "resumo": resumo, "situacao": situacao,
+        "situacoes": Cobranca.Situacao.choices, "aluno_id": aluno_id,
+        "competencia": competencia, "mes_valor": f"{competencia:%m/%Y}",
+        "mes_nome": f"{MESES[competencia.month - 1]} de {competencia.year}",
     })
+
+
+@require_POST
+def gerar_cobrancas_view(request):
+    competencia = _competencia(request)
+    n = gerar_cobrancas(competencia)
+    if n:
+        messages.success(request, f"{n} cobrança{'s' if n > 1 else ''} gerada{'s' if n > 1 else ''} "
+                                  f"para {competencia:%m/%Y}. O caixa só muda quando houver recebimento.")
+    else:
+        messages.warning(request, f"As cobranças de {competencia:%m/%Y} já estavam geradas.")
+    return redirect(f"{reverse('financeiro:mensalidades')}?mes={competencia:%m/%Y}")
+
+
+def cobranca(request, pk):
+    """Detalhe da cobrança: recebimentos, estornos e recebimento de novo valor."""
+    c = get_object_or_404(Cobranca.objects.select_related("aluno", "matricula__turma"), pk=pk)
+    form = None
+    if c.saldo > 0:
+        form = RecebimentoForm(request.POST or None, cobranca=c)
+        if request.method == "POST" and form.is_valid():
+            receber(c, form.cleaned_data["valor"], form.cleaned_data["data_pagamento"],
+                    form.cleaned_data["forma_pagamento"])
+            messages.success(request, "Recebimento registrado.")
+            return redirect("financeiro:cobranca", c.pk)
+    return render(request, "financeiro/cobranca.html", {
+        "c": c, "form": form, "situacao": c.get_situacao_display(),
+        "recebimentos": c.recebimentos.select_related("estorno").order_by("data_pagamento", "pk"),
+        "estorno_form": EstornoForm(), "cancelar_form": CancelamentoCobrancaForm(),
+    })
+
+
+@require_POST
+def estornar_view(request, pk):
+    mov = get_object_or_404(Movimentacao, pk=pk, cobranca__isnull=False)
+    form = EstornoForm(request.POST)
+    if form.is_valid():
+        try:
+            estornar(mov, form.cleaned_data["motivo"])
+            messages.success(request, "Recebimento estornado com o motivo registrado.")
+        except ValueError as erro:
+            messages.error(request, str(erro))
+    else:
+        messages.error(request, "Informe o motivo do estorno.")
+    return redirect("financeiro:cobranca", mov.cobranca_id)
+
+
+@require_POST
+def cancelar_cobranca(request, pk):
+    c = get_object_or_404(Cobranca, pk=pk)
+    form = CancelamentoCobrancaForm(request.POST)
+    if c.recebido > 0:
+        messages.error(request, "A cobrança tem recebimentos. Estorne-os antes de cancelar.")
+    elif not form.is_valid():
+        messages.error(request, "Informe o motivo do cancelamento.")
+    else:
+        c.cancelada = True
+        c.motivo_cancelamento = form.cleaned_data["motivo"]
+        c.save(update_fields=["cancelada", "motivo_cancelamento"])
+        messages.success(request, "Cobrança cancelada.")
+    return redirect("financeiro:cobranca", c.pk)
 
 
 def nova_mensalidade(request):
@@ -128,8 +229,8 @@ def nova_mensalidade(request):
     initial = {}
     if request.GET.get("aluno", "").isdigit():
         initial["aluno"] = request.GET["aluno"]
-    return _salvar_movimentacao(request, MensalidadeForm, "Registrar mensalidade",
-                                initial=initial, sucesso="Mensalidade registrada.",
+    return _salvar_movimentacao(request, MensalidadeForm, "Mensalidade avulsa (sem cobrança)",
+                                initial=initial, sucesso="Mensalidade avulsa registrada.",
                                 voltar=reverse("financeiro:mensalidades"))
 
 

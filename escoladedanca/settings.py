@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'aulas',
     'financeiro',
     'consultas',
+    'comunicacao',
 ]
 
 MIDDLEWARE = [
@@ -175,6 +176,8 @@ LOGOUT_REDIRECT_URL = "login"
 ESCOLA_HORARIO_ABERTURA = "18:00"
 ESCOLA_HORARIO_FECHAMENTO = "22:00"
 ESCOLA_CAPACIDADE_PADRAO_SALA = 40
+# Cobranças de mensalidade: dia do vencimento em cada competência (mês).
+ESCOLA_DIA_VENCIMENTO = int(os.environ.get("ESCOLA_DIA_VENCIMENTO", "5"))
 
 # Consultas — limites (% de ocupação real) da "temperatura" das aulas.
 # Faixa saudável de mercado: 70–85% (ver consultas/services.py).

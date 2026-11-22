@@ -6,9 +6,13 @@ from decimal import Decimal
 
 from django.db.models import Count, Q, Sum
 
+from django.conf import settings
+from django.db import transaction
+from django.utils import timezone
+
 from aulas.models import Matricula
 
-from .models import Movimentacao
+from .models import Cobranca, Movimentacao
 
 ZERO = Decimal("0.00")
 
@@ -165,3 +169,98 @@ def filtrar_movimentacoes(qs, *, inicio=None, fim=None, tipo=None, q=None):
             Q(descricao__icontains=q) | Q(aluno__nome__icontains=q) | Q(professor__nome__icontains=q)
         )
     return qs
+
+
+# ---------------------------------------------------------------------------
+# Cobranças de mensalidade
+# ---------------------------------------------------------------------------
+def vencimento_da(competencia: date) -> date:
+    ultimo = calendar.monthrange(competencia.year, competencia.month)[1]
+    dia = min(max(int(getattr(settings, "ESCOLA_DIA_VENCIMENTO", 5)), 1), ultimo)
+    return date(competencia.year, competencia.month, dia)
+
+
+@transaction.atomic
+def gerar_cobrancas(competencia: date) -> int:
+    """Gera uma cobrança por matrícula ativa na competência (idempotente).
+
+    Entram as matrículas em aberto, iniciadas até o fim do mês, de aulas ativas
+    e com mensalidade final maior que zero. Não altera o caixa.
+    """
+    competencia = competencia.replace(day=1)
+    _, fim = periodo_do_mes(competencia.year, competencia.month)
+    ja_geradas = set(Cobranca.objects.filter(competencia=competencia)
+                     .values_list("matricula_id", flat=True))
+    novas = []
+    for m in (Matricula.objects.filter(data_fim__isnull=True, data_inicio__lte=fim,
+                                       turma__ativa=True)
+              .exclude(pk__in=ja_geradas).select_related("turma")):
+        if m.valor_final > 0:
+            novas.append(Cobranca(matricula=m, aluno_id=m.aluno_id, competencia=competencia,
+                                  valor=m.valor_final, vencimento=vencimento_da(competencia)))
+    Cobranca.objects.bulk_create(novas)
+    return len(novas)
+
+
+@dataclass
+class ResumoCobrancas:
+    previsto: Decimal = ZERO
+    recebido: Decimal = ZERO
+    em_aberto: Decimal = ZERO
+    atrasado: Decimal = ZERO
+    quantidade: int = 0
+    atrasadas: int = 0
+
+
+def resumir_cobrancas(cobrancas, hoje=None) -> ResumoCobrancas:
+    hoje = hoje or timezone.localdate()
+    r = ResumoCobrancas()
+    for c in cobrancas:
+        if c.cancelada:
+            continue
+        r.quantidade += 1
+        r.previsto += c.valor
+        r.recebido += c.recebido
+        r.em_aberto += c.saldo
+        if c.situacao(hoje) == Cobranca.Situacao.ATRASADA or (c.saldo and c.vencimento < hoje):
+            r.atrasado += c.saldo
+            r.atrasadas += 1
+    return r
+
+
+@transaction.atomic
+def receber(cobranca: Cobranca, valor: Decimal, data_pagamento: date, forma: str) -> Movimentacao:
+    """Registra o recebimento (total ou parcial) como entrada de mensalidade."""
+    if not (0 < valor <= cobranca.saldo):
+        raise ValueError("O valor deve ser maior que zero e no máximo o saldo da cobrança.")
+    _, fim = periodo_do_mes(cobranca.competencia.year, cobranca.competencia.month)
+    mov = Movimentacao(
+        tipo=Movimentacao.Tipo.ENTRADA, origem=Movimentacao.Origem.MENSALIDADE,
+        aluno_id=cobranca.aluno_id, cobranca=cobranca, valor=valor,
+        data_pagamento=data_pagamento, forma_pagamento=forma,
+        validade=max(fim, data_pagamento),
+        descricao=f"Mensalidade {cobranca.competencia:%m/%Y} — {cobranca.matricula.turma.nome or cobranca.matricula.turma.modalidade}",
+    )
+    mov.full_clean()
+    mov.save()
+    return mov
+
+
+@transaction.atomic
+def estornar(recebimento: Movimentacao, motivo: str, data: date | None = None) -> Movimentacao:
+    """Estorna um recebimento: lança uma saída de estorno e preserva o histórico."""
+    if not recebimento.cobranca_id or hasattr(recebimento, "estorno"):
+        raise ValueError("Só recebimentos de cobrança ainda não estornados podem ser estornados.")
+    motivo = " ".join((motivo or "").split())
+    if not motivo:
+        raise ValueError("Informe o motivo do estorno.")
+    saida = Movimentacao(
+        tipo=Movimentacao.Tipo.SAIDA, categoria=Movimentacao.Categoria.ESTORNO,
+        estorno_de=recebimento, valor=recebimento.valor,
+        data_pagamento=data or timezone.localdate(),
+        forma_pagamento=recebimento.forma_pagamento,
+        descricao=f"Estorno — {motivo}"[:200],
+    )
+    saida.full_clean()
+    saida.save()
+    return saida

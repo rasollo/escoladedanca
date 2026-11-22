@@ -1,5 +1,5 @@
 <section class="panel">
-    <div class="panel-header"><h2>🎂 Aniversariantes de {{ aniversariantes.mes_nome|lower }}</h2><a href="{% url 'aniversariantes' %}" class="link">Ver todos →</a></div>
+    <div class="panel-header"><h2>Aniversariantes de {{ aniversariantes.mes_nome|lower }}</h2><a href="{% url 'aniversariantes' %}" class="link">Ver todos →</a></div>
     {% for p in aniversariantes.lista|slice:":6" %}
     <div class="list-row"><div><strong>{{ p.nome }}</strong><small>{{ p.perfil }}{% if p.idade is not None %} · completa {{ p.idade }} anos{% endif %}</small></div>
         <span class="badge {% if p.hoje %}badge-green{% endif %}">{% if p.hoje %}Hoje! · {% endif %}{{ p.dia|stringformat:"02d" }}/{{ p.mes|stringformat:"02d" }}</span></div>

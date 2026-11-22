@@ -5,15 +5,15 @@
     <div><span class="section-label">Aluno</span><h1>{{ aluno.nome }}</h1>
         <p class="muted">{{ aluno.telefone|default:"Sem telefone" }} · {{ aluno.email|default:"sem e-mail" }}{% if aluno.data_nascimento %} · nascimento {{ aluno.data_nascimento|date:"d/m/Y" }}{% endif %}{% if not aluno.ativo %} · <span class="badge">Inativo</span>{% endif %}</p></div>
     <div class="actions">
-        <a href="{% url 'financeiro:nova_mensalidade' %}?aluno={{ aluno.pk }}&next={{ request.path|urlencode }}" class="btn btn-primary">Registrar mensalidade</a>
+        <a href="{% url 'financeiro:nova_mensalidade' %}?aluno={{ aluno.pk }}&next={{ request.path|urlencode }}" class="btn btn-primary">Mensalidade avulsa</a>
         <a href="{% url 'alunos:editar' aluno.pk %}" class="btn">Editar</a>
     </div>
 </section>
 <p class="muted note">Acesso ao portal: {% if aluno.usuario %}usuário <strong>{{ aluno.usuario.username }}</strong>{% if not aluno.usuario.is_active %} (bloqueado){% endif %}{% else %}sem acesso · <a class="link" href="{% url 'administradores:usuario_novo' %}?papel=Aluno&aluno={{ aluno.pk }}">criar acesso</a>{% endif %}</p>
 <section class="summary">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças</span><strong>{{ aluno.total_presencas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✖️</span><div><span>Faltas</span><strong>{{ aluno.total_faltas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">💳</span><div><span>Mensalidade</span><strong class="small">{% if em_dia %}Em dia{% else %}Sem mensalidade vigente{% endif %}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Presenças</span><strong>{{ aluno.total_presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="close" %}</span><div><span>Faltas</span><strong>{{ aluno.total_faltas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="receipt" %}</span><div><span>Mensalidade</span><strong class="small {% if situacao == "Em atraso" %}neg{% endif %}">{{ situacao }}</strong></div></div>
 </section>
 <p class="muted note">A situação da mensalidade é apenas informativa: a escola não bloqueia a participação nas aulas (RN08).</p>
 <div class="two-cols">
@@ -23,11 +23,13 @@
         {% empty %}<p class="empty">Não está vinculado a nenhuma aula.</p>{% endfor %}
     </section>
     <section class="panel">
-        <div class="panel-header"><h2>Mensalidades</h2><a class="link" href="{% url 'financeiro:mensalidades' %}?aluno={{ aluno.pk }}">Ver todas →</a></div>
-        {% for m in mensalidades %}<div class="list-row"><div><strong>{{ m.valor|brl }}</strong><small>Pago em {{ m.data_pagamento|date:"d/m/Y" }} · {{ m.get_forma_pagamento_display }}{% if m.validade %} · válida até {{ m.validade|date:"d/m/Y" }}{% endif %}</small></div></div>
-        {% empty %}<p class="empty">Nenhuma mensalidade registrada.</p>{% endfor %}
+        <div class="panel-header"><h2>Matrículas e mensalidade</h2></div>
+        {% for m in matriculas_ativas %}<div class="list-row"><div><strong>{{ m.turma.nome|default:m.turma.modalidade }}</strong><small>desde {{ m.data_inicio|date:"d/m/Y" }} · {{ m.valor_mensal|brl }}{% if m.desconto %} − {% if m.desconto_tipo == "percentual" %}{{ m.desconto|floatformat:"-2" }}%{% else %}{{ m.desconto|brl }}{% endif %} = <strong>{{ m.valor_final|brl }}</strong>{% endif %}/mês</small></div>
+            <a class="link" href="{% url 'aulas:matricula_editar' m.pk %}">Desconto</a></div>
+        {% empty %}<p class="empty">Sem matrículas ativas.</p>{% endfor %}
     </section>
 </div>
+{% include "alunos/_cobrancas.html" %}
 <section class="panel">
     <div class="panel-header"><h2>Últimas presenças e faltas</h2><a class="link" href="{% url 'aulas:presencas' %}?aluno={{ aluno.pk }}">Histórico completo →</a></div>
     <div class="table-wrap"><table><thead><tr><th>Data</th><th>Aula</th><th>Situação</th></tr></thead><tbody>

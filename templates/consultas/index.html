@@ -18,12 +18,12 @@
 
 <section class="summary" aria-label="Resumo do período">
     <div class="summary-card temp-{{ resumo.faixa }}">
-        <span class="summary-icon" aria-hidden="true">🌡️</span>
+        <span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="thermo" %}</span>
         <div><span>Ocupação média</span><strong>{% if resumo.ocupacao is not None %}{{ resumo.ocupacao|floatformat:0 }}%{% else %}—{% endif %}</strong></div>
     </div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças no período</span><strong>{{ resumo.presencas }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🪑</span><div><span>Lugares vazios por semana</span><strong>{{ resumo.lugares_livres }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">📅</span><div><span>Aulas com chamada</span><strong>{{ resumo.aulas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Presenças no período</span><strong>{{ resumo.presencas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="seat" %}</span><div><span>Lugares vazios por semana</span><strong>{{ resumo.lugares_livres }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="calendar" %}</span><div><span>Aulas com chamada</span><strong>{{ resumo.aulas }}</strong></div></div>
 </section>
 
 <section class="panel">

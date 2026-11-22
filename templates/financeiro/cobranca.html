@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Cobrança{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Cobrança · {{ c.competencia|date:"m/Y" }}</span><h1>{{ c.aluno }}</h1>
+        <p class="muted">{{ c.matricula.turma }} · vencimento {{ c.vencimento|date:"d/m/Y" }}</p></div>
+    <a href="{% url 'financeiro:mensalidades' %}?mes={{ c.competencia|date:'m/Y' }}" class="btn btn-ghost">← Mensalidades</a>
+</section>
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="receipt" %}</span><div><span>Valor</span><strong>{{ c.valor|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Recebido</span><strong class="pos">{{ c.recebido|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="clock" %}</span><div><span>Saldo</span><strong>{{ c.saldo|brl }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="pin" %}</span><div><span>Situação</span><strong class="small">{{ situacao }}</strong></div></div>
+</section>
+{% if c.cancelada %}<p class="message message-warning">Cobrança cancelada: {{ c.motivo_cancelamento }}</p>{% endif %}
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Receber</h2></div>
+        {% if form %}
+        <form method="post">{% csrf_token %}{% include "_campos.html" %}
+            <div class="form-actions"><button class="btn btn-primary">Confirmar recebimento</button></div></form>
+        {% else %}<p class="empty">{% if c.cancelada %}Cobrança cancelada.{% else %}Cobrança quitada.{% endif %}</p>{% endif %}
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>Recebimentos e estornos</h2></div>
+        {% for r in recebimentos %}
+        <div class="list-row"><div><strong>{{ r.valor|brl }}</strong><small>{{ r.data_pagamento|date:"d/m/Y" }} · {{ r.get_forma_pagamento_display }}{% if r.estorno %} · estornado em {{ r.estorno.data_pagamento|date:"d/m/Y" }} ({{ r.estorno.descricao }}){% endif %}</small></div>
+            {% if r.estorno %}<span class="badge badge-red">Estornado</span>{% else %}
+            <form method="post" action="{% url 'financeiro:estornar' r.pk %}" class="estorno-form">{% csrf_token %}
+                <label class="sr-only" for="motivo-{{ r.pk }}">Motivo do estorno</label>
+                <input id="motivo-{{ r.pk }}" name="motivo" required maxlength="150" placeholder="Motivo do estorno">
+                <button class="btn btn-small btn-danger-ghost">Estornar</button></form>{% endif %}
+        </div>
+        {% empty %}<p class="empty">Nenhum recebimento.</p>{% endfor %}
+        {% if not c.cancelada and not c.recebido %}
+        <form method="post" action="{% url 'financeiro:cancelar_cobranca' c.pk %}" class="estorno-form mt">{% csrf_token %}
+            <label class="sr-only" for="motivo-cancelar">Motivo do cancelamento</label>
+            <input id="motivo-cancelar" name="motivo" required maxlength="150" placeholder="Motivo do cancelamento">
+            <button class="btn btn-small btn-danger-ghost">Cancelar cobrança</button></form>{% endif %}
+    </section>
+</div>
+{% endblock %}

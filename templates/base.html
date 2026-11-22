@@ -3,73 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3157d5">
     <title>{% block title %}Painel{% endblock %} | Portal da Dança</title>
+    <script>
+        /* Tema claro/escuro: preferência só deste navegador (antes de pintar a página). */
+        try { if (localStorage.getItem("tema") === "escuro") document.documentElement.dataset.theme = "dark"; } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 </head>
 <body>
 <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
 <div class="dashboard">
     {% with nome=request.resolver_match.namespace url=request.resolver_match.url_name %}
-    <aside class="sidebar">
-        <div class="brand">
+    <aside class="sidebar" id="menu" aria-label="Menu">
+        <div class="sidebar-brand brand">
             <div class="brand-icon" aria-hidden="true">P</div>
-            <div><h2>Portal da Dança</h2><span>{% if eh_admin %}Painel de gestão{% elif eh_professor %}Portal do professor{% elif eh_aluno %}Portal do aluno{% else %}Painel{% endif %}</span></div>
+            <div><h2>Portal da Dança</h2><span>{% if eh_admin %}Gestão escolar{% elif eh_professor %}Portal do professor{% elif eh_aluno %}Portal do aluno{% else %}Gestão escolar{% endif %}</span></div>
+            <button type="button" class="nav-button menu-fechar" aria-label="Fechar menu" data-menu-fechar>{% include "_icone.html" with nome="close" %}</button>
         </div>
-        <nav class="navigation" aria-label="Menu principal">
+        <nav class="navigation sidebar-scroll" aria-label="Menu principal">
+            <p class="nav-section">{% if eh_admin %}Gestão escolar{% else %}Meu ambiente{% endif %}</p>
             {% if eh_admin %}
-            <a href="{% url 'index' %}" class="nav-item {% if url == 'index' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Início</span></a>
-            <a href="{% url 'alunos:lista' %}" class="nav-item {% if nome == 'alunos' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎓</span><span>Alunos</span></a>
-            <a href="{% url 'professores:lista' %}" class="nav-item {% if nome == 'professores' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">👨‍🏫</span><span>Professores</span></a>
-            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
-            <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">✅</span><span>Presenças e faltas</span></a>
-            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎂</span><span>Aniversariantes</span></a>
-            <a href="{% url 'financeiro:painel' %}" class="nav-item {% if nome == 'financeiro' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">💰</span><span>Financeiro</span></a>
-            <a href="{% url 'proprietarios:proprietarios' %}" class="nav-item {% if nome == 'proprietarios' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🏢</span><span>Proprietário</span></a>
-            <a href="{% url 'consultas:painel' %}" class="nav-item {% if nome == 'consultas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🌡️</span><span>Consultas</span></a>
-            <a href="{% url 'documentacao' %}" class="nav-item {% if url == 'documentacao' or url == 'documentacao_doc' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📄</span><span>Documentação</span></a>
-            <a href="{% url 'administradores:administradores' %}" class="nav-item {% if nome == 'administradores' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⚙️</span><span>Administração</span></a>
+            <a href="{% url 'index' %}" class="nav-item {% if url == 'index' %}active{% endif %}" {% if url == 'index' %}aria-current="page"{% endif %}>{% include "_icone.html" with nome="home" %}<span>Início</span></a>
+            <a href="{% url 'alunos:lista' %}" class="nav-item {% if nome == 'alunos' %}active{% endif %}">{% include "_icone.html" with nome="students" %}<span>Alunos</span></a>
+            <a href="{% url 'professores:lista' %}" class="nav-item {% if nome == 'professores' %}active{% endif %}">{% include "_icone.html" with nome="teachers" %}<span>Professores</span></a>
+            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}">{% include "_icone.html" with nome="calendar" %}<span>Agenda de aulas</span></a>
+            <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}">{% include "_icone.html" with nome="check" %}<span>Presenças e faltas</span></a>
+            <a href="{% url 'financeiro:mensalidades' %}" class="nav-item {% if url == 'mensalidades' or url == 'cobranca' or url == 'nova_mensalidade' %}active{% endif %}">{% include "_icone.html" with nome="receipt" %}<span>Mensalidades</span></a>
+            <a href="{% url 'financeiro:painel' %}" class="nav-item {% if nome == 'financeiro' and url != 'mensalidades' and url != 'cobranca' and url != 'nova_mensalidade' %}active{% endif %}">{% include "_icone.html" with nome="finance" %}<span>Financeiro</span></a>
+            <a href="{% url 'comunicacao:comunicados' %}" class="nav-item {% if url == 'comunicados' or url == 'comunicado_novo' %}active{% endif %}">{% include "_icone.html" with nome="megaphone" %}<span>Comunicados</span></a>
+            <a href="{% url 'comunicacao:solicitacoes' %}" class="nav-item {% if url == 'solicitacoes' or url == 'solicitacao_responder' %}active{% endif %}">{% include "_icone.html" with nome="message" %}<span>Solicitações</span></a>
+            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}">{% include "_icone.html" with nome="cake" %}<span>Aniversariantes</span></a>
+            <a href="{% url 'consultas:painel' %}" class="nav-item {% if nome == 'consultas' %}active{% endif %}">{% include "_icone.html" with nome="thermo" %}<span>Consultas</span></a>
+            <a href="{% url 'proprietarios:proprietarios' %}" class="nav-item {% if nome == 'proprietarios' %}active{% endif %}">{% include "_icone.html" with nome="building" %}<span>Proprietário</span></a>
+            <a href="{% url 'documentacao' %}" class="nav-item {% if url == 'documentacao' or url == 'documentacao_doc' %}active{% endif %}">{% include "_icone.html" with nome="doc" %}<span>Documentação</span></a>
+            <a href="{% url 'administradores:administradores' %}" class="nav-item {% if nome == 'administradores' %}active{% endif %}">{% include "_icone.html" with nome="lock" %}<span>Acessos</span></a>
             {% elif eh_professor %}
-            <a href="{% url 'professores:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Minha área</span></a>
-            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
-            <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">✅</span><span>Presenças das minhas aulas</span></a>
-            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎂</span><span>Aniversariantes</span></a>
+            <a href="{% url 'professores:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}">{% include "_icone.html" with nome="home" %}<span>Minha área</span></a>
+            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}">{% include "_icone.html" with nome="calendar" %}<span>Agenda de aulas</span></a>
+            <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}">{% include "_icone.html" with nome="check" %}<span>Presenças das minhas aulas</span></a>
+            <a href="{% url 'comunicacao:comunicados' %}" class="nav-item {% if nome == 'comunicacao' %}active{% endif %}">{% include "_icone.html" with nome="megaphone" %}<span>Comunicados</span></a>
+            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}">{% include "_icone.html" with nome="cake" %}<span>Aniversariantes</span></a>
             {% elif eh_aluno %}
-            <a href="{% url 'alunos:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Minha área</span></a>
-            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
-            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎂</span><span>Aniversariantes</span></a>
+            <a href="{% url 'alunos:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}">{% include "_icone.html" with nome="home" %}<span>Minha área</span></a>
+            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' %}active{% endif %}">{% include "_icone.html" with nome="calendar" %}<span>Agenda de aulas</span></a>
+            <a href="{% url 'comunicacao:comunicados' %}" class="nav-item {% if url == 'comunicados' %}active{% endif %}">{% include "_icone.html" with nome="megaphone" %}<span>Comunicados</span></a>
+            <a href="{% url 'comunicacao:solicitacoes' %}" class="nav-item {% if url == 'solicitacoes' or url == 'solicitacao_nova' %}active{% endif %}">{% include "_icone.html" with nome="message" %}<span>Solicitações</span></a>
+            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}">{% include "_icone.html" with nome="cake" %}<span>Aniversariantes</span></a>
             {% endif %}
         </nav>
-        <div class="sidebar-bottom">
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="nav-item logout"><span class="nav-icon" aria-hidden="true">↪</span><span>Sair</span></button>
-            </form>
+        <div class="sidebar-footer sidebar-bottom">
+            <div class="role-card"><span class="role-card-dot" aria-hidden="true"></span><div><p>Ambiente atual</p><strong>{{ papel|default:"Sem perfil" }}</strong></div></div>
+            <div class="sidebar-user">
+                <span class="avatar" aria-hidden="true">{{ user.get_full_name|default:user.get_username|slice:":1"|upper }}</span>
+                <div class="sidebar-user-info"><strong>{{ user.get_full_name|default:user.get_username }}</strong><small>{{ user.get_username }}</small></div>
+                <a href="{% url 'trocar_senha' %}" class="icon-action" title="Alterar minha senha" aria-label="Alterar minha senha">{% include "_icone.html" with nome="lock" tamanho=15 %}</a>
+                <form action="{% url 'logout' %}" method="post">{% csrf_token %}
+                    <button type="submit" class="icon-action logout" title="Sair" aria-label="Sair">{% include "_icone.html" with nome="logout" tamanho=15 %}</button>
+                </form>
+            </div>
         </div>
     </aside>
     {% endwith %}
+    <div class="menu-fundo" data-menu-fechar hidden></div>
 
     <main class="main-content" id="conteudo">
         <header class="topbar">
-            <div class="user-profile">
-                <div class="avatar" aria-hidden="true">{{ user.get_username|slice:":1"|upper }}</div>
-                <div class="user-info">
-                    <strong>{{ user.get_full_name|default:user.get_username }}</strong>
-                    <span>{{ papel|default:"Sem perfil de acesso" }}</span>
-                </div>
+            <div class="topbar-left">
+                <button type="button" class="nav-button menu-abrir" aria-label="Abrir menu" aria-controls="menu" aria-expanded="false" data-menu-abrir>{% include "_icone.html" with nome="menu" %}</button>
+                <div><p class="topbar-eyebrow">Portal da Dança</p><p class="topbar-title" data-titulo-pagina></p></div>
             </div>
+            <button type="button" class="theme-toggle" aria-label="Alternar tema claro/escuro" title="Tema claro/escuro" data-tema>
+                <span class="tema-lua">{% include "_icone.html" with nome="moon" %}</span><span class="tema-sol">{% include "_icone.html" with nome="sun" %}</span>
+            </button>
         </header>
 
-        {% if messages %}
-        <div class="messages" role="status">
-            {% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}</div>{% endfor %}
-        </div>
-        {% endif %}
+        <div class="page">
+            {% if messages %}
+            <div class="messages" role="status">
+                {% for message in messages %}<div class="message message-{{ message.tags }}">{{ message }}</div>{% endfor %}
+            </div>
+            {% endif %}
 
-        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
     </main>
 </div>
+<script>
+(function () {
+    var raiz = document.documentElement;
+    var titulo = document.querySelector("[data-titulo-pagina]");
+    if (titulo) titulo.textContent = document.title.split(" | ")[0];
+    var botaoTema = document.querySelector("[data-tema]");
+    if (botaoTema) botaoTema.addEventListener("click", function () {
+        var escuro = raiz.dataset.theme !== "dark";
+        if (escuro) raiz.dataset.theme = "dark"; else delete raiz.dataset.theme;
+        try { localStorage.setItem("tema", escuro ? "escuro" : "claro"); } catch (e) {}
+    });
+    var menu = document.getElementById("menu"), fundo = document.querySelector(".menu-fundo");
+    var abrir = document.querySelector("[data-menu-abrir]");
+    function alternar(aberto) {
+        menu.classList.toggle("aberto", aberto);
+        fundo.hidden = !aberto;
+        if (abrir) abrir.setAttribute("aria-expanded", aberto ? "true" : "false");
+    }
+    if (abrir) abrir.addEventListener("click", function () { alternar(true); });
+    document.querySelectorAll("[data-menu-fechar]").forEach(function (el) {
+        el.addEventListener("click", function () { alternar(false); });
+    });
+})();
+</script>
 </body>
 </html>

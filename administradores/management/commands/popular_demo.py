@@ -21,7 +21,9 @@ from django.utils import timezone
 from alunos.models import Aluno
 from escoladedanca.rbac import ALUNO, PROFESSOR, atribuir_papel
 from aulas.models import Matricula, Modalidade, Presenca, Sala, Turma
-from financeiro.models import Movimentacao
+from comunicacao.models import Comunicado, Solicitacao
+from financeiro.models import Cobranca, Movimentacao
+from financeiro.services import estornar, periodo_do_mes, receber, vencimento_da
 from professores.models import Professor
 
 NOMES = ["Ana", "Bruno", "Carla", "Diego", "Eduarda", "Felipe", "Gabriela", "Henrique",
@@ -85,11 +87,22 @@ def criar_acesso_demo(cadastro, papel, senha):
     User = get_user_model()
     sem_acento = unicodedata.normalize("NFKD", cadastro.nome).encode("ascii", "ignore").decode()
     base = sem_acento.lower().replace(" ", ".")
-    login, n = base, 1
-    while User.objects.filter(username=login).exists():
-        n += 1
-        login = f"{base}{n}"
-    user = User.objects.create_user(login, "", senha, first_name=cadastro.nome)
+    # Reinstalação com --limpar: o login de demonstração ficou sem cadastro.
+    # Ele é reaproveitado (nova senha), em vez de criar "nome2".
+    sobra = User.objects.filter(username=base, is_superuser=False, professor__isnull=True,
+                                aluno__isnull=True).first()
+    if sobra:
+        sobra.set_password(senha)
+        sobra.first_name = cadastro.nome
+        sobra.is_active = True
+        sobra.save()
+        user, login = sobra, base
+    else:
+        login, n = base, 1
+        while User.objects.filter(username=login).exists():
+            n += 1
+            login = f"{base}{n}"
+        user = User.objects.create_user(login, "", senha, first_name=cadastro.nome)
     atribuir_papel(user, papel)
     cadastro.usuario = user
     cadastro.save(update_fields=["usuario"])
@@ -109,7 +122,11 @@ class Command(BaseCommand):
     def handle(self, *args, limpar=False, usuario="responsavel", senha=None, **kw):
         rnd = random.Random(2026)
         if limpar:
+            Comunicado.objects.all().delete()
+            Solicitacao.objects.all().delete()
+            Movimentacao.objects.filter(estorno_de__isnull=False).delete()
             Movimentacao.objects.all().delete()
+            Cobranca.objects.all().delete()
             Presenca.objects.all().delete()
             Matricula.objects.all().delete()
             Turma.alunos.through.objects.all().delete()
@@ -167,6 +184,9 @@ class Command(BaseCommand):
                 nome=f"{mod} {nivel}", modalidade=Modalidade.objects.get(nome=mod),
                 professor=profs[p], sala=Sala.objects.get(nome=sala),
                 dia_semana=dia, hora_inicio=hm(ini), hora_fim=hm(fim),
+                # Mensalidade por aula: 1h = R$ 90,00; 1h30 = R$ 110,00.
+                valor_mensal=Decimal("110.00") if (hm(fim).hour * 60 + hm(fim).minute)
+                - (hm(ini).hour * 60 + hm(ini).minute) > 60 else Decimal("90.00"),
             )
             t.alunos.set(rnd.sample(alunos, rnd.randint(12, 30)))
             turmas.append(t)
@@ -188,21 +208,41 @@ class Command(BaseCommand):
                     Presenca.objects.create(turma=t, aluno=a, data=d, presente=rnd.random() < 0.82)
                 d += timedelta(days=7)
 
-        # Financeiro: 3 meses de movimentações
+        # Descontos combinados em algumas matrículas (percentual ou valor fixo).
+        abertas = list(Matricula.objects.filter(data_fim__isnull=True).order_by("pk"))
+        for m in rnd.sample(abertas, min(8, len(abertas))):
+            if rnd.random() < 0.5:
+                m.desconto_tipo, m.desconto = "percentual", Decimal("10")
+            else:
+                m.desconto_tipo, m.desconto = "fixo", Decimal("20.00")
+            m.save(update_fields=["desconto_tipo", "desconto"])
+
+        # Financeiro: 3 meses de movimentações e de cobranças de mensalidade
+        recebimentos = []
         for meses_atras in (2, 1, 0):
             ano, mes = hoje.year, hoje.month - meses_atras
             while mes < 1:
                 ano, mes = ano - 1, mes + 12
             ultimo_dia = hoje.day if meses_atras == 0 else 28
-            for a in alunos:
-                if rnd.random() < 0.85:
-                    dia = rnd.randint(1, min(10, ultimo_dia))
-                    pago = date(ano, mes, dia)
-                    Movimentacao.objects.create(
-                        tipo="entrada", origem="mensalidade", aluno=a, valor=Decimal("150.00"),
-                        data_pagamento=pago, validade=pago + timedelta(days=30),
-                        forma_pagamento=rnd.choice(["pix", "pix", "dinheiro", "cartao"]),
-                    )
+            competencia = date(ano, mes, 1)
+            _, fim_mes = periodo_do_mes(ano, mes)
+            # Uma cobrança por matrícula ativa em algum dia do mês.
+            for m in Matricula.ativas_no_periodo(competencia, fim_mes).select_related("turma"):
+                if m.valor_final <= 0:
+                    continue
+                c = Cobranca.objects.create(matricula=m, aluno_id=m.aluno_id, competencia=competencia,
+                                            valor=m.valor_final, vencimento=vencimento_da(competencia))
+                sorte = rnd.random()
+                pago_ate = min(10, ultimo_dia)
+                if meses_atras == 0 and hoje.day < 5:
+                    sorte += 0.4  # início do mês: muitas ainda não venceram
+                forma = rnd.choice(["pix", "pix", "dinheiro", "cartao"])
+                if sorte < 0.86:      # paga em dia (ou até o dia 10)
+                    recebimentos.append(receber(c, c.valor, date(ano, mes, rnd.randint(1, pago_ate)), forma))
+                elif sorte < 0.92:    # pagamento parcial
+                    receber(c, (c.valor / 2).quantize(Decimal("0.01")),
+                            date(ano, mes, rnd.randint(1, pago_ate)), forma)
+                # demais: em aberto (pendentes ou em atraso)
             for _ in range(12):
                 Movimentacao.objects.create(
                     tipo="entrada", origem=rnd.choice(["bebidas", "bebidas", "camisetas", "aluguel_sala"]),
@@ -229,6 +269,11 @@ class Command(BaseCommand):
                             data_pagamento=date(ano, mes, 28), descricao=f"Salário {mes:02d}/{ano}",
                         )
 
+        # Um estorno de exemplo, com motivo registrado (histórico preservado).
+        if recebimentos:
+            estornar(recebimentos[len(recebimentos) // 3], "Pagamento lançado em duplicidade",
+                     data=recebimentos[len(recebimentos) // 3].data_pagamento)
+
         # RF25 — acessos de demonstração para testar os papéis Professor e Aluno.
         # O aluno escolhido faz aniversário no mês e frequenta várias aulas (RF26).
         senha_demo = senha or os.environ.get("DJANGO_DEMO_SENHA") or secrets.token_urlsafe(12)
@@ -238,7 +283,32 @@ class Command(BaseCommand):
             if login:
                 self.stdout.write(f"Acesso {papel}: {login} / {senha_demo}  ({cadastro.nome})")
 
+        # Comunicados das turmas e solicitações de alunos.
+        avisos = [
+            (turmas[0], profs[0], "Aula aberta no sábado", "Neste sábado teremos aula aberta de forró "
+             "às 18h. Tragam amigos!"),
+            (turmas[1], profs[1], "Troca de sala", "Nesta segunda a aula será na Sala 2."),
+            (turmas[3], profs[0], "Ensaio para a apresentação", "Vamos ensaiar a coreografia do baile "
+             "de fim de ano nas próximas duas aulas."),
+            (turmas[8], None, "Feriado", "Não haverá aula no próximo feriado municipal."),
+        ]
+        responsavel = User.objects.filter(username=usuario).first()
+        for turma, prof, titulo, msg in avisos:
+            autor = prof.usuario if prof and prof.usuario_id else responsavel
+            Comunicado.objects.create(turma=turma, autor=autor, titulo=titulo, mensagem=msg)
+        pedidos = [
+            (aluno_demo, "frequencia", "Estive na aula de terça passada, mas aparece falta.", "pendente", ""),
+            (alunos[10], "cadastro", "Mudei de telefone, por favor atualizem.", "concluida",
+             "Telefone atualizado no cadastro."),
+            (alunos[20], "financeiro", "Posso pagar a mensalidade em duas vezes?", "em_analise", ""),
+        ]
+        for aluno, tipo, msg, status, resposta in pedidos:
+            Solicitacao.objects.create(aluno=aluno, tipo=tipo, mensagem=msg, status=status,
+                                       resposta=resposta,
+                                       respondido_por=responsavel if resposta else None)
+
         self.stdout.write(self.style.SUCCESS(
             f"Demo criada: {len(alunos)} alunos, {len(profs)} professores, {len(turmas)} aulas, "
-            f"{Presenca.objects.count()} presenças/faltas, {Movimentacao.objects.count()} movimentações."
+            f"{Presenca.objects.count()} presenças/faltas, {Cobranca.objects.count()} cobranças, "
+            f"{Movimentacao.objects.count()} movimentações."
         ))

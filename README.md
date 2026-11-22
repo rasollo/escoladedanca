@@ -159,6 +159,19 @@ O acesso é **negado por padrão**: uma página só abre para Professor ou Aluno
 
 Todas as datas são exibidas e digitadas no formato **dd/mm/aaaa**.
 
+### Mensalidades (cobranças)
+
+Cada aula tem um valor de mensalidade, que é copiado para a matrícula no momento da inscrição; a matrícula pode ter desconto percentual ou fixo. Em **Mensalidades → Gerar cobranças**, o sistema cria uma cobrança por matrícula ativa no mês, com vencimento no dia 5 (`ESCOLA_DIA_VENCIMENTO`). Gerar de novo não duplica. A cobrança não muda o caixa: o saldo só muda quando um recebimento é confirmado, e o recebimento pode ser parcial, mas nunca acima do saldo devedor. Para corrigir um recebimento, use o **estorno**, que exige motivo e preserva o histórico. A situação (pendente, parcial, atrasada ou paga) é só informativa: nenhum aluno é bloqueado.
+
+### Comunicados e solicitações
+
+- **Comunicados:** a administração e os professores publicam avisos por aula. Cada aluno vê os avisos das aulas em que está matriculado.
+- **Solicitações:** o aluno pede correção cadastral, revisão de frequência, mudança de matrícula ou tira dúvidas sobre a mensalidade, e a administração responde. Nada é alterado automaticamente.
+
+### Visual
+
+O visual segue o protótipo v3: fontes DM Sans e Manrope, menu lateral com o cartão "Ambiente atual" e modo escuro (botão no topo; a escolha fica salva no navegador). Qualquer usuário altera a própria senha pelo ícone de cadeado no rodapé do menu.
+
 ### Aniversariantes do mês
 
 Os três papéis veem o menu **Aniversariantes** e um quadro no painel inicial com os alunos e professores ativos que fazem aniversário no mês. Administrativo e Professor veem também a idade que a pessoa completa; o Aluno vê só o dia e o mês. O ano de nascimento não aparece para ninguém nessa tela. A data de nascimento continua **opcional** no cadastro de alunos e professores.

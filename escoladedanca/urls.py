@@ -3,12 +3,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
 from .rbac import qualquer_usuario
-from .views import aniversariantes, documentacao, index
+from .views import aniversariantes, documentacao, index, trocar_senha
 
 urlpatterns = [
     path("", index, name="index"),
     path("entrar/", auth_views.LoginView.as_view(), name="login"),
     path("aniversariantes/", aniversariantes, name="aniversariantes"),
+    path("senha/", trocar_senha, name="trocar_senha"),
     path("documentacao/", documentacao, name="documentacao"),
     path("documentacao/<slug:slug>/", documentacao, name="documentacao_doc"),
     path("sair/", qualquer_usuario(auth_views.LogoutView.as_view()), name="logout"),
@@ -20,4 +21,5 @@ urlpatterns = [
     path("administradores/", include("administradores.urls")),
     path("proprietarios/", include("proprietarios.urls")),
     path("consultas/", include("consultas.urls")),
+    path("comunicacao/", include("comunicacao.urls")),
 ]

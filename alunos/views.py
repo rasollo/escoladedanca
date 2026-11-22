@@ -3,7 +3,9 @@ from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
+from comunicacao.views import comunicados_visiveis
 from escoladedanca.aniversarios import aniversariantes_do_mes
 from escoladedanca.rbac import ALUNO, aluno_do, permitir
 
@@ -47,9 +49,19 @@ def detalhe(request, pk):
         "aluno": aluno,
         "turmas": aluno.turmas.select_related("modalidade", "sala", "professor"),
         "presencas": aluno.presencas.select_related("turma__modalidade")[:20],
-        "mensalidades": aluno.movimentacoes.filter(origem="mensalidade")[:12],
-        "em_dia": aluno.mensalidade_em_dia(),
+        "mensalidades": aluno.movimentacoes.filter(origem="mensalidade", cobranca__isnull=True)[:12],
+        "situacao": aluno.situacao_mensalidade(),
+        "matriculas_ativas": aluno.matriculas.filter(data_fim__isnull=True).select_related("turma__modalidade"),
+        "cobrancas": _cobrancas(aluno),
     })
+
+
+def _cobrancas(aluno, limite=12):
+    hoje = timezone.localdate()
+    lista = list(aluno.cobrancas.com_totais().select_related("matricula__turma__modalidade")[:limite])
+    for c in lista:
+        c.situacao_atual = c.situacao(hoje)
+    return lista
 
 
 def editar(request, pk):
@@ -80,7 +92,9 @@ def minha_area(request):
         "turmas": aluno.turmas.filter(ativa=True).select_related("modalidade", "sala", "professor"),
         "matriculas": aluno.matriculas.select_related("turma__modalidade")[:20],
         "presencas": aluno.presencas.select_related("turma__modalidade", "turma__sala")[:30],
-        "mensalidades": aluno.movimentacoes.filter(origem="mensalidade")[:12],
-        "em_dia": aluno.mensalidade_em_dia(),
+        "mensalidades": aluno.movimentacoes.filter(origem="mensalidade", cobranca__isnull=True)[:12],
+        "situacao": aluno.situacao_mensalidade(),
+        "cobrancas": _cobrancas(aluno),
         "aniversariantes": aniversariantes_do_mes(request.user),
+        "comunicados": comunicados_visiveis(request.user)[:3],
     })

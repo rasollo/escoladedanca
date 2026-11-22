@@ -12,9 +12,9 @@
     </div>
 </section>
 <section class="summary">
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">👥</span><div><span>Alunos vinculados</span><strong>{{ turma.quantidade_alunos }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🏠</span><div><span>Capacidade da sala</span><strong>{{ turma.capacidade }}</strong></div></div>
-    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🪑</span><div><span>Vagas restantes</span><strong>{{ turma.vagas_restantes }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="students" %}</span><div><span>Alunos vinculados</span><strong>{{ turma.quantidade_alunos }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="building" %}</span><div><span>Capacidade da sala</span><strong>{{ turma.capacidade }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="seat" %}</span><div><span>Vagas restantes</span><strong>{{ turma.vagas_restantes }}</strong></div></div>
 </section>
 <div class="two-cols">
     <section class="panel">

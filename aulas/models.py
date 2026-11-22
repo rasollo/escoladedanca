@@ -1,4 +1,5 @@
 from datetime import time
+from decimal import Decimal
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -86,6 +87,12 @@ class Turma(models.Model):
     alunos = models.ManyToManyField(
         "alunos.Aluno", related_name="turmas", blank=True,
         verbose_name="alunos vinculados",
+    )
+    # Cobranças: mensalidade cobrada por matrícula nesta aula (0 = sem cobrança).
+    valor_mensal = models.DecimalField(
+        "mensalidade da aula (R$)", max_digits=8, decimal_places=2, default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+        help_text="Valor mensal cobrado de cada aluno matriculado. Use 0 para não gerar cobrança.",
     )
     ativa = models.BooleanField(default=True)
 
@@ -227,6 +234,27 @@ class Matricula(models.Model):
     data_inicio = models.DateField("início")
     data_fim = models.DateField("fim", null=True, blank=True)
 
+    class TipoDesconto(models.TextChoices):
+        NENHUM = "nenhum", "Sem desconto"
+        PERCENTUAL = "percentual", "Percentual (%)"
+        FIXO = "fixo", "Valor fixo (R$)"
+
+    # Mensalidade combinada na matrícula (copiada da aula ao matricular, para que
+    # um reajuste da aula não altere matrículas já feitas) e desconto opcional.
+    valor_mensal = models.DecimalField(
+        "mensalidade (R$)", max_digits=8, decimal_places=2, default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+    desconto_tipo = models.CharField(
+        "tipo de desconto", max_length=10, choices=TipoDesconto.choices,
+        default=TipoDesconto.NENHUM,
+    )
+    desconto = models.DecimalField(
+        max_digits=8, decimal_places=2, default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+        help_text="Percentual (0 a 100) ou valor em reais, conforme o tipo.",
+    )
+
     class Meta:
         ordering = ["-data_inicio", "aluno__nome"]
         constraints = [
@@ -250,6 +278,25 @@ class Matricula(models.Model):
     def ativa(self):
         return self.data_fim is None
 
+    @property
+    def valor_final(self) -> Decimal:
+        """Mensalidade com desconto, nunca negativa."""
+        if self.desconto_tipo == self.TipoDesconto.PERCENTUAL:
+            abatimento = (self.valor_mensal * self.desconto / 100).quantize(Decimal("0.01"))
+        elif self.desconto_tipo == self.TipoDesconto.FIXO:
+            abatimento = self.desconto
+        else:
+            abatimento = Decimal("0.00")
+        return max(self.valor_mensal - abatimento, Decimal("0.00"))
+
+    def clean(self):
+        if self.desconto_tipo == self.TipoDesconto.PERCENTUAL and self.desconto > 100:
+            raise ValidationError({"desconto": "O desconto percentual vai de 0 a 100."})
+        if self.desconto_tipo == self.TipoDesconto.FIXO and self.desconto > self.valor_mensal:
+            raise ValidationError({"desconto": "O desconto não pode ser maior que a mensalidade."})
+        if self.desconto_tipo == self.TipoDesconto.NENHUM and self.desconto:
+            raise ValidationError({"desconto": "Escolha o tipo de desconto ou deixe o valor em 0."})
+
     @classmethod
     def ativas_no_periodo(cls, inicio, fim):
         """Inscrições que estiveram ativas em algum dia do período.
@@ -269,10 +316,12 @@ def sincronizar_matriculas(sender, instance, action, reverse, pk_set, **kwargs):
     hoje = timezone.localdate()
     if action == "post_add":
         pares = [(p, instance.pk) for p in pk_set] if reverse else [(instance.pk, p) for p in pk_set]
+        valores = dict(Turma.objects.filter(pk__in={t for t, _ in pares})
+                       .values_list("pk", "valor_mensal"))
         for turma_id, aluno_id in pares:
             Matricula.objects.get_or_create(
                 turma_id=turma_id, aluno_id=aluno_id, data_fim=None,
-                defaults={"data_inicio": hoje},
+                defaults={"data_inicio": hoje, "valor_mensal": valores.get(turma_id, 0)},
             )
     elif action in ("post_remove", "pre_clear"):
         abertas = Matricula.objects.filter(data_fim__isnull=True)

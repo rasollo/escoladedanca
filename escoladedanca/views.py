@@ -1,3 +1,6 @@
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.db.models import Count
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -94,4 +97,22 @@ def aniversariantes(request):
         "mes": mes, "mes_nome": MESES[mes - 1],
         "meses": list(enumerate(MESES, start=1)),
         "anterior": (anterior, MESES[anterior - 1]), "proximo": (proximo, MESES[proximo - 1]),
+    })
+
+
+# ---------------------------------------------------------------------------
+# Alterar a própria senha (todos os papéis)
+# ---------------------------------------------------------------------------
+
+
+@permitir(*PAPEIS)
+def trocar_senha(request):
+    form = PasswordChangeForm(request.user, request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        update_session_auth_hash(request, user)  # mantém a sessão aberta
+        messages.success(request, "Senha alterada.")
+        return redirect("index")
+    return render(request, "form.html", {
+        "form": form, "titulo": "Alterar minha senha", "secao": "Minha conta", "voltar": "/",
     })

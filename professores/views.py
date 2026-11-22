@@ -4,6 +4,7 @@ from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from comunicacao.views import comunicados_visiveis
 from escoladedanca.aniversarios import aniversariantes_do_mes
 from escoladedanca.rbac import PROFESSOR, permitir, professor_do
 from financeiro.services import calcular_salario
@@ -76,4 +77,5 @@ def minha_area(request):
         "pagamentos": professor.pagamentos.all()[:6],
         "hoje": hoje,
         "aniversariantes": aniversariantes_do_mes(request.user, hoje),
+        "comunicados": comunicados_visiveis(request.user)[:3],
     })
