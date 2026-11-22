@@ -6,7 +6,7 @@
 <div class="panel table-wrap"><table>
     <thead><tr><th>Mês</th><th class="right">Entradas</th><th class="right">Saídas</th><th class="right">Resultado</th></tr></thead>
     <tbody>{% for b in meses %}
-    <tr><td><a class="link" href="{% url 'financeiro:balanco' %}?mes={{ b.ano }}-{{ b.mes|stringformat:'02d' }}">{{ b.mes|stringformat:'02d' }}/{{ b.ano }}</a></td>
+    <tr><td><a class="link" href="{% url 'financeiro:balanco' %}?mes={{ b.mes|stringformat:'02d' }}/{{ b.ano }}">{{ b.mes|stringformat:'02d' }}/{{ b.ano }}</a></td>
         <td class="right pos">{{ b.total_entradas|brl }}</td><td class="right neg">{{ b.total_saidas|brl }}</td>
         <td class="right {% if b.saldo < 0 %}neg{% else %}pos{% endif %}"><strong>{{ b.saldo|brl }}</strong></td></tr>
     {% endfor %}</tbody>

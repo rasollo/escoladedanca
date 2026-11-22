@@ -1,15 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ turma.nome|default:turma.modalidade }}<section class="panel">
-    <div class="panel-header"><h2>Histórico de matrículas</h2><span class="muted">Base do salário do professor (RN07)</span></div>
-    <div class="table-wrap"><table>
-        <thead><tr><th>Aluno</th><th>Início</th><th>Fim</th><th>Situação</th></tr></thead>
-        <tbody>{% for m in matriculas %}
-        <tr><td>{{ m.aluno }}</td><td>{{ m.data_inicio|date:"d/m/Y" }}</td><td>{{ m.data_fim|date:"d/m/Y"|default:"—" }}</td>
-            <td>{% if m.ativa %}<span class="badge badge-green">Ativa</span>{% else %}<span class="badge">Encerrada</span>{% endif %}</td></tr>
-        {% empty %}<tr><td colspan="4" class="empty">Nenhuma matrícula.</td></tr>{% endfor %}</tbody>
-    </table></div>
-</section>
-{% endblock %}
+{% block title %}{{ turma.nome|default:turma.modalidade }}{% endblock %}
 {% block content %}
 <section class="page-header">
     <div><span class="section-label">Aula agendada</span><h1>{{ turma.nome|default:turma.modalidade }}</h1>
@@ -18,7 +8,7 @@
         <a href="{% url 'aulas:chamada' turma.pk %}" class="btn btn-primary">Fazer chamada</a>
         <a href="{% url 'aulas:turma_alunos' turma.pk %}" class="btn">Vincular alunos</a>
         <a href="{% url 'aulas:turma_editar' turma.pk %}" class="btn">Editar</a>
-        <a href="{% url 'aulas:turma_excluir' turma.pk %}" class="btn btn-danger-ghost">Remover</a>
+        {% if eh_admin %}<a href="{% url 'aulas:turma_excluir' turma.pk %}" class="btn btn-danger-ghost">Remover</a>{% endif %}
     </div>
 </section>
 <section class="summary">
@@ -29,7 +19,7 @@
 <div class="two-cols">
     <section class="panel">
         <div class="panel-header"><h2>Alunos vinculados</h2></div>
-        {% for a in alunos %}<div class="list-row"><a class="link" href="{{ a.get_absolute_url }}">{{ a.nome }}</a></div>
+        {% for a in alunos %}<div class="list-row">{% if eh_admin %}<a class="link" href="{{ a.get_absolute_url }}">{{ a.nome }}</a>{% else %}{{ a.nome }}{% endif %}</div>
         {% empty %}<p class="empty">Nenhum aluno vinculado. Alunos avulsos podem ser incluídos na chamada.</p>{% endfor %}
     </section>
     <section class="panel">
@@ -38,4 +28,14 @@
         {% empty %}<p class="empty">Nenhuma chamada registrada.</p>{% endfor %}
     </section>
 </div>
+<section class="panel">
+    <div class="panel-header"><h2>Histórico de matrículas</h2><span class="muted">Base do salário do professor (RN07)</span></div>
+    <div class="table-wrap"><table>
+        <thead><tr><th>Aluno</th><th>Início</th><th>Fim</th><th>Situação</th></tr></thead>
+        <tbody>{% for m in matriculas %}
+        <tr><td>{{ m.aluno }}</td><td>{{ m.data_inicio|date:"d/m/Y" }}</td><td>{{ m.data_fim|date:"d/m/Y"|default:"—" }}</td>
+            <td>{% if m.ativa %}<span class="badge badge-green">Ativa</span>{% else %}<span class="badge">Encerrada</span>{% endif %}</td></tr>
+        {% empty %}<tr><td colspan="4" class="empty">Nenhuma matrícula.</td></tr>{% endfor %}</tbody>
+    </table></div>
+</section>
 {% endblock %}

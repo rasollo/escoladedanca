@@ -16,19 +16,31 @@
     <aside class="sidebar">
         <div class="brand">
             <div class="brand-icon" aria-hidden="true">P</div>
-            <div><h2>Portal da Dança</h2><span>Painel de gestão</span></div>
+            <div><h2>Portal da Dança</h2><span>{% if eh_admin %}Painel de gestão{% elif eh_professor %}Portal do professor{% elif eh_aluno %}Portal do aluno{% else %}Painel{% endif %}</span></div>
         </div>
         <nav class="navigation" aria-label="Menu principal">
+            {% if eh_admin %}
             <a href="{% url 'index' %}" class="nav-item {% if url == 'index' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Início</span></a>
             <a href="{% url 'alunos:lista' %}" class="nav-item {% if nome == 'alunos' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎓</span><span>Alunos</span></a>
             <a href="{% url 'professores:lista' %}" class="nav-item {% if nome == 'professores' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">👨‍🏫</span><span>Professores</span></a>
             <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
             <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">✅</span><span>Presenças e faltas</span></a>
+            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎂</span><span>Aniversariantes</span></a>
             <a href="{% url 'financeiro:painel' %}" class="nav-item {% if nome == 'financeiro' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">💰</span><span>Financeiro</span></a>
             <a href="{% url 'proprietarios:proprietarios' %}" class="nav-item {% if nome == 'proprietarios' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🏢</span><span>Proprietário</span></a>
             <a href="{% url 'consultas:painel' %}" class="nav-item {% if nome == 'consultas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🌡️</span><span>Consultas</span></a>
             <a href="{% url 'documentacao' %}" class="nav-item {% if url == 'documentacao' or url == 'documentacao_doc' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📄</span><span>Documentação</span></a>
             <a href="{% url 'administradores:administradores' %}" class="nav-item {% if nome == 'administradores' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⚙️</span><span>Administração</span></a>
+            {% elif eh_professor %}
+            <a href="{% url 'professores:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Minha área</span></a>
+            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
+            <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">✅</span><span>Presenças das minhas aulas</span></a>
+            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎂</span><span>Aniversariantes</span></a>
+            {% elif eh_aluno %}
+            <a href="{% url 'alunos:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">⌂</span><span>Minha área</span></a>
+            <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">📅</span><span>Agenda de aulas</span></a>
+            <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}"><span class="nav-icon" aria-hidden="true">🎂</span><span>Aniversariantes</span></a>
+            {% endif %}
         </nav>
         <div class="sidebar-bottom">
             <form action="{% url 'logout' %}" method="post">
@@ -45,7 +57,7 @@
                 <div class="avatar" aria-hidden="true">{{ user.get_username|slice:":1"|upper }}</div>
                 <div class="user-info">
                     <strong>{{ user.get_full_name|default:user.get_username }}</strong>
-                    <span>Responsável</span>
+                    <span>{{ papel|default:"Sem perfil de acesso" }}</span>
                 </div>
             </div>
         </header>

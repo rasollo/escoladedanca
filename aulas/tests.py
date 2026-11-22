@@ -437,8 +437,8 @@ class MatriculaTests(TestCase):
             self.turma.delete()
 
     def test_historico_na_tela_da_aula(self):
-        from django.contrib.auth import get_user_model
-        self.client.force_login(get_user_model().objects.create_user("resp"))
+        from escoladedanca.testutils import criar_usuario
+        self.client.force_login(criar_usuario("resp"))
         self.turma.alunos.add(self.a1)
         resp = self.client.get(self.turma.get_absolute_url())
         self.assertContains(resp, "Histórico de matrículas")

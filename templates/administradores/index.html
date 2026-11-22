@@ -2,15 +2,18 @@
 {% block title %}Administração{% endblock %}
 {% block content %}
 <section class="page-header">
-    <div><span class="section-label">RNF03 · RNF04</span><h1>Administração do acesso</h1>
-        <p class="muted">Somente usuários cadastrados aqui acessam os dados administrativos, financeiros e pessoais (LGPD).</p></div>
-    {% if user.is_staff %}<a href="{% url 'admin:auth_user_add' %}" class="btn btn-primary">+ Novo usuário</a>{% endif %}
+    <div><span class="section-label">RF25 · RNF03 · RNF04</span><h1>Administração do acesso</h1>
+        <p class="muted">Papéis: Administrativo, Professor e Aluno. Cada um acessa apenas as telas do seu perfil.</p></div>
+    <a href="{% url 'administradores:usuario_novo' %}" class="btn btn-primary">+ Novo acesso</a>
 </section>
 <div class="panel table-wrap"><table>
-    <thead><tr><th>Usuário</th><th>Nome</th><th>Perfil</th><th>Último acesso</th><th>Situação</th></tr></thead>
+    <thead><tr><th>Usuário</th><th>Nome</th><th>Papel</th><th>Vinculado a</th><th>Último acesso</th><th>Situação</th><th></th></tr></thead>
     <tbody>{% for u in usuarios %}
-    <tr><td>{{ u.username }}</td><td>{{ u.get_full_name|default:"—" }}</td><td>{% if u.is_superuser %}Administrador{% elif u.is_staff %}Equipe{% else %}Responsável{% endif %}</td>
-        <td>{{ u.last_login|date:"d/m/Y H:i"|default:"nunca" }}</td><td>{% if u.is_active %}<span class="badge badge-green">Ativo</span>{% else %}<span class="badge">Bloqueado</span>{% endif %}</td></tr>
+    <tr><td>{{ u.username }}</td><td>{{ u.get_full_name|default:"—" }}</td>
+        <td>{% if u.papel %}<span class="badge">{{ u.papel }}</span>{% else %}<span class="badge badge-red">Sem papel</span>{% endif %}{% if u.is_staff %} <small class="muted">· equipe técnica</small>{% endif %}</td>
+        <td>{% if u.vinculo %}<a class="link" href="{{ u.vinculo.get_absolute_url }}">{{ u.vinculo }}</a>{% else %}—{% endif %}</td>
+        <td>{{ u.last_login|date:"d/m/Y H:i"|default:"nunca" }}</td><td>{% if u.is_active %}<span class="badge badge-green">Ativo</span>{% else %}<span class="badge">Bloqueado</span>{% endif %}</td>
+        <td class="right">{% if u != user %}<form method="post" action="{% url 'administradores:usuario_situacao' u.pk %}">{% csrf_token %}<button class="btn btn-small {% if u.is_active %}btn-danger-ghost{% endif %}">{% if u.is_active %}Bloquear{% else %}Desbloquear{% endif %}</button></form>{% endif %}</td></tr>
     {% endfor %}</tbody>
 </table></div>
 {% if resumo %}

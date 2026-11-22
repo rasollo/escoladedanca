@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -16,6 +17,11 @@ class Aluno(models.Model):
     email = models.EmailField("e-mail", blank=True)
     data_nascimento = models.DateField("data de nascimento", null=True, blank=True)
     observacoes = models.TextField("observações", blank=True)
+    # RF25 — acesso ao portal: login usado por este aluno (opcional).
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="aluno", verbose_name="usuário de acesso",
+    )
     ativo = models.BooleanField(default=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 

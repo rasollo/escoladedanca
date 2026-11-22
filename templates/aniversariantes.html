@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Aniversariantes{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF26</span><h1>Aniversariantes de {{ mes_nome|lower }}</h1>
+        <p class="muted">Alunos e professores ativos com data de nascimento cadastrada.{% if eh_aluno %} Por privacidade, aparecem só o dia e o mês.{% endif %}</p></div>
+    <div class="actions">
+        <a href="?mes={{ anterior.0 }}" class="btn">← {{ anterior.1 }}</a>
+        <a href="?mes={{ proximo.0 }}" class="btn">{{ proximo.1 }} →</a>
+    </div>
+</section>
+<form method="get" class="filters panel">
+    <label for="mes">Mês</label>
+    <select name="mes" id="mes">{% for n, nome in meses %}<option value="{{ n }}" {% if n == mes %}selected{% endif %}>{{ nome }}</option>{% endfor %}</select>
+    <button class="btn">Ver</button>
+</form>
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">🎂</span><div><span>Aniversariantes no mês</span><strong>{{ lista|length }}</strong></div></div>
+</section>
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Dia</th><th>Nome</th><th>Perfil</th>{% if not eh_aluno %}<th>Idade</th>{% endif %}<th></th></tr></thead>
+    <tbody>{% for p in lista %}
+    <tr><td>{{ p.dia|stringformat:"02d" }}/{{ p.mes|stringformat:"02d" }}</td><td>{{ p.nome }}</td><td>{{ p.perfil }}</td>{% if not eh_aluno %}<td>{% if p.idade is not None %}completa {{ p.idade }} anos{% endif %}</td>{% endif %}
+        <td class="right">{% if p.hoje %}<span class="badge badge-green">Aniversário hoje 🎉</span>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5" class="empty">Nenhum aniversariante neste mês.</td></tr>{% endfor %}</tbody>
+</table></div>
+<p class="muted note">A data de nascimento é opcional no cadastro; quem não informou não aparece nesta lista.</p>
+{% endblock %}

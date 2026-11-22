@@ -1,8 +1,11 @@
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from escoladedanca.aniversarios import aniversariantes_do_mes
+from escoladedanca.rbac import PROFESSOR, permitir, professor_do
 from financeiro.services import calcular_salario
 
 from .forms import ProfessorForm
@@ -53,4 +56,24 @@ def editar(request, pk):
     return render(request, "form.html", {
         "form": form, "titulo": f"Editar {professor.nome}", "secao": "Professores",
         "voltar": professor.get_absolute_url(),
+    })
+
+
+@permitir(PROFESSOR)
+def minha_area(request):
+    """RF25 — portal do professor: próprias aulas, inscritos e salário estimado."""
+    professor = professor_do(request.user)
+    if professor is None:
+        raise PermissionDenied("Seu usuário ainda não está vinculado a um professor ativo.")
+    hoje = timezone.localdate()
+    turmas = (professor.turmas.filter(ativa=True).select_related("modalidade", "sala")
+              .annotate(qtd_alunos=Count("alunos", distinct=True)))
+    return render(request, "professores/minha_area.html", {
+        "professor": professor,
+        "turmas": turmas,
+        "aulas_hoje": [t for t in turmas if t.dia_semana == hoje.weekday()],
+        "calculo": calcular_salario(professor, hoje.year, hoje.month),
+        "pagamentos": professor.pagamentos.all()[:6],
+        "hoje": hoje,
+        "aniversariantes": aniversariantes_do_mes(request.user, hoje),
     })

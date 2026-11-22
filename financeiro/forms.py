@@ -4,11 +4,12 @@ from django import forms
 from django.utils import timezone
 
 from alunos.models import Aluno
+from escoladedanca.utils import ATTRS_MES, DataBR, ler_mes
 from professores.models import Professor
 
 from .models import Movimentacao
 
-DATE = forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d")
+DATE = DataBR()
 
 
 def um_mes_depois(d: date) -> date:
@@ -99,16 +100,16 @@ class CalculoSalarioForm(forms.Form):
 
     professor = forms.ModelChoiceField(queryset=Professor.objects.filter(ativo=True))
     mes = forms.CharField(
-        label="Mês", widget=forms.DateInput(attrs={"type": "month"}),
+        label="Mês", widget=forms.TextInput(attrs=ATTRS_MES),
     )
 
     def clean_mes(self):
         valor = self.cleaned_data["mes"]
         try:
-            ano, mes = (int(p) for p in valor.split("-"))
+            ano, mes = ler_mes(valor)
             return date(ano, mes, 1)
         except ValueError:
-            raise forms.ValidationError("Informe o mês no formato AAAA-MM.")
+            raise forms.ValidationError("Informe o mês no formato mm/aaaa.")
 
 
 class FiltroMovimentacoesForm(forms.Form):

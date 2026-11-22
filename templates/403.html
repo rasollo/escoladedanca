@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Acesso negado{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">RF25 · Controle de acesso</span><h1>Acesso negado</h1>
+        <p class="muted">{{ exception|default:"Seu perfil não tem acesso a esta página." }}</p></div>
+</section>
+<div class="panel">
+    <p>O sistema libera cada página de acordo com o papel do usuário ({{ papel|default:"sem papel definido" }}). Se você precisa deste acesso, fale com a administração da escola.</p>
+    <div class="form-actions"><a href="{% url 'index' %}" class="btn btn-primary">Voltar ao início</a></div>
+</div>
+{% endblock %}

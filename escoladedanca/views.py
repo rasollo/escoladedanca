@@ -1,5 +1,5 @@
 from django.db.models import Count
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from alunos.models import Aluno
@@ -7,9 +7,19 @@ from aulas.models import Presenca, Turma
 from financeiro.services import balanco_mensal, calcular_saldo
 from professores.models import Professor
 
+from .aniversarios import MESES, aniversariantes_do_mes, ve_idade
+from .aniversarios import aniversariantes as lista_aniversariantes
+from .rbac import ALUNO, PAPEIS, PROFESSOR, papel_do, permitir
 
+
+@permitir(*PAPEIS)
 def index(request):
-    """Painel inicial do responsável pela Portal da Dança."""
+    """Painel inicial: cada papel cai na sua própria área (RF25)."""
+    papel = papel_do(request.user)
+    if papel == PROFESSOR:
+        return redirect("professores:minha_area")
+    if papel == ALUNO:
+        return redirect("alunos:minha_area")
     hoje = timezone.localdate()
     aulas_hoje = (
         Turma.objects.filter(ativa=True, dia_semana=hoje.weekday())
@@ -27,6 +37,7 @@ def index(request):
         "saldo": calcular_saldo(),
         "balanco": balanco_mensal(hoje.year, hoje.month),
         "hoje": hoje,
+        "aniversariantes": aniversariantes_do_mes(request.user, hoje),
     })
 
 
@@ -60,4 +71,27 @@ def documentacao(request, slug="resumo"):
         "slug": slug,
         "documentos": [(s, t) for s, (t, _) in DOCUMENTOS.items()],
         "html": mark_safe(converter(conteudo)),  # converter() escapa todo o texto
+    })
+
+
+# ---------------------------------------------------------------------------
+# RF26 — aniversariantes do mês (todos os papéis)
+# ---------------------------------------------------------------------------
+
+
+@permitir(*PAPEIS)
+def aniversariantes(request):
+    hoje = timezone.localdate()
+    try:
+        mes = int(request.GET.get("mes", hoje.month))
+    except ValueError:
+        mes = hoje.month
+    if not 1 <= mes <= 12:
+        mes = hoje.month
+    anterior, proximo = (mes - 2) % 12 + 1, mes % 12 + 1
+    return render(request, "aniversariantes.html", {
+        "lista": lista_aniversariantes(mes, hoje, com_idade=ve_idade(request.user)),
+        "mes": mes, "mes_nome": MESES[mes - 1],
+        "meses": list(enumerate(MESES, start=1)),
+        "anterior": (anterior, MESES[anterior - 1]), "proximo": (proximo, MESES[proximo - 1]),
     })

@@ -758,3 +758,19 @@ input[type=checkbox], input[type=radio] { width: 18px; height: 18px; accent-colo
     .bar-track { grid-column: 1 / -1; grid-row: 2; }
     .op-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* =========================
+   AJUSTES DE ALINHAMENTO (v1.1)
+========================= */
+/* Dicas em lista (ex.: regras de senha) ficam dentro da coluna do campo */
+.help ul { margin: 2px 0 0; padding-left: 16px; }
+.help li { margin: 1px 0; }
+/* Agenda: todas as tabelas dos dias com as mesmas colunas alinhadas */
+.agenda-table { table-layout: fixed; min-width: 760px; }
+.agenda-table th:nth-child(1) { width: 13%; }
+.agenda-table th:nth-child(2) { width: 33%; }
+.agenda-table th:nth-child(3) { width: 11%; }
+.agenda-table th:nth-child(4) { width: 18%; }
+.agenda-table th:nth-child(5) { width: 11%; }
+.agenda-table th:nth-child(6) { width: 14%; }
+.agenda-table td { overflow-wrap: anywhere; }

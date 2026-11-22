@@ -5,6 +5,7 @@ from .models import Aluno
 
 @admin.register(Aluno)
 class AlunoAdmin(admin.ModelAdmin):
-    list_display = ["nome", "telefone", "email", "ativo"]
+    list_display = ["nome", "telefone", "email", "usuario", "ativo"]
+    raw_id_fields = ["usuario"]
     list_filter = ["ativo"]
     search_fields = ["nome", "email", "telefone"]

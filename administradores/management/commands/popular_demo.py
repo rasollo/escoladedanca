@@ -45,6 +45,37 @@ GRADE = [
 ]
 
 
+def preencher_aniversarios(rnd, alunos, profs, hoje=None):
+    """RF26 — datas de nascimento fictícias para a demonstração.
+
+    A data é opcional: cerca de 15% dos alunos ficam sem ela. Para a tela de
+    aniversariantes nunca ficar vazia na demonstração, alguns alunos e um
+    professor fazem aniversário no mês atual, um deles no próprio dia.
+    """
+    hoje = hoje or timezone.localdate()
+    alunos, profs = list(alunos), list(profs)
+
+    def data(ano_min, ano_max, mes=None, dia=None):
+        mes = mes or rnd.randint(1, 12)
+        return date(rnd.randint(ano_min, ano_max), mes, dia or rnd.randint(1, 28))
+
+    total = 0
+    for k, a in enumerate(alunos):
+        if k < 6:  # aniversariantes do mês atual (o primeiro, hoje)
+            a.data_nascimento = data(1975, 2008, hoje.month, min(hoje.day, 28) if k == 0 else None)
+        elif rnd.random() < 0.15:
+            continue  # sem data: o campo não é obrigatório
+        else:
+            a.data_nascimento = data(1965, 2008)
+        a.save(update_fields=["data_nascimento"])
+        total += 1
+    for k, p in enumerate(profs):
+        p.data_nascimento = data(1975, 1998, hoje.month if k == 0 else None)
+        p.save(update_fields=["data_nascimento"])
+        total += 1
+    return total
+
+
 class Command(BaseCommand):
     help = "Cria dados de demonstração para o protótipo da Portal da Dança."
 
@@ -73,6 +104,16 @@ class Command(BaseCommand):
             self.stdout.write(f"Usuário criado: {usuario} / {senha}  (anote: não será exibida de novo)")
 
         if Aluno.objects.exists():
+            # Reinstalação: completa as datas de nascimento da demonstração (RF26)
+            # sem tocar em cadastros reais (só e-mails @exemplo.com e professores demo).
+            n = preencher_aniversarios(
+                random.Random(1990),
+                Aluno.objects.filter(email__endswith="@exemplo.com", data_nascimento__isnull=True),
+                Professor.objects.filter(nome__in=[n for n, _ in PROFESSORES],
+                                         data_nascimento__isnull=True),
+            )
+            if n:
+                self.stdout.write(f"Datas de nascimento da demonstração preenchidas: {n}.")
             self.stdout.write(self.style.WARNING("Já existem dados; use --limpar para recriar."))
             return
 
@@ -95,6 +136,9 @@ class Command(BaseCommand):
                 nome=nome, telefone=f"(13) 9{rnd.randint(1000,9999)}-{rnd.randint(1000,9999)}",
                 email=f"{nome.lower().replace(' ', '.')}@exemplo.com".encode("ascii", "ignore").decode(),
             ))
+
+        # Gerador próprio: não altera o restante dos dados de demonstração.
+        preencher_aniversarios(random.Random(1990), alunos, profs)
 
         hm = lambda s: time(*map(int, s.split(":")))
         turmas = []

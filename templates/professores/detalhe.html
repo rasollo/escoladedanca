@@ -2,9 +2,10 @@
 {% block title %}{{ professor.nome }}{% endblock %}
 {% block content %}
 <section class="page-header">
-    <div><span class="section-label">Professor</span><h1>{{ professor.nome }}</h1><p class="muted">{{ professor.telefone|default:"Sem telefone" }} · {{ professor.email|default:"sem e-mail" }}</p></div>
+    <div><span class="section-label">Professor</span><h1>{{ professor.nome }}</h1><p class="muted">{{ professor.telefone|default:"Sem telefone" }} · {{ professor.email|default:"sem e-mail" }}{% if professor.data_nascimento %} · nascimento {{ professor.data_nascimento|date:"d/m/Y" }}{% endif %}</p></div>
     <div class="actions"><a href="{% url 'professores:editar' professor.pk %}" class="btn">Editar</a></div>
 </section>
+<p class="muted note">Acesso ao portal: {% if professor.usuario %}usuário <strong>{{ professor.usuario.username }}</strong>{% if not professor.usuario.is_active %} (bloqueado){% endif %}{% else %}sem acesso · <a class="link" href="{% url 'administradores:usuario_novo' %}?papel=Professor&professor={{ professor.pk }}">criar acesso</a>{% endif %}</p>
 <section class="summary">
     <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Alunos inscritos no mês</span><strong>{{ calculo.inscricoes }}</strong></div></div>
     <div class="summary-card"><span class="summary-icon" aria-hidden="true">💲</span><div><span>Valor por aluno inscrito</span><strong>{{ professor.valor_por_aluno|brl }}</strong></div></div>
@@ -17,7 +18,7 @@
         {% empty %}<p class="empty">Nenhuma aula atribuída.</p>{% endfor %}
     </section>
     <section class="panel">
-        <div class="panel-header"><h2>Pagamentos</h2><a class="link" href="{% url 'financeiro:salarios' %}?professor={{ professor.pk }}&mes={{ calculo.referencia|date:'Y-m' }}">Calcular salário →</a></div>
+        <div class="panel-header"><h2>Pagamentos</h2><a class="link" href="{% url 'financeiro:salarios' %}?professor={{ professor.pk }}&mes={{ calculo.referencia|date:'m/Y' }}">Calcular salário →</a></div>
         {% for p in pagamentos %}<div class="list-row"><div><strong>{{ p.valor|brl }}</strong><small>Pago em {{ p.data_pagamento|date:"d/m/Y" }}{% if p.referencia %} · ref. {{ p.referencia|date:"m/Y" }}{% endif %}</small></div></div>
         {% empty %}<p class="empty">Nenhum pagamento registrado.</p>{% endfor %}
     </section>

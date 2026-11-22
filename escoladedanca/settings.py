@@ -74,6 +74,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     # RNF03 — todas as páginas exigem login, exceto as marcadas com @login_not_required
     'django.contrib.auth.middleware.LoginRequiredMiddleware',
+    # RF25 — RBAC: cada página só abre para os papéis liberados (nega por padrão)
+    'escoladedanca.rbac.PapelMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Auditoria: registra requisições com usuário e IP (logs/acessos.log)
@@ -92,6 +94,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.debug",
+                "escoladedanca.rbac.contexto",
             ],
             "builtins": ["financeiro.templatetags.moeda"],
         },

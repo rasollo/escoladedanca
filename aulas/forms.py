@@ -1,7 +1,8 @@
 from django import forms
-from django.core.exceptions import ValidationError
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
 
 from alunos.models import Aluno
+from escoladedanca.utils import DataBR
 from professores.models import Professor
 
 from .models import Modalidade, Sala, Turma
@@ -32,7 +33,34 @@ class TurmaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["professor"].queryset = Professor.objects.filter(ativo=True)
+        if "professor" in self.fields:
+            self.fields["professor"].queryset = Professor.objects.filter(ativo=True)
+
+
+class TurmaProfessorForm(TurmaForm):
+    """RF25 — o professor agenda/edita apenas as próprias aulas.
+
+    O professor responsável é fixado no usuário logado. As validações do modelo
+    continuam valendo: lotação da sala (RN09), horário 18h–22h (RN13) e
+    conflitos de sala e de professor (RN14). Desativar ou remover aulas segue
+    com o Administrativo.
+    """
+
+    class Meta(TurmaForm.Meta):
+        fields = ["nome", "modalidade", "dia_semana", "hora_inicio", "hora_fim", "sala"]
+
+    def __init__(self, *args, professor, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Definido antes da validação para o modelo checar conflitos do professor.
+        self.instance.professor = professor
+
+    def _update_errors(self, errors):
+        # O campo "professor" não aparece neste formulário: o choque de horário
+        # do professor (RN14) vira mensagem geral do formulário.
+        if hasattr(errors, "error_dict") and "professor" in errors.error_dict:
+            mensagens = errors.error_dict.pop("professor")
+            errors.error_dict.setdefault(NON_FIELD_ERRORS, []).extend(mensagens)
+        super()._update_errors(errors)
 
 
 class VinculoAlunosForm(forms.Form):
@@ -79,7 +107,7 @@ class FiltroAgendaForm(forms.Form):
 class ChamadaForm(forms.Form):
     """RF03 / RF04 — escolha da data da aula para registrar presença/falta."""
 
-    data = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"))
+    data = forms.DateField(widget=DataBR())
 
     def __init__(self, *args, turma: Turma, **kwargs):
         self.turma = turma

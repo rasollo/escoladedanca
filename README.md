@@ -143,6 +143,26 @@ O sistema está implementado e documentado:
 * **Resumo e análise:** `docs/RESUMO.md` e `docs/ANALISE.md`, também disponíveis no menu Documentação do sistema.
 * **Como instalar:** veja "Como instalar e testar", acima.
 
+## Perfis de acesso (RBAC)
+
+Cada usuário tem um papel, guardado como grupo do Django e criado automaticamente pelo instalador:
+
+| Papel | O que pode fazer |
+|---|---|
+| **Administrativo** | Todo o sistema: alunos, professores, aulas, chamadas, financeiro, consultas e criação/bloqueio de acessos (menu Administração → **+ Novo acesso**). O usuário `responsavel` é Administrativo. |
+| **Professor** | Ver a própria área (aulas, inscritos e salário estimado), agendar e editar as próprias aulas (respeitando a lotação da sala, o horário 18h–22h e os conflitos), vincular alunos às suas aulas até a lotação, fazer a chamada e consultar as presenças das suas turmas. |
+| **Aluno** | Ver as aulas em que está matriculado, a agenda, as próprias presenças/faltas e mensalidades. |
+
+O acesso é **negado por padrão**: uma página só abre para Professor ou Aluno quando liberada explicitamente no código (`escoladedanca/rbac.py`). Para dar acesso a um professor ou aluno, cadastre-o normalmente e, na página dele, use **criar acesso**. Os logs de auditoria (IPs e acessos) continuam visíveis só para a equipe técnica (`is_staff`).
+
+Todas as datas são exibidas e digitadas no formato **dd/mm/aaaa**.
+
+### Aniversariantes do mês
+
+Os três papéis veem o menu **Aniversariantes** e um quadro no painel inicial com os alunos e professores ativos que fazem aniversário no mês. Administrativo e Professor veem também a idade que a pessoa completa; o Aluno vê só o dia e o mês. O ano de nascimento não aparece para ninguém nessa tela. A data de nascimento continua **opcional** no cadastro de alunos e professores.
+
+Os dados de demonstração do instalador já trazem datas de nascimento, com aniversariantes sempre no mês atual. Em uma instalação de demonstração já existente, rode `python3 portal.py instalar` de novo para completar as datas: só os registros de demonstração são alterados.
+
 ## Time
 
 FATEC Rubens Lara — Análise e Desenvolvimento de Sistemas — Projeto Integrador em Análise e Desenvolvimento de Sistemas I, 2º semestre de 2026. Professora orientadora: Rosemeire Cardozo Vidal.

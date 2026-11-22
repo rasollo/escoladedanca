@@ -1,3 +1,4 @@
+from django.conf import settings
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
@@ -11,6 +12,8 @@ class Professor(models.Model):
     nome = models.CharField("nome completo", max_length=150)
     telefone = models.CharField(max_length=20, blank=True)
     email = models.EmailField("e-mail", blank=True)
+    # RF26 — opcional; usada só na lista de aniversariantes (dia e mês).
+    data_nascimento = models.DateField("data de nascimento", null=True, blank=True)
     # RN07 / RF13: a remuneração tem como base a quantidade de alunos inscritos
     # (matriculados) nas aulas do professor no mês. O valor por aluno é
     # configurável porque o relatório não informa o valor praticado pela escola.
@@ -21,6 +24,11 @@ class Professor(models.Model):
         default=Decimal("0.00"),
         validators=[MinValueValidator(Decimal("0.00"))],
         help_text="Salário do mês = inscrições ativas nas aulas do professor × este valor.",
+    )
+    # RF25 — acesso ao portal: login usado por este professor (opcional).
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="professor", verbose_name="usuário de acesso",
     )
     ativo = models.BooleanField(default=True)
     criado_em = models.DateTimeField(auto_now_add=True)

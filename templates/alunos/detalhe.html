@@ -3,12 +3,13 @@
 {% block content %}
 <section class="page-header">
     <div><span class="section-label">Aluno</span><h1>{{ aluno.nome }}</h1>
-        <p class="muted">{{ aluno.telefone|default:"Sem telefone" }} · {{ aluno.email|default:"sem e-mail" }}{% if not aluno.ativo %} · <span class="badge">Inativo</span>{% endif %}</p></div>
+        <p class="muted">{{ aluno.telefone|default:"Sem telefone" }} · {{ aluno.email|default:"sem e-mail" }}{% if aluno.data_nascimento %} · nascimento {{ aluno.data_nascimento|date:"d/m/Y" }}{% endif %}{% if not aluno.ativo %} · <span class="badge">Inativo</span>{% endif %}</p></div>
     <div class="actions">
         <a href="{% url 'financeiro:nova_mensalidade' %}?aluno={{ aluno.pk }}&next={{ request.path|urlencode }}" class="btn btn-primary">Registrar mensalidade</a>
         <a href="{% url 'alunos:editar' aluno.pk %}" class="btn">Editar</a>
     </div>
 </section>
+<p class="muted note">Acesso ao portal: {% if aluno.usuario %}usuário <strong>{{ aluno.usuario.username }}</strong>{% if not aluno.usuario.is_active %} (bloqueado){% endif %}{% else %}sem acesso · <a class="link" href="{% url 'administradores:usuario_novo' %}?papel=Aluno&aluno={{ aluno.pk }}">criar acesso</a>{% endif %}</p>
 <section class="summary">
     <div class="summary-card"><span class="summary-icon" aria-hidden="true">✅</span><div><span>Presenças</span><strong>{{ aluno.total_presencas }}</strong></div></div>
     <div class="summary-card"><span class="summary-icon" aria-hidden="true">✖️</span><div><span>Faltas</span><strong>{{ aluno.total_faltas }}</strong></div></div>

@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from alunos.models import Aluno
 from aulas.models import Presenca, Turma
-from escoladedanca.testutils import LogadoTestCase, entrada, saida, senha_aleatoria
+from escoladedanca.testutils import LogadoTestCase, criar_usuario, entrada, saida, senha_aleatoria
 from financeiro.models import Movimentacao
 
 PAGINAS_PROTEGIDAS = [
@@ -28,7 +28,7 @@ class SegurancaTests(TestCase):
 
     def test_login_e_logout(self):
         senha = senha_aleatoria()
-        get_user_model().objects.create_user("resp", password=senha)
+        criar_usuario("resp", password=senha)
         self.assertEqual(self.client.get(reverse("login")).status_code, 200)
         resp = self.client.post(reverse("login"), {"username": "resp", "password": senha_aleatoria()})
         self.assertContains(resp, "Usuário ou senha inválidos")
@@ -142,7 +142,7 @@ class AuditoriaTests(TestCase):
 
     def setUp(self):
         self.senha = senha_aleatoria()
-        self.user = get_user_model().objects.create_user("resp", password=self.senha)
+        self.user = criar_usuario("resp", password=self.senha)
 
     def test_login_ok_falha_e_logout_com_ip(self):
         with self.assertLogs("auditoria.acesso", "INFO") as cm:

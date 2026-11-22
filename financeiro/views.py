@@ -1,12 +1,10 @@
-from datetime import date
-
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
 
-from escoladedanca.utils import redirecionar
+from escoladedanca.utils import ler_mes, redirecionar
 
 from .forms import (CalculoSalarioForm, EntradaForm, FiltroMovimentacoesForm,
                     MensalidadeForm, SaidaForm)
@@ -55,13 +53,12 @@ def balanco(request):
     """RF16 — balanço mensal (fluxo 13)."""
     hoje = timezone.localdate()
     try:
-        ano, mes = (int(p) for p in request.GET.get("mes", "").split("-"))
-        date(ano, mes, 1)
+        ano, mes = ler_mes(request.GET.get("mes", ""))
     except ValueError:
         ano, mes = hoje.year, hoje.month
     return render(request, "financeiro/balanco.html", {
         "balanco": balanco_mensal(ano, mes),
-        "mes_valor": f"{ano:04d}-{mes:02d}",
+        "mes_valor": f"{mes:02d}/{ano:04d}",
         "mes_nome": f"{MESES[mes - 1]} de {ano}",
     })
 

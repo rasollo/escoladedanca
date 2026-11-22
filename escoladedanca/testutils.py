@@ -9,6 +9,7 @@ from django.test import TestCase
 from alunos.models import Aluno
 from aulas.models import Modalidade, Presenca, Sala, Turma
 from financeiro.models import Movimentacao
+from escoladedanca.rbac import ADMINISTRATIVO, atribuir_papel
 from professores.models import Professor
 
 SEGUNDA = date(2026, 11, 2)  # uma segunda-feira
@@ -17,6 +18,13 @@ SEGUNDA = date(2026, 11, 2)  # uma segunda-feira
 def senha_aleatoria() -> str:
     """Senha gerada a cada execução: nenhuma credencial fica fixa no código."""
     return secrets.token_urlsafe(16)
+
+
+def criar_usuario(username, papel=ADMINISTRATIVO, **kw):
+    """Usuário com papel (RF25). Padrão: Administrativo, que acessa tudo."""
+    user = get_user_model().objects.create_user(username, **kw)
+    atribuir_papel(user, papel)
+    return user
 
 
 def criar_aluno(nome="Ana Silva", **kw):
@@ -70,5 +78,5 @@ class LogadoTestCase(TestCase):
 
     def setUp(self):
         # force_login dispensa senha; o usuário fica com senha inutilizável.
-        self.usuario = get_user_model().objects.create_user("responsavel")
+        self.usuario = criar_usuario("responsavel")
         self.client.force_login(self.usuario)

@@ -2,7 +2,7 @@
 {% block title %}Balanço mensal{% endblock %}
 {% block content %}
 {% include "financeiro/_header.html" with rotulo="RF16 · RN05" titulo="Balanço mensal" %}
-<form method="get" class="filters panel"><label for="mes">Mês e ano</label><input type="month" id="mes" name="mes" value="{{ mes_valor }}"><button class="btn">Consultar</button></form>
+<form method="get" class="filters panel"><label for="mes">Mês e ano</label><input type="text" id="mes" name="mes" value="{{ mes_valor }}" placeholder="mm/aaaa" inputmode="numeric" maxlength="7" pattern="\d{2}/\d{4}" title="Mês no formato mm/aaaa"><button class="btn">Consultar</button></form>
 <h2 class="mb">{{ mes_nome }}</h2>
 {% if balanco.tem_movimentacoes %}
 <section class="summary">
