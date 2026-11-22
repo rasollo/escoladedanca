@@ -150,7 +150,7 @@ Nunca envie para o repositório o `db.sqlite3`, o `.env`, o `.secret_key` nem a 
 
 ### Em produção (serviço)
 
-O `runserver` acima é só para desenvolvimento. No servidor, o sistema roda com gunicorn pelo serviço `escoladedanca` do systemd, que lê a configuração de `project/.env` (`DJANGO_DEBUG=0`, `DJANGO_ALLOWED_HOSTS`, `AUDITORIA_DIAS_RETENCAO`).
+O `runserver` acima é só para desenvolvimento. No servidor, o sistema roda com gunicorn pelo serviço `escoladedanca` do systemd, que lê a configuração do `.env` da pasta do projeto (`DJANGO_DEBUG=0`, `DJANGO_ALLOWED_HOSTS`, `AUDITORIA_DIAS_RETENCAO`).
 
 ```bash
 sudo systemctl status escoladedanca     # situação do serviço
@@ -159,11 +159,71 @@ journalctl -u escoladedanca -f          # acompanhar o log
 sudo systemctl enable escoladedanca     # iniciar junto com o servidor
 ```
 
-O gunicorn não serve arquivos estáticos; quem serve o CSS é o WhiteNoise, a partir de `project/staticfiles/`. Depois de mudar qualquer CSS, rode:
+O gunicorn não serve arquivos estáticos; quem serve o CSS é o WhiteNoise, a partir de `staticfiles/`, na pasta do projeto. Depois de mudar qualquer CSS, rode:
 
 ```bash
 .venv/bin/python manage.py collectstatic --noinput
 sudo systemctl restart escoladedanca
 ```
+
+### Atualizar um servidor que já está rodando
+
+Roteiro para trocar a versão em uso pela última versão publicada no GitHub, sem perder dados. Rode os comandos **na pasta do projeto** usada pelo serviço (a do `WorkingDirectory` em `/etc/systemd/system/escoladedanca.service`).
+
+**1. Faça o backup do banco**
+
+```bash
+cd /caminho/da/pasta/do/projeto
+cp db.sqlite3 "db.sqlite3.antes-$(date +%Y%m%d-%H%M).bak"
+```
+
+**2. Baixe a versão nova**
+
+```bash
+git status            # não deve haver alterações locais; se houver, guarde com: git stash
+git pull origin main
+```
+
+**3. Atualize as dependências** (só faz algo se o `requirements.txt` mudou)
+
+```bash
+.venv/bin/pip install -r requirements.txt
+```
+
+**4. Aplique as migrações e os arquivos de estilo, com a configuração do servidor**
+
+```bash
+set -a; . ./.env; set +a
+.venv/bin/python manage.py migrate --noinput
+.venv/bin/python manage.py collectstatic --noinput
+.venv/bin/python manage.py check --deploy    # opcional: avisos de segurança (HTTPS etc.)
+```
+
+**5. Reinicie o gunicorn**
+
+```bash
+sudo systemctl restart escoladedanca
+```
+
+> Até o restart, o serviço continua com o código antigo carregado e pode responder erro 500 nas telas novas. Por isso o restart vem logo depois do passo 4.
+
+**6. Confira**
+
+```bash
+systemctl status escoladedanca --no-pager            # deve estar "active (running)"
+curl -I http://127.0.0.1:3010/entrar/                # deve responder 200
+journalctl -u escoladedanca -n 50 --no-pager         # sem "Traceback" ou "Error"
+```
+
+**Se algo der errado, volte para a versão anterior:**
+
+```bash
+git log --oneline -5                       # anote o commit anterior
+git checkout <commit-anterior>
+cp db.sqlite3.antes-AAAAMMDD-HHMM.bak db.sqlite3
+sudo systemctl restart escoladedanca
+```
+
+> ⚠️ Em produção, **não rode** `popular_demo --limpar` nem `portal.py instalar` sem `--sem-demo`: o `--limpar` apaga alunos, aulas e o financeiro para recriar a demonstração.
 
 Nenhuma senha ou chave fica no código: a `SECRET_KEY` vem de `DJANGO_SECRET_KEY` ou é gerada no primeiro uso em `.secret_key` (ignorado pelo git).

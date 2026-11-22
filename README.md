@@ -167,6 +167,8 @@ No Windows, use `py` no lugar de `python3`.
 
 Baixe a versão nova (`git pull` ou um novo ZIP) e rode **`instalar` de novo**. O instalador atualiza o que mudou e não apaga nem duplica dados.
 
+Para um **servidor que já está rodando com gunicorn**, o roteiro está em `docs/RESUMO.md`, na seção "Atualizar um servidor que já está rodando": backup, `git pull`, migrações, arquivos de estilo, restart do serviço, conferência e como voltar atrás.
+
 ### Problemas comuns
 
 | Sintoma | Solução |
