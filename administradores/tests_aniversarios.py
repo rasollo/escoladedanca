@@ -108,6 +108,18 @@ class DemoAniversariosTests(TestCase):
         self.assertTrue(any(p["hoje"] for p in lista))
         self.assertTrue(Aluno.objects.filter(data_nascimento__isnull=True).exists())  # opcional
 
+    def test_demo_cria_acessos_de_professor_e_aluno(self):
+        from django.contrib.auth import authenticate
+        from escoladedanca.rbac import papel_do
+        call_command("popular_demo", "--senha", "senha-de-teste-123", stdout=StringIO())
+        prof = Professor.objects.exclude(usuario=None).get()
+        aluno = Aluno.objects.exclude(usuario=None).get()
+        self.assertEqual(papel_do(prof.usuario), PROFESSOR)
+        self.assertEqual(papel_do(aluno.usuario), ALUNO)
+        self.assertEqual(aluno.data_nascimento.month, timezone.localdate().month)
+        self.assertIsNotNone(authenticate(username=aluno.usuario.username, password="senha-de-teste-123"))
+        self.assertTrue(aluno.usuario.username.isascii())
+
     def test_reinstalar_completa_so_os_dados_de_demonstracao(self):
         call_command("popular_demo", "--senha", "x" * 20, stdout=StringIO())
         Aluno.objects.update(data_nascimento=None)

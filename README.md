@@ -153,6 +153,8 @@ Cada usuário tem um papel, guardado como grupo do Django e criado automaticamen
 | **Professor** | Ver a própria área (aulas, inscritos e salário estimado), agendar e editar as próprias aulas (respeitando a lotação da sala, o horário 18h–22h e os conflitos), vincular alunos às suas aulas até a lotação, fazer a chamada e consultar as presenças das suas turmas. |
 | **Aluno** | Ver as aulas em que está matriculado, a agenda, as próprias presenças/faltas e mensalidades. |
 
+Com os dados de demonstração, o instalador cria também um acesso de **professor** (`camila.rocha`) e um de **aluno** (um aluno que faz aniversário no mês), com a mesma senha do `responsavel`. Os logins aparecem no fim da instalação. Com `--sem-demo`, nenhum desses acessos é criado.
+
 O acesso é **negado por padrão**: uma página só abre para Professor ou Aluno quando liberada explicitamente no código (`escoladedanca/rbac.py`). Para dar acesso a um professor ou aluno, cadastre-o normalmente e, na página dele, use **criar acesso**. Os logs de auditoria (IPs e acessos) continuam visíveis só para a equipe técnica (`is_staff`).
 
 Todas as datas são exibidas e digitadas no formato **dd/mm/aaaa**.

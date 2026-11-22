@@ -9,6 +9,7 @@ Sem nenhuma das duas, uma senha aleatória é gerada e exibida uma única vez.
 import os
 import random
 import secrets
+import unicodedata
 from datetime import date, time, timedelta
 from decimal import Decimal
 
@@ -18,6 +19,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from alunos.models import Aluno
+from escoladedanca.rbac import ALUNO, PROFESSOR, atribuir_papel
 from aulas.models import Matricula, Modalidade, Presenca, Sala, Turma
 from financeiro.models import Movimentacao
 from professores.models import Professor
@@ -74,6 +76,24 @@ def preencher_aniversarios(rnd, alunos, profs, hoje=None):
         p.save(update_fields=["data_nascimento"])
         total += 1
     return total
+
+
+def criar_acesso_demo(cadastro, papel, senha):
+    """Cria o usuário de demonstração vinculado ao professor/aluno (se ainda não existir)."""
+    if cadastro.usuario_id:
+        return None
+    User = get_user_model()
+    sem_acento = unicodedata.normalize("NFKD", cadastro.nome).encode("ascii", "ignore").decode()
+    base = sem_acento.lower().replace(" ", ".")
+    login, n = base, 1
+    while User.objects.filter(username=login).exists():
+        n += 1
+        login = f"{base}{n}"
+    user = User.objects.create_user(login, "", senha, first_name=cadastro.nome)
+    atribuir_papel(user, papel)
+    cadastro.usuario = user
+    cadastro.save(update_fields=["usuario"])
+    return login
 
 
 class Command(BaseCommand):
@@ -208,6 +228,15 @@ class Command(BaseCommand):
                             referencia=c.referencia, forma_pagamento="pix",
                             data_pagamento=date(ano, mes, 28), descricao=f"Salário {mes:02d}/{ano}",
                         )
+
+        # RF25 — acessos de demonstração para testar os papéis Professor e Aluno.
+        # O aluno escolhido faz aniversário no mês e frequenta várias aulas (RF26).
+        senha_demo = senha or os.environ.get("DJANGO_DEMO_SENHA") or secrets.token_urlsafe(12)
+        aluno_demo = max(alunos[:6], key=lambda a: (a.turmas.count(), -a.pk))
+        for papel, cadastro in ((PROFESSOR, profs[0]), (ALUNO, aluno_demo)):
+            login = criar_acesso_demo(cadastro, papel, senha_demo)
+            if login:
+                self.stdout.write(f"Acesso {papel}: {login} / {senha_demo}  ({cadastro.nome})")
 
         self.stdout.write(self.style.SUCCESS(
             f"Demo criada: {len(alunos)} alunos, {len(profs)} professores, {len(turmas)} aulas, "
