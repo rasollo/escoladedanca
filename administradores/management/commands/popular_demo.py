@@ -14,6 +14,8 @@ from datetime import date, time, timedelta
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
@@ -92,6 +94,10 @@ def criar_acesso_demo(cadastro, papel, senha):
     sobra = User.objects.filter(username=base, is_superuser=False, professor__isnull=True,
                                 aluno__isnull=True).first()
     if sobra:
+        try:
+            validate_password(senha, sobra)
+        except ValidationError as erro:  # demonstração: avisa, mas não impede a instalação
+            print(f"Aviso: senha de demonstração fraca para {base}: {' '.join(erro.messages)}")
         sobra.set_password(senha)
         sobra.first_name = cadastro.nome
         sobra.is_active = True
