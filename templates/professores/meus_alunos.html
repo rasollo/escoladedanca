@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Meus alunos{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Portal do professor</span><h1>Meus alunos</h1>
+        <p class="muted">{{ total }} aluno{{ total|pluralize }} matriculado{{ total|pluralize }} nas suas aulas. A frequência considera só as suas aulas.</p></div>
+</section>
+<form method="get" class="filters panel">
+    <label class="sr-only" for="q">Buscar aluno</label>
+    <input type="search" id="q" name="q" value="{{ q }}" placeholder="Buscar pelo nome…">
+    <button class="btn">Buscar</button>
+</form>
+<div class="panel table-wrap"><table>
+    <thead><tr><th>Aluno</th><th>Aulas</th><th>Telefone</th><th>E-mail</th><th class="right">Frequência</th></tr></thead>
+    <tbody>{% for l in linhas %}
+    <tr><td><strong>{{ l.aluno.nome }}</strong></td>
+        <td>{% for t in l.aulas %}<span class="tag">{{ t.nome|default:t.modalidade }}</span> {% endfor %}</td>
+        <td class="nowrap">{{ l.aluno.telefone|default:"—" }}</td><td>{{ l.aluno.email|default:"—" }}</td>
+        <td class="right">{% if l.frequencia is not None %}<span class="badge {% if l.frequencia >= 75 %}badge-green{% elif l.frequencia >= 50 %}badge-yellow{% else %}badge-red{% endif %}">{{ l.frequencia }}%</span>{% else %}—{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5" class="empty">Nenhum aluno matriculado nas suas aulas.</td></tr>{% endfor %}</tbody>
+</table></div>
+{% endblock %}

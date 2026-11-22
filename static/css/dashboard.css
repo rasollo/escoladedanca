@@ -613,3 +613,25 @@ input[type=checkbox], input[type=radio] { width: 18px; height: 18px; min-height:
     .estorno-form { flex-wrap: wrap; }
 }
 .estorno-form .btn { white-space: nowrap; }
+.acoes-linha { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.acoes-linha form { margin: 0; }
+.menu-acao summary { cursor: pointer; list-style: none; }
+.menu-acao summary::-webkit-details-marker { display: none; }
+.menu-acao[open] { flex-basis: 100%; }
+.menu-acao[open] .estorno-form { margin-top: 8px; }
+.subtitulo { margin: 18px 0 4px; font-size: 13px; color: var(--subtle); text-transform: uppercase; letter-spacing: .08em; }
+.dias-semana { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
+.dias-semana label { display: inline-flex; gap: 6px; align-items: center; padding: 7px 10px; border: 1px solid var(--border); border-radius: 10px; font-weight: 600; font-size: 13px; color: var(--text); cursor: pointer; }
+fieldset.sem-borda { border: 0; min-width: 0; padding: 0; margin: 0; }
+fieldset.sem-borda[disabled] { opacity: .75; }
+.ambientes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+.ambiente-opcao { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+.ambiente-opcao h2 { margin-top: 4px; }
+.trocar-ambiente { margin-bottom: 8px; }
+.backup-acoes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 12px; }
+.backup-acoes input[type=file] { min-height: 32px; padding: 4px 8px; font-size: 12px; }
+.field-largo { grid-column: 1 / -1; }
+.opcoes-linha > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.opcoes-linha > div > div { display: contents; }
+.opcoes-linha label:has(input) { display: inline-flex; gap: 7px; align-items: center; padding: 8px 12px; border: 1px solid var(--border-strong); border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; background: var(--surface); }
+.opcoes-linha label:has(input:checked) { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }

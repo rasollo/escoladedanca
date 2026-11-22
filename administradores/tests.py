@@ -67,7 +67,7 @@ class PopularDemoTests(TestCase):
     def test_comando_cria_dados_validos(self):
         call_command("popular_demo", verbosity=0, stdout=open("/dev/null", "w"))
         self.assertTrue(get_user_model().objects.filter(username="responsavel").exists())
-        self.assertEqual(Aluno.objects.count(), 60)
+        self.assertEqual(Aluno.objects.count(), 61)  # 60 alunos + a professora Camila como aluna
         self.assertEqual(Turma.objects.count(), 10)
         self.assertTrue(Presenca.objects.exists())
         # RNF05 — todos os dados gerados respeitam as regras do modelo
@@ -96,7 +96,7 @@ class PopularDemoTests(TestCase):
         out = open("/dev/null", "w")
         call_command("popular_demo", stdout=out)
         call_command("popular_demo", stdout=out)
-        self.assertEqual(Aluno.objects.count(), 60)
+        self.assertEqual(Aluno.objects.count(), 61)  # 60 alunos + a professora Camila como aluna
 
 
 class DocumentacaoTests(LogadoTestCase):

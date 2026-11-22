@@ -21,8 +21,8 @@ from django.db import transaction
 from django.utils import timezone
 
 from alunos.models import Aluno
-from escoladedanca.rbac import ALUNO, PROFESSOR, atribuir_papel
-from aulas.models import Matricula, Modalidade, Presenca, Sala, Turma
+from escoladedanca.rbac import ALUNO, PROFESSOR, adicionar_papel, atribuir_papel
+from aulas.models import Chamada, Matricula, Modalidade, Presenca, Sala, Turma
 from comunicacao.models import Comunicado, Solicitacao
 from financeiro.models import Cobranca, Movimentacao
 from financeiro.services import estornar, periodo_do_mes, receber, vencimento_da
@@ -134,6 +134,7 @@ class Command(BaseCommand):
             Movimentacao.objects.all().delete()
             Cobranca.objects.all().delete()
             Presenca.objects.all().delete()
+            Chamada.objects.all().delete()
             Matricula.objects.all().delete()
             Turma.alunos.through.objects.all().delete()
             Turma.objects.all().delete()
@@ -196,6 +197,14 @@ class Command(BaseCommand):
             )
             t.alunos.set(rnd.sample(alunos, rnd.randint(12, 30)))
             turmas.append(t)
+        # RF36 — aula em mais de um dia: o Forró iniciante também acontece às quartas.
+        Turma.objects.filter(pk=turmas[0].pk).update(outros_dias="2")
+        turmas[0].refresh_from_db()
+        # RF31 — a professora Camila também é aluna (Zouk iniciante): conta com dois papéis.
+        camila_aluna = Aluno.objects.create(
+            nome=profs[0].nome, telefone=profs[0].telefone, email="camila.rocha@exemplo.com",
+            data_nascimento=profs[0].data_nascimento)
+        turmas[1].alunos.add(camila_aluna)
 
         hoje = timezone.localdate()
         inicio = hoje - timedelta(days=70)
@@ -206,13 +215,38 @@ class Command(BaseCommand):
             saidas = rnd.sample(list(t.alunos.all()), 2)
             t.alunos.remove(*saidas)
             Matricula.objects.filter(turma=t, aluno__in=saidas).update(data_fim=hoje - timedelta(days=21))
+            # RF32 — encerramentos com motivo: um suspenso (pode voltar) e um cancelado.
+            Matricula.objects.filter(turma=t, aluno=saidas[0]).update(
+                situacao="suspensa", motivo=rnd.choice(["Viagem a trabalho", "Lesão no joelho",
+                                                        "Pausa por motivo financeiro"]))
+            Matricula.objects.filter(turma=t, aluno=saidas[1]).update(
+                situacao="cancelada", motivo=rnd.choice(["Mudou de cidade", "Trocou de horário",
+                                                         "Não se adaptou à modalidade"]))
         for t in turmas:
-            d = inicio + timedelta(days=(t.dia_semana - inicio.weekday()) % 7)
             vinculados = list(t.alunos.all())
+            d = inicio
             while d < hoje:
-                for a in vinculados:
-                    Presenca.objects.create(turma=t, aluno=a, data=d, presente=rnd.random() < 0.82)
-                d += timedelta(days=7)
+                if t.data_valida(d):
+                    for a in vinculados:
+                        Presenca.objects.create(turma=t, aluno=a, data=d, presente=rnd.random() < 0.82)
+                d += timedelta(days=1)
+
+        # RF33 — chamadas: as antigas concluídas, as da última semana abertas,
+        # uma aula cancelada (feriado) e uma correção registrada pela administração.
+        for t in turmas:
+            for d in sorted(set(t.presencas.values_list("data", flat=True))):
+                Chamada.objects.create(turma=t, data=d,
+                                       situacao="concluida" if d < hoje - timedelta(days=7) else "aberta")
+        datas_salsa = sorted(set(turmas[2].presencas.values_list("data", flat=True)))
+        if len(datas_salsa) > 3:
+            feriado = datas_salsa[-3]
+            turmas[2].presencas.filter(data=feriado).delete()
+            Chamada.objects.filter(turma=turmas[2], data=feriado).update(
+                situacao="cancelada", motivo="Feriado municipal")
+        corrigida = Chamada.objects.filter(turma=turmas[0], situacao="concluida").order_by("-data").first()
+        if corrigida:
+            Chamada.objects.filter(pk=corrigida.pk).update(
+                motivo="Correção: aluna estava presente (registro trocado)")
 
         # Descontos combinados em algumas matrículas (percentual ou valor fixo).
         abertas = list(Matricula.objects.filter(data_fim__isnull=True).order_by("pk"))
@@ -288,6 +322,10 @@ class Command(BaseCommand):
             login = criar_acesso_demo(cadastro, papel, senha_demo)
             if login:
                 self.stdout.write(f"Acesso {papel}: {login} / {senha_demo}  ({cadastro.nome})")
+        if profs[0].usuario_id and not camila_aluna.usuario_id:
+            adicionar_papel(profs[0].usuario, ALUNO)
+            Aluno.objects.filter(pk=camila_aluna.pk).update(usuario=profs[0].usuario)
+            self.stdout.write(f"  {profs[0].usuario.username} também é aluno: ao entrar, escolhe o ambiente.")
 
         # Comunicados das turmas e solicitações de alunos.
         avisos = [

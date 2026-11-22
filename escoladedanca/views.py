@@ -12,7 +12,8 @@ from professores.models import Professor
 
 from .aniversarios import MESES, aniversariantes_do_mes, ve_idade
 from .aniversarios import aniversariantes as lista_aniversariantes
-from .rbac import ALUNO, PAPEIS, PROFESSOR, papel_do, permitir
+from .rbac import (ADMINISTRATIVO, ALUNO, PAPEIS, PROFESSOR, SESSAO_PAPEL, aluno_do, papel_do,
+                   papeis_do, permitir, professor_do, qualquer_usuario)
 
 
 @permitir(*PAPEIS)
@@ -24,10 +25,12 @@ def index(request):
     if papel == ALUNO:
         return redirect("alunos:minha_area")
     hoje = timezone.localdate()
-    aulas_hoje = (
-        Turma.objects.filter(ativa=True, dia_semana=hoje.weekday())
-        .select_related("modalidade", "sala", "professor")
-        .annotate(qtd_alunos=Count("alunos"))
+    aulas_hoje = sorted(
+        (t for t in Turma.objects.filter(ativa=True)
+         .select_related("modalidade", "sala", "professor")
+         .annotate(qtd_alunos=Count("alunos"))
+         if t.data_valida(hoje)),
+        key=lambda t: t.hora_inicio,
     )
     return render(request, "template/index.html", {
         "total_alunos": Aluno.objects.filter(ativo=True).count(),
@@ -58,6 +61,19 @@ DOCUMENTOS = {
     "resumo": ("Resumo da revisão", "RESUMO.md"),
     "analise": ("Análise e rastreabilidade", "ANALISE.md"),
 }
+
+
+RELATORIO_PDF = "Relatorio_Portal_da_Danca_v2.0.pdf"
+
+
+def relatorio_pdf(request):
+    """Relatório final do projeto (PDF), para quem tem acesso à Documentação."""
+    from django.http import FileResponse
+    caminho = settings.BASE_DIR / "docs" / "relatorio" / RELATORIO_PDF
+    if not caminho.exists():
+        raise Http404("Relatório não encontrado.")
+    return FileResponse(open(caminho, "rb"), content_type="application/pdf",
+                        filename=RELATORIO_PDF, as_attachment=False)
 
 
 def documentacao(request, slug="resumo"):
@@ -105,14 +121,46 @@ def aniversariantes(request):
 # ---------------------------------------------------------------------------
 
 
-@permitir(*PAPEIS)
+@qualquer_usuario
 def trocar_senha(request):
     form = PasswordChangeForm(request.user, request.POST or None)
     if request.method == "POST" and form.is_valid():
         user = form.save()
         update_session_auth_hash(request, user)  # mantém a sessão aberta
+        from administradores.models import marcar_troca_de_senha
+        marcar_troca_de_senha(user, False)
         messages.success(request, "Senha alterada.")
         return redirect("index")
     return render(request, "form.html", {
         "form": form, "titulo": "Alterar minha senha", "secao": "Minha conta", "voltar": "/",
+    })
+
+
+# ---------------------------------------------------------------------------
+# Escolha do ambiente (conta com mais de um papel)
+# ---------------------------------------------------------------------------
+
+
+@qualquer_usuario
+def ambiente(request):
+    papeis = papeis_do(request.user)
+    if request.method == "POST":
+        escolhido = request.POST.get("papel")
+        if escolhido in papeis:
+            request.session[SESSAO_PAPEL] = escolhido
+            messages.success(request, f"Ambiente {escolhido} ativo.")
+            return redirect("index")
+        messages.error(request, "Escolha um dos seus ambientes.")
+    if len(papeis) <= 1 and request.method == "GET":
+        return redirect("index")
+    descricao = {
+        ADMINISTRATIVO: ("Gestão escolar", "Cadastros, aulas, financeiro e acessos."),
+        PROFESSOR: (getattr(professor_do(request.user), "nome", "Professor"),
+                    "Suas aulas, chamadas e comunicados."),
+        ALUNO: (getattr(aluno_do(request.user), "nome", "Aluno"),
+                "Suas aulas, presenças, mensalidades e solicitações."),
+    }
+    return render(request, "ambiente.html", {
+        "opcoes": [{"papel": p, "nome": descricao[p][0], "texto": descricao[p][1]} for p in papeis],
+        "atual": request.session.get(SESSAO_PAPEL),
     })

@@ -52,6 +52,8 @@ def detalhe(request, pk):
         "mensalidades": aluno.movimentacoes.filter(origem="mensalidade", cobranca__isnull=True)[:12],
         "situacao": aluno.situacao_mensalidade(),
         "matriculas_ativas": aluno.matriculas.filter(data_fim__isnull=True).select_related("turma__modalidade"),
+        "matriculas_encerradas": aluno.matriculas.filter(data_fim__isnull=False)
+        .select_related("turma__modalidade").order_by("-data_fim")[:12],
         "cobrancas": _cobrancas(aluno),
     })
 

@@ -37,13 +37,15 @@
             <a href="{% url 'comunicacao:comunicados' %}" class="nav-item {% if url == 'comunicados' or url == 'comunicado_novo' %}active{% endif %}">{% include "_icone.html" with nome="megaphone" %}<span>Comunicados</span></a>
             <a href="{% url 'comunicacao:solicitacoes' %}" class="nav-item {% if url == 'solicitacoes' or url == 'solicitacao_responder' %}active{% endif %}">{% include "_icone.html" with nome="message" %}<span>Solicitações</span></a>
             <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}">{% include "_icone.html" with nome="cake" %}<span>Aniversariantes</span></a>
-            <a href="{% url 'consultas:painel' %}" class="nav-item {% if nome == 'consultas' %}active{% endif %}">{% include "_icone.html" with nome="thermo" %}<span>Consultas</span></a>
+            <a href="{% url 'consultas:painel' %}" class="nav-item {% if nome == 'consultas' and url != 'relatorios' %}active{% endif %}">{% include "_icone.html" with nome="thermo" %}<span>Consultas</span></a>
+            <a href="{% url 'consultas:relatorios' %}" class="nav-item {% if url == 'relatorios' %}active{% endif %}">{% include "_icone.html" with nome="report" %}<span>Relatórios</span></a>
             <a href="{% url 'proprietarios:proprietarios' %}" class="nav-item {% if nome == 'proprietarios' %}active{% endif %}">{% include "_icone.html" with nome="building" %}<span>Proprietário</span></a>
             <a href="{% url 'documentacao' %}" class="nav-item {% if url == 'documentacao' or url == 'documentacao_doc' %}active{% endif %}">{% include "_icone.html" with nome="doc" %}<span>Documentação</span></a>
             <a href="{% url 'administradores:administradores' %}" class="nav-item {% if nome == 'administradores' %}active{% endif %}">{% include "_icone.html" with nome="lock" %}<span>Acessos</span></a>
             {% elif eh_professor %}
             <a href="{% url 'professores:minha_area' %}" class="nav-item {% if url == 'minha_area' %}active{% endif %}">{% include "_icone.html" with nome="home" %}<span>Minha área</span></a>
             <a href="{% url 'aulas:agenda' %}" class="nav-item {% if nome == 'aulas' and url != 'presencas' %}active{% endif %}">{% include "_icone.html" with nome="calendar" %}<span>Agenda de aulas</span></a>
+            <a href="{% url 'professores:meus_alunos' %}" class="nav-item {% if url == 'meus_alunos' %}active{% endif %}">{% include "_icone.html" with nome="students" %}<span>Meus alunos</span></a>
             <a href="{% url 'aulas:presencas' %}" class="nav-item {% if url == 'presencas' %}active{% endif %}">{% include "_icone.html" with nome="check" %}<span>Presenças das minhas aulas</span></a>
             <a href="{% url 'comunicacao:comunicados' %}" class="nav-item {% if nome == 'comunicacao' %}active{% endif %}">{% include "_icone.html" with nome="megaphone" %}<span>Comunicados</span></a>
             <a href="{% url 'aniversariantes' %}" class="nav-item {% if url == 'aniversariantes' %}active{% endif %}">{% include "_icone.html" with nome="cake" %}<span>Aniversariantes</span></a>
@@ -56,6 +58,7 @@
             {% endif %}
         </nav>
         <div class="sidebar-footer sidebar-bottom">
+            {% if varios_papeis %}<a href="{% url 'ambiente' %}" class="nav-item trocar-ambiente">{% include "_icone.html" with nome="lock" %}<span>Trocar ambiente</span></a>{% endif %}
             <div class="role-card"><span class="role-card-dot" aria-hidden="true"></span><div><p>Ambiente atual</p><strong>{{ papel|default:"Sem perfil" }}</strong></div></div>
             <div class="sidebar-user">
                 <span class="avatar" aria-hidden="true">{{ user.get_full_name|default:user.get_username|slice:":1"|upper }}</span>

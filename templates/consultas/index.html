@@ -60,7 +60,7 @@
         {% for i, largura in ranking %}
         <div class="bar-row">
             <div class="bar-label"><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a>
-                <small>{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</small></div>
+                <small>{{ i.turma.get_dias_display }} {{ i.turma.hora_inicio|time:"H:i" }}</small></div>
             <div class="bar-track"><div class="bar-fill temp-{{ i.faixa }}" style="width: {{ largura }}%"></div></div>
             <div class="bar-value">{{ i.media|floatformat:1 }}<small>/{{ i.capacidade }}</small></div>
         </div>
@@ -92,7 +92,7 @@
             <div class="op-top">
                 <div>
                     <h3><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a></h3>
-                    <small class="muted">{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }} · {{ i.turma.professor }}</small>
+                    <small class="muted">{{ i.turma.get_dias_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }} · {{ i.turma.professor }}</small>
                 </div>
                 <span class="temp-chip temp-{{ i.faixa }}">{{ i.faixa_icone }} {{ i.faixa_rotulo }}</span>
             </div>
@@ -117,18 +117,18 @@
     <section class="panel">
         <div class="panel-header"><h2>🔥 Lotando — sem promoção</h2></div>
         {% for i in lotando %}
-        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
+        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dias_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
             <small>{{ i.ocupacao|floatformat:0 }}% de ocupação · {{ i.recomendacoes.0 }}</small></div></div>
         {% empty %}<p class="empty">Nenhuma aula perto da lotação.</p>{% endfor %}
     </section>
     <section class="panel">
         <div class="panel-header"><h2>📉 Esfriando — atenção</h2></div>
         {% for i in esfriando %}
-        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
+        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dias_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
             <small>Ainda {{ i.faixa_rotulo|lower }} ({{ i.ocupacao|floatformat:0 }}%), mas a presença caiu {% include "consultas/_tendencia.html" %}.</small></div></div>
         {% empty %}<p class="empty">Nenhuma aula boa perdendo alunos.</p>{% endfor %}
         {% for i in sem_dados %}
-        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
+        <div class="list-row"><div><strong>{{ i.turma.nome|default:i.turma.modalidade }} · {{ i.turma.get_dias_display }} {{ i.turma.hora_inicio|time:"H:i" }}</strong>
             <small>Sem chamada registrada no período.</small></div>
             <a href="{% url 'aulas:chamada' i.turma.pk %}" class="btn btn-small">Fazer chamada</a></div>
         {% endfor %}
@@ -153,7 +153,7 @@
         <thead><tr><th>Aula</th><th>Temperatura</th><th class="right">Ocupação</th><th class="right">Média</th><th class="right">Inscritos</th><th class="right">Frequência</th><th class="right">Avulsos</th><th class="right">Tendência</th><th>Sugestão</th></tr></thead>
         <tbody>{% for i in indicadores %}
         <tr>
-            <td><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a><br><small class="muted">{{ i.turma.get_dia_semana_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }}</small></td>
+            <td><a class="link" href="{{ i.turma.get_absolute_url }}">{{ i.turma.nome|default:i.turma.modalidade }}</a><br><small class="muted">{{ i.turma.get_dias_display }} {{ i.turma.hora_inicio|time:"H:i" }} · {{ i.turma.sala.nome }}</small></td>
             <td><span class="temp-chip temp-{{ i.faixa }}">{{ i.faixa_icone }} {{ i.faixa_rotulo }}</span></td>
             <td class="right">{% if i.ocupacao is not None %}{{ i.ocupacao|floatformat:0 }}%{% else %}—{% endif %}</td>
             <td class="right">{% if i.media is not None %}{{ i.media|floatformat:1 }}{% else %}—{% endif %}</td>

@@ -13,9 +13,25 @@
         <td>{% if u.papel %}<span class="badge">{{ u.papel }}</span>{% else %}<span class="badge badge-red">Sem papel</span>{% endif %}{% if u.is_staff %} <small class="muted">· equipe técnica</small>{% endif %}</td>
         <td>{% if u.vinculo %}<a class="link" href="{{ u.vinculo.get_absolute_url }}">{{ u.vinculo }}</a>{% else %}—{% endif %}</td>
         <td>{{ u.last_login|date:"d/m/Y H:i"|default:"nunca" }}</td><td>{% if u.is_active %}<span class="badge badge-green">Ativo</span>{% else %}<span class="badge">Bloqueado</span>{% endif %}</td>
-        <td class="right">{% if u != user %}<form method="post" action="{% url 'administradores:usuario_situacao' u.pk %}">{% csrf_token %}<button class="btn btn-small {% if u.is_active %}btn-danger-ghost{% endif %}">{% if u.is_active %}Bloquear{% else %}Desbloquear{% endif %}</button></form>{% endif %}</td></tr>
+        <td class="right"><div class="acoes-linha"><a class="link" href="{% url 'administradores:usuario_papeis' u.pk %}">Papéis</a>{% if u != user %}<form method="post" action="{% url 'administradores:usuario_situacao' u.pk %}">{% csrf_token %}<button class="btn btn-small {% if u.is_active %}btn-danger-ghost{% endif %}">{% if u.is_active %}Bloquear{% else %}Desbloquear{% endif %}</button></form>{% endif %}</div></td></tr>
     {% endfor %}</tbody>
 </table></div>
+{% if user.is_superuser %}
+<section class="panel">
+    <div class="panel-header"><div><span class="section-label">Equipe técnica</span><h2>Backup dos dados</h2></div></div>
+    <p class="muted">A exportação traz todos os dados (inclusive dados pessoais e senhas criptografadas): guarde o arquivo em local seguro. A restauração substitui tudo pelos dados do arquivo e encerra as sessões.</p>
+    <div class="backup-acoes">
+        <a href="{% url 'administradores:backup_exportar' %}" class="btn">{% include "_icone.html" with nome="down" tamanho=15 %}Exportar backup (JSON)</a>
+        <form method="post" action="{% url 'administradores:backup_restaurar' %}" enctype="multipart/form-data" class="estorno-form">{% csrf_token %}
+            <label class="sr-only" for="arquivo-backup">Arquivo de backup</label>
+            <input type="file" id="arquivo-backup" name="arquivo" accept=".json,application/json" required>
+            <label class="sr-only" for="confirma-backup">Confirmação</label>
+            <input id="confirma-backup" name="confirmacao" required placeholder="Digite RESTAURAR" autocomplete="off">
+            <button class="btn btn-small btn-danger-ghost">Restaurar</button>
+        </form>
+    </div>
+</section>
+{% endif %}
 {% if resumo %}
 <section class="section">
     <div class="panel-header"><div><span class="section-label">Auditoria · últimos 30 dias</span><h2>Quem acessou o sistema</h2></div></div>

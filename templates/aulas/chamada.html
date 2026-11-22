@@ -3,7 +3,7 @@
 {% block content %}
 <section class="page-header">
     <div><span class="section-label">RF03 · RF04</span><h1>Chamada · {{ turma.nome|default:turma.modalidade }}</h1>
-        <p class="muted">{{ turma.get_dia_semana_display }} {{ turma.hora_inicio|time:"H:i" }} · {{ turma.sala.nome }}</p></div>
+        <p class="muted">{{ turma.get_dias_display }} {{ turma.hora_inicio|time:"H:i" }} · {{ turma.sala.nome }}</p></div>
     <a href="{{ turma.get_absolute_url }}" class="btn btn-ghost">← Voltar</a>
 </section>
 <form method="get" class="filters panel">
@@ -12,10 +12,20 @@
     {% for e in form.data.errors %}<small class="error">{{ e }}</small>{% endfor %}
 </form>
 {% if data %}
+{% if situacao == "cancelada" %}
+<div class="message message-warning">Aula cancelada nesta data{% if registro_chamada.motivo %}: {{ registro_chamada.motivo }}{% endif %}.</div>
+{% elif situacao == "concluida" and not pode_editar %}
+<div class="message">Chamada concluída. Para corrigir, fale com a administração.</div>
+{% elif correcao %}
+<div class="message message-warning">Chamada concluída. A correção exige motivo e fica registrada na auditoria.</div>
+{% endif %}
 <form method="post" class="panel">
     {% csrf_token %}
     <input type="hidden" name="data" value="{{ data|date:'d/m/Y' }}">
-    <div class="panel-header"><h2>{{ data|date:"l, d/m/Y" }}</h2><span class="muted">{{ presentes }} presente{{ presentes|pluralize }} · {{ faltas }} falta{{ faltas|pluralize }} registradas</span></div>
+    <div class="panel-header"><h2>{{ data|date:"l, d/m/Y" }}</h2>
+        <span class="muted">{% if situacao == "concluida" %}<span class="badge badge-green">Concluída</span>{% elif situacao == "cancelada" %}<span class="badge badge-red">Cancelada</span>{% else %}<span class="badge badge-yellow">Aberta</span>{% endif %}
+        · {{ presentes }} presente{{ presentes|pluralize }} · {{ faltas }} falta{{ faltas|pluralize }} registradas{% if registro_chamada.motivo and situacao == "concluida" %} · {{ registro_chamada.motivo }}{% endif %}</span></div>
+    <fieldset class="sem-borda" {% if not pode_editar %}disabled{% endif %}>
     <div class="table-wrap"><table>
         <thead><tr><th>Aluno</th><th>Presente</th><th>Falta</th><th><span class="sr-only">Ações</span></th></tr></thead>
         <tbody>
@@ -41,11 +51,30 @@
         <button type="button" class="btn btn-small" id="avulso-mais">+ Adicionar aluno avulso</button>
         <p class="muted note" id="avulsos-resumo" aria-live="polite"></p>
     </fieldset>
+    {% if correcao %}<div class="field mt"><label for="motivo-correcao">Motivo da correção</label>
+        <input id="motivo-correcao" name="motivo" required maxlength="200" placeholder="Ex.: aluna estava presente, registro trocado"></div>{% endif %}
+    {% if pode_editar %}
     <div class="form-actions">
         <button type="button" class="btn" onclick="document.querySelectorAll('input[value=P]').forEach(r=>r.checked=true)">Marcar todos presentes</button>
-        <button type="submit" class="btn btn-primary">Salvar registros da aula</button>
+        {% if correcao %}<button type="submit" name="acao" value="salvar" class="btn btn-primary">Salvar correção</button>
+        {% else %}<button type="submit" name="acao" value="salvar" class="btn">Salvar</button>
+        <button type="submit" name="acao" value="concluir" class="btn btn-primary">Salvar e concluir chamada</button>{% endif %}
     </div>
+    {% endif %}
+    </fieldset>
 </form>
+{% if situacao == "aberta" and not presentes and not faltas %}
+<form method="post" class="panel estorno-form">{% csrf_token %}
+    <input type="hidden" name="data" value="{{ data|date:'d/m/Y' }}"><input type="hidden" name="acao" value="cancelar">
+    <label for="motivo-cancelar" class="sr-only">Motivo do cancelamento</label>
+    <input id="motivo-cancelar" name="motivo" required maxlength="200" placeholder="Motivo (ex.: feriado, professor ausente)">
+    <button class="btn btn-small btn-danger-ghost">Cancelar aula nesta data</button>
+</form>
+{% endif %}
+{% if eh_admin and situacao != "aberta" %}
+<form method="post">{% csrf_token %}<input type="hidden" name="data" value="{{ data|date:'d/m/Y' }}"><input type="hidden" name="acao" value="reabrir">
+    <button class="btn btn-small">Reabrir chamada</button></form>
+{% endif %}
 <script>
 (function () {
     const lista = document.getElementById('avulsos-lista');

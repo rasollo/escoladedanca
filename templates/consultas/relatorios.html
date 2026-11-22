@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Relatórios{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Relatórios</span><h1>Relatórios do período</h1>
+        <p class="muted">De {{ inicio|date:"d/m/Y" }} até {{ fim|date:"d/m/Y" }}. Exporte os dados em CSV para abrir em planilhas.</p></div>
+</section>
+<form method="get" class="filters panel">
+    <label for="id_inicio">De</label>{{ form.inicio }}
+    <label for="id_fim">Até</label>{{ form.fim }}
+    <button class="btn">Atualizar</button>
+    {% for e in form.non_field_errors %}<small class="error">{{ e }}</small>{% endfor %}
+</form>
+<section class="summary">
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="students" %}</span><div><span>Alunos ativos</span><strong>{{ alunos_ativos }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="calendar" %}</span><div><span>Matrículas ativas</span><strong>{{ matriculas_ativas }}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Frequência</span><strong>{% if frequencia is not None %}{{ frequencia }}%{% else %}—{% endif %}</strong></div></div>
+    <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="finance" %}</span><div><span>Resultado</span><strong class="{% if resultado < 0 %}neg{% else %}pos{% endif %}">{{ resultado|brl }}</strong></div></div>
+</section>
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Aulas e frequência</h2></div>
+        <dl class="stats">
+            <div><dt>Registros de chamada</dt><dd>{{ registros }}</dd></div>
+            <div><dt>Presenças</dt><dd>{{ presentes }}</dd></div>
+            <div><dt>Chamadas concluídas</dt><dd>{{ chamadas_concluidas }}</dd></div>
+            <div><dt>Aulas canceladas</dt><dd>{{ aulas_canceladas }}</dd></div>
+            <div><dt>Matrículas suspensas</dt><dd>{{ suspensas }}</dd></div>
+            <div><dt>Matrículas canceladas</dt><dd>{{ canceladas }}</dd></div>
+        </dl>
+        <a class="btn btn-small" href="?{{ query }}&exportar=presencas">{% include "_icone.html" with nome="down" tamanho=15 %}Exportar presenças (CSV)</a>
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>Financeiro</h2></div>
+        <dl class="stats">
+            <div><dt>Entradas</dt><dd class="pos">{{ entradas|brl }}</dd></div>
+            <div><dt>Saídas</dt><dd class="neg">{{ saidas|brl }}</dd></div>
+            <div><dt>Cobranças previstas</dt><dd>{{ cobrancas.previsto|brl }}</dd></div>
+            <div><dt>Em atraso</dt><dd class="neg">{{ cobrancas.atrasado|brl }}</dd></div>
+        </dl>
+        <div class="quick-actions">
+            <a class="btn btn-small" href="?{{ query }}&exportar=cobrancas">{% include "_icone.html" with nome="down" tamanho=15 %}Cobranças (CSV)</a>
+            <a class="btn btn-small" href="?{{ query }}&exportar=movimentacoes">{% include "_icone.html" with nome="down" tamanho=15 %}Movimentações (CSV)</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

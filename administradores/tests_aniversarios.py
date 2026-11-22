@@ -113,7 +113,8 @@ class DemoAniversariosTests(TestCase):
         from escoladedanca.rbac import papel_do
         call_command("popular_demo", "--senha", "senha-de-teste-123", stdout=StringIO())
         prof = Professor.objects.exclude(usuario=None).get()
-        aluno = Aluno.objects.exclude(usuario=None).get()
+        aluno = Aluno.objects.exclude(usuario=None).exclude(usuario=prof.usuario).get()
+        self.assertEqual(Aluno.objects.get(usuario=prof.usuario).nome, prof.nome)  # dois papéis
         self.assertEqual(papel_do(prof.usuario), PROFESSOR)
         self.assertEqual(papel_do(aluno.usuario), ALUNO)
         self.assertEqual(aluno.data_nascimento.month, timezone.localdate().month)

@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 from datetime import time
 from decimal import Decimal
 
@@ -81,7 +82,13 @@ class Turma(models.Model):
         verbose_name="professor responsável",
     )
     sala = models.ForeignKey(Sala, on_delete=models.PROTECT, related_name="turmas")
-    dia_semana = models.IntegerField("dia", choices=DiaSemana.choices)
+    dia_semana = models.IntegerField("dia", choices=DiaSemana.choices,
+                                     help_text="Primeiro dia da semana da aula.")
+    # Aula em mais de um dia da semana (mesmo horário): demais dias, ex.: "2,4".
+    outros_dias = models.CharField("outros dias", max_length=20, blank=True, default="")
+    # Vigência opcional (ex.: turma de verão); vazio = sem data de início/fim.
+    vigencia_inicio = models.DateField("início das aulas", null=True, blank=True)
+    vigencia_fim = models.DateField("fim das aulas", null=True, blank=True)
     hora_inicio = models.TimeField("início")
     hora_fim = models.TimeField("término")
     alunos = models.ManyToManyField(
@@ -104,7 +111,7 @@ class Turma(models.Model):
     def __str__(self):
         titulo = self.nome or self.modalidade.nome
         return (
-            f"{titulo} — {self.get_dia_semana_display()} "
+            f"{titulo} — {self.get_dias_display()} "
             f"{self.hora_inicio:%H:%M}–{self.hora_fim:%H:%M} ({self.sala.nome})"
         )
 
@@ -125,21 +132,22 @@ class Turma(models.Model):
         if erros:
             raise ValidationError(erros)
 
+        if self.vigencia_inicio and self.vigencia_fim and self.vigencia_fim < self.vigencia_inicio:
+            raise ValidationError({"vigencia_fim": "O fim das aulas deve ser depois do início."})
         if self.dia_semana is None or not (self.hora_inicio and self.hora_fim):
             return
-        conflitos = Turma.objects.filter(
-            ativa=True,
-            dia_semana=self.dia_semana,
-            hora_inicio__lt=self.hora_fim,
-            hora_fim__gt=self.hora_inicio,
-        ).exclude(pk=self.pk)
-        if self.ativa and self.sala_id and conflitos.filter(sala_id=self.sala_id).exists():
+        # RN14 — conflito em qualquer dia em comum, no mesmo horário e período de vigência
+        meus_dias = set(self.dias)
+        candidatas = [
+            t for t in Turma.objects.filter(
+                ativa=True, hora_inicio__lt=self.hora_fim, hora_fim__gt=self.hora_inicio,
+            ).exclude(pk=self.pk)
+            if meus_dias & set(t.dias) and self._vigencias_se_cruzam(t)
+        ]
+        if self.ativa and self.sala_id and any(t.sala_id == self.sala_id for t in candidatas):
             erros["sala"] = "Já existe uma aula nesta sala neste dia e horário."
-        if (
-            self.ativa
-            and self.professor_id
-            and conflitos.filter(professor_id=self.professor_id).exists()
-        ):
+        if self.ativa and self.professor_id and any(
+                t.professor_id == self.professor_id for t in candidatas):
             erros["professor"] = "O professor já tem outra aula neste dia e horário."
         if self.pk and self.sala_id:
             total = self.alunos.count()
@@ -176,8 +184,50 @@ class Turma(models.Model):
                 "outra turma."
             )
 
+    # ---- dias da semana e vigência -------------------------------------------------
+    @property
+    def dias(self) -> list[int]:
+        extras = {int(d) for d in self.outros_dias.split(",") if d.strip().isdigit()}
+        return sorted({self.dia_semana, *extras} - {None})
+
+    def definir_dias(self, dias):
+        dias = sorted({int(d) for d in dias})
+        self.dia_semana = dias[0]
+        self.outros_dias = ",".join(str(d) for d in dias[1:])
+
+    def get_dias_display(self) -> str:
+        rotulos = dict(self.DiaSemana.choices)
+        if len(self.dias) == 1:
+            return rotulos[self.dias[0]]
+        return " · ".join(rotulos[d].replace("-feira", "") for d in self.dias)
+
+    def acontece_em(self, dia_da_semana: int) -> bool:
+        return dia_da_semana in self.dias
+
+    def vigente_em(self, data) -> bool:
+        if self.vigencia_inicio and data < self.vigencia_inicio:
+            return False
+        if self.vigencia_fim and data > self.vigencia_fim:
+            return False
+        return True
+
+    def vigente_no_periodo(self, inicio, fim) -> bool:
+        return not ((self.vigencia_fim and self.vigencia_fim < inicio)
+                    or (self.vigencia_inicio and self.vigencia_inicio > fim))
+
+    def _vigencias_se_cruzam(self, outra) -> bool:
+        from datetime import date as _d
+        ini = self.vigencia_inicio or _d.min
+        fim = self.vigencia_fim or _d.max
+        return outra.vigente_no_periodo(ini, fim)
+
     def data_valida(self, data) -> bool:
-        return data.weekday() == self.dia_semana
+        return self.acontece_em(data.weekday()) and self.vigente_em(data)
+
+    def mensagem_data_invalida(self, data) -> str:
+        if not self.vigente_em(data):
+            return "Esta data está fora do período de aulas desta turma."
+        return f"Esta aula acontece: {self.get_dias_display()}."
 
 
 class Presenca(models.Model):
@@ -213,9 +263,49 @@ class Presenca(models.Model):
 
     def clean(self):
         if self.turma_id and self.data and not self.turma.data_valida(self.data):
-            raise ValidationError(
-                {"data": f"Esta aula acontece às {self.turma.get_dia_semana_display()}s."}
-            )
+            raise ValidationError({"data": self.turma.mensagem_data_invalida(self.data)})
+
+
+class Chamada(models.Model):
+    """Situação da chamada de uma aula em uma data.
+
+    Aberta: professor e administração marcam presenças. Concluída: só a
+    administração corrige, com motivo. Cancelada: a aula não aconteceu.
+    """
+
+    class Situacao(models.TextChoices):
+        ABERTA = "aberta", "Aberta"
+        CONCLUIDA = "concluida", "Concluída"
+        CANCELADA = "cancelada", "Cancelada"
+
+    turma = models.ForeignKey(Turma, on_delete=models.PROTECT, related_name="chamadas")
+    data = models.DateField()
+    situacao = models.CharField("situação", max_length=10, choices=Situacao.choices,
+                                default=Situacao.ABERTA)
+    motivo = models.CharField("motivo (cancelamento ou última correção)", max_length=200, blank=True)
+    atualizado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+                                       null=True, blank=True, related_name="+")
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-data"]
+        constraints = [models.UniqueConstraint(fields=["turma", "data"], name="uma_chamada_por_aula_e_data")]
+        verbose_name = "chamada"
+        verbose_name_plural = "chamadas"
+
+    def __str__(self):
+        return f"{self.turma} — {self.data:%d/%m/%Y}: {self.get_situacao_display()}"
+
+
+def pode_editar_chamada(papel, situacao) -> bool:
+    """Aluno nunca edita; professor só edita chamada aberta; administração sempre,
+    exceto aula cancelada (precisa reabrir antes)."""
+    from escoladedanca.rbac import ADMINISTRATIVO, PROFESSOR
+    if situacao == Chamada.Situacao.CANCELADA:
+        return False
+    if papel == ADMINISTRATIVO:
+        return True
+    return papel == PROFESSOR and situacao != Chamada.Situacao.CONCLUIDA
 
 
 class Matricula(models.Model):
@@ -233,6 +323,16 @@ class Matricula(models.Model):
     aluno = models.ForeignKey("alunos.Aluno", on_delete=models.PROTECT, related_name="matriculas")
     data_inicio = models.DateField("início")
     data_fim = models.DateField("fim", null=True, blank=True)
+
+    class Situacao(models.TextChoices):
+        ATIVA = "ativa", "Ativa"
+        SUSPENSA = "suspensa", "Suspensa"
+        CANCELADA = "cancelada", "Cancelada"
+        ENCERRADA = "encerrada", "Encerrada"
+
+    situacao = models.CharField("situação", max_length=10, choices=Situacao.choices,
+                                default=Situacao.ATIVA)
+    motivo = models.CharField("motivo do encerramento", max_length=200, blank=True)
 
     class TipoDesconto(models.TextChoices):
         NENHUM = "nenhum", "Sem desconto"
@@ -309,10 +409,17 @@ class Matricula(models.Model):
         )
 
 
+# Restauração de backup: as matrículas vêm do próprio arquivo e não devem ser
+# recriadas a partir do vínculo aluno–aula.
+IMPORTANDO_BACKUP = ContextVar("importando_backup", default=False)
+
+
 @receiver(m2m_changed, sender=Turma.alunos.through)
 def sincronizar_matriculas(sender, instance, action, reverse, pk_set, **kwargs):
     """Mantém o histórico de matrículas igual ao vínculo atual, venha a mudança
     da tela, do admin ou do shell (turma.alunos.add/remove/set/clear)."""
+    if IMPORTANDO_BACKUP.get():
+        return
     hoje = timezone.localdate()
     if action == "post_add":
         pares = [(p, instance.pk) for p in pk_set] if reverse else [(instance.pk, p) for p in pk_set]
@@ -333,4 +440,5 @@ def sincronizar_matriculas(sender, instance, action, reverse, pk_set, **kwargs):
             abertas = abertas.filter(turma_id=instance.pk)
             if action == "post_remove":
                 abertas = abertas.filter(aluno_id__in=pk_set)
-        abertas.update(data_fim=hoje)
+        # Sem motivo informado (vínculo removido na tela da aula): "encerrada".
+        abertas.update(data_fim=hoje, situacao=Matricula.Situacao.ENCERRADA)

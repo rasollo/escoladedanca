@@ -8,15 +8,18 @@ from django.db.models import Count, ProtectedError, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from alunos.models import Aluno
-from escoladedanca.rbac import (ALUNO, PROFESSOR, aluno_do, exigir_turma_propria, papel_do,
+from escoladedanca.rbac import (ADMINISTRATIVO, ALUNO, PROFESSOR, aluno_do, exigir_turma_propria, papel_do,
                                 permitir, professor_do)
 from escoladedanca.utils import ler_data, redirecionar
 
-from .forms import (ChamadaForm, FiltroAgendaForm, MatriculaFinanceiroForm, ModalidadeForm,
+from .forms import (ChamadaForm, EncerrarMatriculaForm, FiltroAgendaForm,
+                    MatriculaFinanceiroForm, ModalidadeForm,
                     SalaForm, TurmaForm, TurmaProfessorForm, VinculoAlunosForm)
-from .models import Matricula, Modalidade, Presenca, Sala, Turma
+from .models import (Chamada, Matricula, Modalidade, Presenca, Sala, Turma,
+                     pode_editar_chamada)
 
 
 # ---------------------------------------------------------------------------
@@ -77,16 +80,23 @@ def agenda(request):
         .select_related("modalidade", "sala", "professor")
         .annotate(qtd_alunos=Count("alunos", distinct=True))
     )
+    dia_filtro = None
     if form.is_valid():
-        if form.cleaned_data.get("dia") is not None:
-            turmas = turmas.filter(dia_semana=form.cleaned_data["dia"])
+        dia_filtro = form.cleaned_data.get("dia")
         if form.cleaned_data.get("modalidade"):
             turmas = turmas.filter(modalidade=form.cleaned_data["modalidade"])
         if form.cleaned_data.get("sala"):
             turmas = turmas.filter(sala=form.cleaned_data["sala"])
+    turmas = list(turmas)
+    if dia_filtro is not None:
+        turmas = [t for t in turmas if t.acontece_em(dia_filtro)]
+    # Uma aula com vários dias aparece em cada um deles.
     dias = []
     for valor, rotulo in Turma.DiaSemana.choices:
-        do_dia = [t for t in turmas if t.dia_semana == valor]
+        if dia_filtro is not None and valor != dia_filtro:
+            continue
+        do_dia = sorted((t for t in turmas if t.acontece_em(valor)),
+                        key=lambda t: (t.hora_inicio, t.sala.nome))
         if do_dia:
             dias.append({"rotulo": rotulo, "turmas": do_dia})
     # Aulas do próprio usuário: destacadas na agenda (professor: as que dá;
@@ -169,11 +179,59 @@ def matricula_editar(request, pk):
     })
 
 
+@require_POST
+def matricula_encerrar(request, pk):
+    """Suspende ou cancela a matrícula com motivo (o histórico é preservado)."""
+    m = get_object_or_404(Matricula.objects.select_related("aluno", "turma"), pk=pk,
+                          data_fim__isnull=True)
+    form = EncerrarMatriculaForm(request.POST)
+    if not form.is_valid():
+        messages.error(request, "Escolha suspender ou cancelar e informe o motivo.")
+        return redirect(m.aluno)
+    with transaction.atomic():
+        m.turma.alunos.remove(m.aluno)  # encerra a matrícula (data de fim = hoje)
+        Matricula.objects.filter(pk=m.pk).update(situacao=form.cleaned_data["situacao"],
+                                                 motivo=form.cleaned_data["motivo"])
+    rotulo = "suspensa" if form.cleaned_data["situacao"] == Matricula.Situacao.SUSPENSA else "cancelada"
+    messages.success(request, f"Matrícula em {m.turma} {rotulo}. Não entra nas próximas cobranças.")
+    return redirect(m.aluno)
+
+
+@require_POST
+def matricula_reativar(request, pk):
+    """Reativa uma matrícula suspensa: nova matrícula a partir de hoje, mesma mensalidade."""
+    m = get_object_or_404(Matricula.objects.select_related("aluno", "turma__sala"), pk=pk,
+                          situacao=Matricula.Situacao.SUSPENSA)
+    turma = m.turma
+    if turma.alunos.filter(pk=m.aluno_id).exists():
+        messages.warning(request, "O aluno já está matriculado nesta aula.")
+        return redirect(m.aluno)
+    if not turma.ativa:
+        messages.error(request, "A aula está desativada.")
+        return redirect(m.aluno)
+    try:
+        turma.validar_quantidade(turma.quantidade_alunos() + 1)  # RN09 — lotação
+    except ValidationError as erro:
+        messages.error(request, erro.messages[0])
+        return redirect(m.aluno)
+    with transaction.atomic():
+        turma.alunos.add(m.aluno)
+        Matricula.objects.filter(turma=turma, aluno=m.aluno, data_fim__isnull=True).update(
+            valor_mensal=m.valor_mensal, desconto_tipo=m.desconto_tipo, desconto=m.desconto)
+    messages.success(request, f"Matrícula em {turma} reativada.")
+    return redirect(m.aluno)
+
+
 # ---------------------------------------------------------------------------
 # RF03 / RF04 — chamada (fluxo 06)
 # ---------------------------------------------------------------------------
 def _ultima_ocorrencia(turma, ref):
-    return ref - timedelta(days=(ref.weekday() - turma.dia_semana) % 7)
+    """Data mais recente (até ref) em que a aula acontece."""
+    for atras in range(0, 7 * 60):
+        d = ref - timedelta(days=atras)
+        if turma.data_valida(d):
+            return d
+    return ref
 
 
 @permitir(PROFESSOR)
@@ -193,7 +251,40 @@ def chamada(request, pk):
     avulsos = [p.aluno for aid, p in registros.items() if aid not in {a.pk for a in vinculados}]
     lista = vinculados + sorted(avulsos, key=lambda a: a.nome)
 
+    papel = papel_do(request.user)
+    registro_chamada = Chamada.objects.filter(turma=turma, data=data).first()
+    situacao = registro_chamada.situacao if registro_chamada else Chamada.Situacao.ABERTA
+    voltar = f"{reverse('aulas:chamada', args=[turma.pk])}?data={data:%d/%m/%Y}"
+
     if request.method == "POST":
+        acao = request.POST.get("acao", "salvar")
+        motivo = " ".join(request.POST.get("motivo", "").split())[:200]
+        if acao in ("reabrir", "cancelar"):
+            if acao == "reabrir":
+                if papel != ADMINISTRATIVO or not registro_chamada:
+                    raise PermissionDenied("Somente a administração reabre uma chamada.")
+                registro_chamada.situacao = Chamada.Situacao.ABERTA
+                registro_chamada.atualizado_por = request.user
+                registro_chamada.save()
+                messages.success(request, "Chamada reaberta.")
+            elif situacao != Chamada.Situacao.ABERTA or registros:
+                messages.error(request, "Só é possível cancelar a aula com a chamada aberta e sem registros.")
+            elif not motivo:
+                messages.error(request, "Informe o motivo do cancelamento da aula.")
+            else:
+                Chamada.objects.update_or_create(turma=turma, data=data, defaults={
+                    "situacao": Chamada.Situacao.CANCELADA, "motivo": motivo,
+                    "atualizado_por": request.user})
+                messages.success(request, f"Aula de {data:%d/%m/%Y} cancelada: {motivo}.")
+            return redirect(voltar)
+        if not pode_editar_chamada(papel, situacao):
+            messages.error(request, "Esta chamada está concluída ou cancelada. Correções são feitas "
+                                    "pela administração, com motivo.")
+            return redirect(voltar)
+        correcao = situacao == Chamada.Situacao.CONCLUIDA  # só a administração chega aqui
+        if correcao and not motivo:
+            messages.error(request, "Informe o motivo da correção de uma chamada concluída.")
+            return redirect(voltar)
         ids_vinculados = {a.pk for a in vinculados}
         # Avulso salvo por engano: o operador pode tirá-lo da chamada (não vira falta).
         remover = {a.pk for a in avulsos if request.POST.get(f"remover_{a.pk}")}
@@ -231,14 +322,20 @@ def chamada(request, pk):
                         turma=turma, aluno_id=aluno_id, data=data,
                         defaults={"presente": presente},
                     )
-            partes = [f"Chamada de {data:%d/%m/%Y} salva"]
+                nova_situacao = (Chamada.Situacao.CONCLUIDA if acao == "concluir" or correcao
+                                 else Chamada.Situacao.ABERTA)
+                Chamada.objects.update_or_create(turma=turma, data=data, defaults={
+                    "situacao": nova_situacao, "atualizado_por": request.user,
+                    **({"motivo": f"Correção: {motivo}"} if correcao else {}),
+                })
+            partes = [f"Chamada de {data:%d/%m/%Y} {'corrigida' if correcao else 'concluída' if acao == 'concluir' else 'salva'}"]
             if novos_avulsos:
                 partes.append(f"{len(novos_avulsos)} avulso{'s' if len(novos_avulsos) > 1 else ''} "
                               f"incluído{'s' if len(novos_avulsos) > 1 else ''}")
             if remover:
                 partes.append(f"{len(remover)} removido{'s' if len(remover) > 1 else ''} da chamada")
             messages.success(request, ", ".join(partes) + ".")
-        return redirect(f"{reverse('aulas:chamada', args=[turma.pk])}?data={data:%d/%m/%Y}")
+        return redirect(voltar)
 
     ids_lista = [a.pk for a in lista]
     return render(request, "aulas/chamada.html", {
@@ -248,6 +345,9 @@ def chamada(request, pk):
         "candidatos_avulsos": Aluno.objects.filter(ativo=True).exclude(pk__in=ids_lista),
         "presentes": sum(1 for p in registros.values() if p.presente),
         "faltas": sum(1 for p in registros.values() if not p.presente),
+        "registro_chamada": registro_chamada, "situacao": situacao,
+        "pode_editar": pode_editar_chamada(papel, situacao),
+        "correcao": situacao == Chamada.Situacao.CONCLUIDA and papel == ADMINISTRATIVO,
     })
 
 

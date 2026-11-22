@@ -13,52 +13,171 @@ O sistema foi feito para atender a Portal da Dança, mas foi organizado para pod
 
 ## Como instalar e testar
 
-Qualquer pessoa pode instalar e usar o sistema. É preciso ter o **Python 3.12 ou mais novo** ([python.org/downloads](https://www.python.org/downloads/)); no Windows, marque a opção "Add Python to PATH" ao instalar.
+Qualquer pessoa pode instalar e usar o sistema no próprio computador. Você vai precisar de:
 
-**1. Baixe o projeto**, de um destes jeitos:
+* **Python 3.12 ou mais novo**;
+* **internet** durante a instalação, para baixar as dependências;
+* uns **10 minutos**.
 
-* com o git: `git clone https://github.com/rasollo/escoladedanca.git`
-* sem o git: no GitHub, clique em **Code → Download ZIP** e descompacte
+Escolha o seu sistema operacional e siga os passos em ordem.
 
-**2. Abra o terminal na pasta do projeto** (no Windows: PowerShell ou Prompt de Comando) e instale:
+---
 
-| Sistema | Comando |
-|---|---|
-| Windows | `py portal.py instalar` |
-| macOS e Linux | `python3 portal.py instalar` |
+### 🪟 Windows
 
-O instalador cria o ambiente Python (`.venv`), instala as dependências, cria o banco de dados, carrega dados de demonstração e prepara os arquivos de estilo. No fim, ele mostra a **senha** do usuário `responsavel`: anote, porque ela só aparece uma vez.
+**1. Instale o Python**
 
-**3. Abra o sistema:**
+Baixe em [python.org/downloads](https://www.python.org/downloads/) e execute o instalador.
 
-| Sistema | Comando |
-|---|---|
-| Windows | `py portal.py iniciar` |
-| macOS e Linux | `python3 portal.py iniciar` |
+> ⚠️ Na primeira tela do instalador, **marque a opção "Add Python to PATH"** antes de clicar em *Install Now*.
 
-Acesse **http://127.0.0.1:8000/** no navegador e entre com o usuário `responsavel`. Para parar, pressione Ctrl+C no terminal.
+Se preferir, instale pelo terminal: `winget install Python.Python.3.12`
 
-**Outros comandos** (no Windows, troque `python3` por `py`):
+**2. Baixe o projeto**
+
+* **Sem git:** no GitHub, clique em **Code → Download ZIP** e descompacte, por exemplo em `Documentos\escoladedanca`.
+* **Com git:** `git clone https://github.com/rasollo/escoladedanca.git`
+
+**3. Abra o terminal na pasta do projeto**
+
+Abra a pasta no Explorador de Arquivos, clique na barra de endereço, digite `powershell` e pressione Enter.
+
+**4. Instale**
+
+```powershell
+py portal.py instalar
+```
+
+> Se aparecer *"py não é reconhecido"*, use `python portal.py instalar`.
+
+**5. Abra o sistema**
+
+```powershell
+py portal.py iniciar
+```
+
+Acesse **http://127.0.0.1:8000/** no navegador. Para parar, pressione `Ctrl + C` no terminal.
+
+---
+
+### 🐧 Linux (Ubuntu, Debian, Mint, Fedora…)
+
+**1. Instale o Python e o git**
+
+```bash
+# Ubuntu, Debian e Mint
+sudo apt update && sudo apt install -y python3 python3-venv python3-pip git
+
+# Fedora
+sudo dnf install -y python3 git
+```
+
+Confira a versão com `python3 --version`; ela precisa ser 3.12 ou mais nova.
+
+**2. Baixe o projeto**
+
+```bash
+git clone https://github.com/rasollo/escoladedanca.git
+cd escoladedanca
+```
+
+**3. Instale**
+
+```bash
+python3 portal.py instalar
+```
+
+**4. Abra o sistema**
+
+```bash
+python3 portal.py iniciar
+```
+
+Acesse **http://127.0.0.1:8000/** no navegador. Para parar, pressione `Ctrl + C` no terminal.
+
+---
+
+### 🍎 macOS
+
+**1. Instale o Python**
+
+Baixe o instalador para macOS em [python.org/downloads](https://www.python.org/downloads/) e execute. Quem usa Homebrew pode instalar com `brew install python`.
+
+**2. Baixe o projeto**
+
+Abra o **Terminal** (Aplicativos → Utilitários → Terminal):
+
+```bash
+git clone https://github.com/rasollo/escoladedanca.git
+cd escoladedanca
+```
+
+> Na primeira vez que você usar o `git`, o macOS pode oferecer as "ferramentas de linha de comando": aceite. Se não quiser usar o git, baixe o ZIP pelo GitHub (**Code → Download ZIP**), descompacte e entre na pasta com `cd`.
+
+**3. Instale**
+
+```bash
+python3 portal.py instalar
+```
+
+**4. Abra o sistema**
+
+```bash
+python3 portal.py iniciar
+```
+
+Acesse **http://127.0.0.1:8000/** no navegador. Para parar, pressione `Ctrl + C` no terminal.
+
+---
+
+### O que o instalador faz
+
+1. Cria o ambiente Python do projeto (pasta `.venv`). Nada é instalado no resto do computador.
+2. Instala as dependências (`requirements.txt`).
+3. Cria o banco de dados e carrega os **dados de demonstração**.
+4. Prepara os arquivos de estilo.
+
+No fim, ele mostra os acessos criados. **Anote a senha**, porque ela só aparece uma vez.
+
+### Acessos de demonstração
+
+| Usuário | Papel | O que dá para testar |
+|---|---|---|
+| `responsavel` | Administrativo | Todo o sistema: cadastros, aulas, mensalidades, relatórios e acessos |
+| `camila.rocha` | Professor **e** Aluno | Escolha de ambiente, portal do professor, chamadas e comunicados |
+| aluno indicado no fim da instalação | Aluno | Portal do aluno: aulas, mensalidades e solicitações |
+
+Para escolher você mesmo a senha da demonstração: `instalar --senha MINHA_SENHA`.
+
+### Comandos úteis
+
+No Windows, use `py` no lugar de `python3`.
 
 | Comando | O que faz |
 |---|---|
-| `python3 portal.py instalar --senha MINHA_SENHA` | instala usando uma senha escolhida por você |
-| `python3 portal.py instalar --sem-demo` | instala com o banco vazio, sem dados de demonstração |
+| `python3 portal.py instalar --senha MINHA_SENHA` | instala com uma senha escolhida por você |
+| `python3 portal.py instalar --sem-demo` | instala com o banco vazio, sem demonstração |
 | `python3 portal.py iniciar --porta 8080` | usa outra porta |
-| `python3 portal.py iniciar --rede` | deixa outras máquinas da rede acessarem, pelo IP deste computador |
+| `python3 portal.py iniciar --rede` | permite o acesso de outros computadores da rede, pelo IP desta máquina |
 | `python3 portal.py senha` | troca a senha do usuário `responsavel` |
 | `python3 portal.py senha --novo` | cria um novo usuário administrador |
 | `python3 portal.py testar` | roda os testes automatizados |
 
-O instalador pode ser executado de novo a qualquer momento, por exemplo depois de baixar uma versão nova: ele atualiza o que mudou e não duplica os dados.
+### Atualizar para uma versão nova
 
-Problemas comuns:
+Baixe a versão nova (`git pull` ou um novo ZIP) e rode **`instalar` de novo**. O instalador atualiza o que mudou e não apaga nem duplica dados.
 
-* **"python3 não encontrado"** (macOS/Linux) ou **"py não é reconhecido"** (Windows): o Python não está instalado ou não está no PATH. No Windows, tente também `python portal.py instalar`.
-* **Ubuntu/Debian, erro ao criar o ambiente:** instale o módulo venv (`sudo apt install python3-venv`) e rode o instalador de novo.
-* **"Port is already in use":** outra aplicação usa a porta 8000; use `iniciar --porta 8080`.
+### Problemas comuns
 
-Este modo é para testar e desenvolver. Para colocar o sistema em uso numa escola, com o modo de depuração desligado, veja "Em produção" em `docs/RESUMO.md`.
+| Sintoma | Solução |
+|---|---|
+| **"py não é reconhecido"** (Windows) | O Python não está no PATH. Reinstale marcando *Add Python to PATH*, ou use `python` no lugar de `py`. |
+| **"python3: command not found"** (Linux/macOS) | Instale o Python (passo 1 do seu sistema). |
+| **Erro ao criar o ambiente** (Ubuntu/Debian) | `sudo apt install python3-venv` e rode o instalador de novo. |
+| **"Port is already in use"** | Outra aplicação usa a porta 8000: `iniciar --porta 8080`. |
+| **Erro de rede ao instalar as dependências** | Confira a internet ou o proxy da rede e rode o instalador de novo. |
+
+> Este modo é para **testar e desenvolver**. Para usar o sistema de verdade numa escola, com HTTPS e o modo de depuração desligado, veja "Em produção" em `docs/RESUMO.md`.
 
 ## Origem do projeto
 
@@ -134,11 +253,27 @@ A ideia é que todos possam participar do desenvolvimento e também aprender dur
 
 No final, esperamos ter um sistema **simples, funcional e seguro**, que possa ajudar no controle dos processos internos da escola de dança e, ao mesmo tempo, servir como uma oportunidade para colocarmos em prática os conhecimentos adquiridos durante o curso.
 
+## Versão 2.0 (22/11/2026)
+
+* **Relatório final atualizado:** `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.pdf` (e `.docx`), com 38 requisitos funcionais, 20 regras de negócio, rastreabilidade e o print de cada tela. Também pode ser baixado pelo menu **Documentação** do sistema.
+* **Novidades:**
+  * visual baseado no protótipo v3, com modo escuro;
+  * perfis Administrativo, Professor e Aluno, com mais de um papel na mesma conta e "Trocar ambiente";
+  * mensalidades como cobranças, com recebimento parcial e estorno;
+  * comunicados e solicitações;
+  * matrícula suspensa ou cancelada com motivo;
+  * chamada concluída, com correção justificada e cancelamento de aula;
+  * aulas em vários dias e com período de vigência;
+  * relatórios em CSV e backup em JSON;
+  * troca de senha no primeiro acesso;
+  * lista de alunos para o professor;
+  * aniversariantes do mês.
+
 ## Versão 1.0 (10/11/2026)
 
 O sistema está implementado e documentado:
 
-* **Relatório final:** `docs/relatorio/Relatorio_Portal_da_Danca_v1.0.pdf` (e `.docx`), com requisitos, rastreabilidade, protótipo e verificação.
+* **Relatório final da v1.0:** substituído pela versão 2.0 (a v1.0 continua no histórico do git).
 * **Fluxogramas:** `docs/fluxogramas/Portal_da_Danca_Fluxogramas_v1.0.pdf` (e `.drawio`, editável).
 * **Resumo e análise:** `docs/RESUMO.md` e `docs/ANALISE.md`, também disponíveis no menu Documentação do sistema.
 * **Como instalar:** veja "Como instalar e testar", acima.

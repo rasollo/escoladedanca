@@ -195,7 +195,7 @@ def gerar_cobrancas(competencia: date) -> int:
     for m in (Matricula.objects.filter(data_fim__isnull=True, data_inicio__lte=fim,
                                        turma__ativa=True)
               .exclude(pk__in=ja_geradas).select_related("turma")):
-        if m.valor_final > 0:
+        if m.valor_final > 0 and m.turma.vigente_no_periodo(competencia, fim):
             novas.append(Cobranca(matricula=m, aluno_id=m.aluno_id, competencia=competencia,
                                   valor=m.valor_final, vencimento=vencimento_da(competencia)))
     Cobranca.objects.bulk_create(novas)

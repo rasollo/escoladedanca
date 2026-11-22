@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Escolher ambiente{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Sua conta tem mais de um perfil</span><h1>Escolha o ambiente</h1>
+        <p class="muted">Cada ambiente mostra só as telas daquele papel. Você pode trocar a qualquer momento pelo menu.</p></div>
+</section>
+<div class="ambientes">
+    {% for o in opcoes %}
+    <form method="post" class="panel ambiente-opcao">{% csrf_token %}
+        <input type="hidden" name="papel" value="{{ o.papel }}">
+        <span class="summary-icon" aria-hidden="true">{% if o.papel == "Administrativo" %}{% include "_icone.html" with nome="lock" %}{% elif o.papel == "Professor" %}{% include "_icone.html" with nome="teachers" %}{% else %}{% include "_icone.html" with nome="students" %}{% endif %}</span>
+        <div><span class="eyebrow">{{ o.papel }}</span><h2>{{ o.nome }}</h2><p class="muted">{{ o.texto }}</p></div>
+        <button class="btn {% if o.papel == atual %}btn-ghost{% else %}btn-primary{% endif %}">{% if o.papel == atual %}Ambiente atual{% else %}Entrar como {{ o.papel|lower }}{% endif %}</button>
+    </form>
+    {% endfor %}
+</div>
+{% endblock %}

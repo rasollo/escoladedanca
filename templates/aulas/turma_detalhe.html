@@ -3,7 +3,7 @@
 {% block content %}
 <section class="page-header">
     <div><span class="section-label">Aula agendada</span><h1>{{ turma.nome|default:turma.modalidade }}</h1>
-        <p class="muted">{{ turma.modalidade }} · {{ turma.get_dia_semana_display }} {{ turma.hora_inicio|time:"H:i" }}–{{ turma.hora_fim|time:"H:i" }} · {{ turma.sala.nome }} · Prof. {{ turma.professor }}{% if not turma.ativa %} · <span class="badge">Inativa</span>{% endif %}</p></div>
+        <p class="muted">{{ turma.modalidade }} · {{ turma.get_dias_display }} {{ turma.hora_inicio|time:"H:i" }}–{{ turma.hora_fim|time:"H:i" }} · {{ turma.sala.nome }} · Prof. {{ turma.professor }}{% if not turma.ativa %} · <span class="badge">Inativa</span>{% endif %}</p></div>
     <div class="actions">
         <a href="{% url 'aulas:chamada' turma.pk %}" class="btn btn-primary">Fazer chamada</a>
         <a href="{% url 'aulas:turma_alunos' turma.pk %}" class="btn">Vincular alunos</a>

@@ -72,10 +72,35 @@ def minha_area(request):
     return render(request, "professores/minha_area.html", {
         "professor": professor,
         "turmas": turmas,
-        "aulas_hoje": [t for t in turmas if t.dia_semana == hoje.weekday()],
+        "aulas_hoje": [t for t in turmas if t.data_valida(hoje)],
         "calculo": calcular_salario(professor, hoje.year, hoje.month),
         "pagamentos": professor.pagamentos.all()[:6],
         "hoje": hoje,
         "aniversariantes": aniversariantes_do_mes(request.user, hoje),
         "comunicados": comunicados_visiveis(request.user)[:3],
     })
+
+
+@permitir(PROFESSOR)
+def meus_alunos(request):
+    """Alunos matriculados nas aulas do professor, com contato e frequência nelas."""
+    from alunos.models import Aluno
+    from aulas.models import Presenca
+    professor = professor_do(request.user)
+    if professor is None:
+        raise PermissionDenied("Seu usuário ainda não está vinculado a um professor ativo.")
+    turmas = list(professor.turmas.filter(ativa=True).select_related("modalidade"))
+    q = request.GET.get("q", "").strip()
+    alunos = (Aluno.objects.filter(turmas__in=turmas, ativo=True).distinct()
+              .prefetch_related("turmas"))
+    if q:
+        alunos = alunos.filter(nome__icontains=q)
+    linhas = []
+    for a in alunos:
+        regs = Presenca.objects.filter(aluno=a, turma__professor=professor)
+        total = regs.count()
+        presentes = regs.filter(presente=True).count()
+        linhas.append({"aluno": a, "aulas": [t for t in a.turmas.all() if t.professor_id == professor.pk],
+                       "frequencia": round(100 * presentes / total) if total else None})
+    return render(request, "professores/meus_alunos.html", {"linhas": linhas, "q": q,
+                                                              "total": len(linhas)})

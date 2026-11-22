@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Papéis da conta{% endblock %}
+{% block content %}
+<section class="page-header">
+    <div><span class="section-label">Acessos · papéis</span><h1>{{ u.get_full_name|default:u.username }}</h1>
+        <p class="muted">Usuário {{ u.username }}. Com mais de um papel, a pessoa escolhe o ambiente ao entrar e pode trocá-lo pelo menu.</p></div>
+    <a href="{% url 'administradores:administradores' %}" class="btn btn-ghost">← Acessos</a>
+</section>
+<div class="two-cols">
+    <section class="panel">
+        <div class="panel-header"><h2>Papéis atuais</h2></div>
+        {% for p in papeis %}
+        <div class="list-row"><div><strong>{{ p }}</strong>
+            <small>{% if p == "Professor" and vinculo_professor %}Cadastro: {{ vinculo_professor }}{% elif p == "Aluno" and vinculo_aluno %}Cadastro: {{ vinculo_aluno }}{% elif p == "Administrativo" %}Todo o sistema{% endif %}</small></div>
+            {% if papeis|length > 1 %}<form method="post">{% csrf_token %}<input type="hidden" name="remover" value="{{ p }}"><button class="btn btn-small btn-danger-ghost">Remover</button></form>{% endif %}</div>
+        {% endfor %}
+    </section>
+    <section class="panel">
+        <div class="panel-header"><h2>Acrescentar papel</h2></div>
+        {% if form.fields.papel.choices %}
+        <form method="post">{% csrf_token %}{% include "_campos.html" %}
+            <div class="form-actions"><button class="btn btn-primary">Acrescentar</button></div></form>
+        {% else %}<p class="empty">A conta já tem todos os papéis.</p>{% endif %}
+    </section>
+</div>
+{% endblock %}

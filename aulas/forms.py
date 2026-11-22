@@ -25,13 +25,25 @@ class SalaForm(forms.ModelForm):
 
 
 class TurmaForm(forms.ModelForm):
-    """RF19 / RN10 — agendamento prévio com modalidade, dia, horário, sala e professor."""
+    """RF19 / RN10 — agendamento prévio com modalidade, dias, horário, sala e professor."""
+
+    # Um ou mais dias da semana, no mesmo horário (ex.: segunda e quarta).
+    dia_semana = forms.TypedMultipleChoiceField(
+        label="Dias da semana", coerce=int, choices=Turma.DiaSemana.choices,
+        widget=forms.CheckboxSelectMultiple(attrs={"class": "dias-semana"}),
+        help_text="Marque um ou mais dias; o horário é o mesmo em todos.",
+    )
+    field_order = ["nome", "modalidade", "dia_semana", "hora_inicio", "hora_fim", "sala",
+                   "professor", "valor_mensal", "vigencia_inicio", "vigencia_fim", "ativa"]
 
     class Meta:
         model = Turma
-        fields = ["nome", "modalidade", "dia_semana", "hora_inicio", "hora_fim", "sala",
-                  "professor", "valor_mensal", "ativa"]
-        widgets = {"hora_inicio": TIME, "hora_fim": TIME}
+        fields = ["nome", "modalidade", "hora_inicio", "hora_fim", "sala",
+                  "professor", "valor_mensal", "vigencia_inicio", "vigencia_fim", "ativa"]
+        widgets = {"hora_inicio": TIME, "hora_fim": TIME,
+                   "vigencia_inicio": DataBR(), "vigencia_fim": DataBR()}
+        help_texts = {"vigencia_inicio": "Opcional (ex.: turma de verão).",
+                      "vigencia_fim": "Opcional. Após o fim, não há chamada nem cobrança."}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,6 +51,14 @@ class TurmaForm(forms.ModelForm):
             self.fields["professor"].queryset = Professor.objects.filter(ativo=True)
         if "valor_mensal" in self.fields:
             self.fields["valor_mensal"].required = False
+        if self.instance.pk and not self.is_bound:
+            self.initial["dia_semana"] = self.instance.dias
+
+    def clean(self):
+        dados = super().clean()
+        if dados.get("dia_semana"):
+            self.instance.definir_dias(dados["dia_semana"])
+        return dados
 
     def clean_valor_mensal(self):
         return self.cleaned_data.get("valor_mensal") or Decimal("0.00")
@@ -54,7 +74,8 @@ class TurmaProfessorForm(TurmaForm):
     """
 
     class Meta(TurmaForm.Meta):
-        fields = ["nome", "modalidade", "dia_semana", "hora_inicio", "hora_fim", "sala"]
+        fields = ["nome", "modalidade", "hora_inicio", "hora_fim", "sala",
+                  "vigencia_inicio", "vigencia_fim"]
 
     def __init__(self, *args, professor, **kwargs):
         super().__init__(*args, **kwargs)
@@ -76,6 +97,14 @@ class MatriculaFinanceiroForm(forms.ModelForm):
     class Meta:
         model = Matricula
         fields = ["valor_mensal", "desconto_tipo", "desconto"]
+
+
+class EncerrarMatriculaForm(forms.Form):
+    """Suspensão (pode ser reativada) ou cancelamento da matrícula, com motivo."""
+
+    situacao = forms.ChoiceField(label="Ação", choices=[
+        (Matricula.Situacao.SUSPENSA, "Suspender"), (Matricula.Situacao.CANCELADA, "Cancelar")])
+    motivo = forms.CharField(label="Motivo", max_length=200)
 
 
 class VinculoAlunosForm(forms.Form):
@@ -131,7 +160,5 @@ class ChamadaForm(forms.Form):
     def clean_data(self):
         data = self.cleaned_data["data"]
         if not self.turma.data_valida(data):
-            raise ValidationError(
-                f"Esta aula acontece às {self.turma.get_dia_semana_display()}s."
-            )
+            raise ValidationError(self.turma.mensagem_data_invalida(data))
         return data

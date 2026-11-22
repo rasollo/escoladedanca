@@ -259,11 +259,12 @@ def por_modalidade(indicadores) -> list[dict]:
 def mapa_de_calor(indicadores) -> dict:
     """Grade dia da semana × horário de início com as turmas de cada célula."""
     nomes_dias = dict(Turma.DiaSemana.choices)
-    dias = sorted({i.turma.dia_semana for i in indicadores})
+    dias = sorted({d for i in indicadores for d in i.turma.dias})
     horas = sorted({i.turma.hora_inicio for i in indicadores})
     celulas = defaultdict(list)
     for i in indicadores:
-        celulas[i.turma.hora_inicio, i.turma.dia_semana].append(i)
+        for d in i.turma.dias:  # aula de vários dias aparece em cada um
+            celulas[i.turma.hora_inicio, d].append(i)
     return {
         "dias": [nomes_dias[d].split("-")[0] for d in dias],
         "linhas": [{"hora": h, "celulas": [celulas.get((h, d), []) for d in dias]} for h in horas],
