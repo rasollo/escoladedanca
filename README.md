@@ -266,7 +266,7 @@ No final, esperamos ter um sistema **simples, funcional e seguro**, que possa aj
   * matrícula suspensa ou cancelada com motivo;
   * chamada concluída, com correção justificada e cancelamento de aula;
   * aulas em vários dias e com período de vigência;
-  * relatórios em CSV e backup em JSON;
+  * relatórios em CSV, com o quadro de mensalidades por situação (cada situação abre a lista filtrada), e backup em JSON;
   * troca de senha no primeiro acesso;
   * lista de alunos para o professor;
   * aniversariantes do mês.

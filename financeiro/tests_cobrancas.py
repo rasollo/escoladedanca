@@ -201,3 +201,40 @@ class CobrancaPapeisTests(TestCase):
         criar_professor("Prof X", usuario=user)
         self.client.force_login(user)
         self.assertEqual(self.client.get(reverse("financeiro:mensalidades")).status_code, 403)
+
+
+class FiltrosMensalidadesTests(LogadoTestCase):
+    """Atalhos por situação, período de vencimento e links do Relatório."""
+
+    def setUp(self):
+        super().setUp()
+        turma = turma_com_valor("100.00")
+        self.a1, self.a2, self.a3 = criar_aluno("Ana Paga"), criar_aluno("Bia Atrasada"), criar_aluno("Caio Parcial")
+        turma.alunos.add(self.a1, self.a2, self.a3)
+        Matricula.objects.update(data_inicio=date(2026, 9, 1))
+        for mes in (9, 10):
+            gerar_cobrancas(date(2026, mes, 1))
+        for c in Cobranca.objects.filter(aluno=self.a1):
+            receber(c, c.valor, c.vencimento, "pix")
+        for c in Cobranca.objects.filter(aluno=self.a3, competencia=date(2026, 10, 1)):
+            receber(c, Decimal("30.00"), c.vencimento, "pix")
+
+    def test_periodo_e_situacao(self):
+        url = reverse("financeiro:mensalidades")
+        resp = self.client.get(url, {"inicio": "01/09/2026", "fim": "31/10/2026", "situacao": "atrasada"})
+        nomes = {c.aluno.nome for c in resp.context["cobrancas"]}
+        self.assertEqual(nomes, {"Bia Atrasada", "Caio Parcial"})  # Caio: setembro em atraso
+        self.assertEqual(len(resp.context["cobrancas"]), 3)
+        contagem = {a["valor"]: a["qtd"] for a in resp.context["atalhos"]}
+        self.assertEqual((contagem[""], contagem["paga"], contagem["atrasada"], contagem["parcial"]), (6, 2, 3, 1))
+        self.assertContains(resp, "Cobranças com vencimento de 01/09/2026 a 31/10/2026")
+        self.assertContains(resp, "situacao=atrasada")
+
+    def test_relatorio_liga_para_a_lista_e_csv_filtrado(self):
+        resp = self.client.get(reverse("consultas:relatorios"), {"inicio": "01/09/2026", "fim": "31/10/2026"})
+        self.assertContains(resp, reverse("financeiro:mensalidades") + "?inicio=01/09/2026&amp;fim=31/10/2026&situacao=paga")
+        csv = self.client.get(reverse("consultas:relatorios"), {"inicio": "01/09/2026", "fim": "31/10/2026",
+                                                               "exportar": "cobrancas", "situacao": "paga"})
+        linhas = csv.content.decode("utf-8").strip().splitlines()
+        self.assertEqual(len(linhas), 3)  # cabeçalho + 2 pagas
+        self.assertTrue(all("Paga" in l for l in linhas[1:]))

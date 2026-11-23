@@ -637,3 +637,15 @@ fieldset.sem-borda[disabled] { opacity: .75; }
 .opcoes-linha label:has(input:checked) { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
 .stats-4 { grid-template-columns: repeat(4, 1fr); }
 @media (max-width: 700px) { .stats-4 { grid-template-columns: 1fr 1fr; } }
+/* Atalhos de situação (Mensalidades e Relatórios) */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 700; transition: .15s; }
+.chip strong { color: var(--text); }
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip-ativo { background: var(--primary); border-color: var(--primary); color: #fff; }
+.chip-ativo strong { color: #fff; }
+:root[data-theme="dark"] .chip-ativo, :root[data-theme="dark"] .chip-ativo strong { color: #0e1324; }
+.chip-paga:not(.chip-ativo) strong { color: var(--success); }
+.chip-atrasada:not(.chip-ativo) strong { color: var(--danger); }
+.chip-parcial:not(.chip-ativo) strong, .chip-pendente:not(.chip-ativo) strong { color: var(--warning); }
+a.badge:hover { filter: brightness(.95); text-decoration: underline; }

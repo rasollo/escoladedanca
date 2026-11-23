@@ -23,16 +23,18 @@
         <div><dt>Previsto</dt><dd>{{ cobrancas.previsto|brl }}</dd></div>
         <div><dt>Recebido das cobranças</dt><dd class="pos">{{ cobrancas.recebido|brl }}</dd></div>
         <div><dt>Em aberto</dt><dd>{{ cobrancas.em_aberto|brl }}</dd></div>
-        <div><dt>Em atraso</dt><dd class="neg">{{ cobrancas.atrasado|brl }}</dd></div>
+        <div><dt>Saldo vencido</dt><dd class="neg"><a href="{% url 'financeiro:mensalidades' %}?{{ query }}&situacao=atrasada">{{ cobrancas.atrasado|brl }}</a></dd></div>
     </dl>
-    <p class="muted">
-        <span class="badge badge-green">{{ situacoes.paga }} paga{{ situacoes.paga|pluralize }}</span>
-        <span class="badge badge-yellow">{{ situacoes.parcial }} parcia{{ situacoes.parcial|pluralize:"l,is" }}</span>
-        <span class="badge badge-yellow">{{ situacoes.pendente }} pendente{{ situacoes.pendente|pluralize }}</span>
-        <span class="badge badge-red">{{ situacoes.atrasada }} atrasada{{ situacoes.atrasada|pluralize }}</span>
-        <span class="badge">{{ situacoes.cancelada }} cancelada{{ situacoes.cancelada|pluralize }}</span>
-        · Mensalidades recebidas no período (data do pagamento, inclusive avulsas): <strong>{{ mensalidades_recebidas|brl }}</strong>
-    </p>
+    {% url 'financeiro:mensalidades' as url_mens %}
+    <nav class="chips" aria-label="Ver mensalidades por situação">
+        <a class="chip chip-paga" href="{{ url_mens }}?{{ query }}&situacao=paga">Pagas <strong>{{ situacoes.paga }}</strong></a>
+        <a class="chip chip-parcial" href="{{ url_mens }}?{{ query }}&situacao=parcial">Parciais <strong>{{ situacoes.parcial }}</strong></a>
+        <a class="chip chip-pendente" href="{{ url_mens }}?{{ query }}&situacao=pendente">Pendentes <strong>{{ situacoes.pendente }}</strong></a>
+        <a class="chip chip-atrasada" href="{{ url_mens }}?{{ query }}&situacao=atrasada">Atrasadas <strong>{{ situacoes.atrasada }}</strong></a>
+        <a class="chip chip-cancelada" href="{{ url_mens }}?{{ query }}&situacao=cancelada">Canceladas <strong>{{ situacoes.cancelada }}</strong></a>
+        <a class="chip" href="{{ url_mens }}?{{ query }}">Ver todas</a>
+    </nav>
+    <p class="muted">Mensalidades recebidas no período (data do pagamento, inclusive avulsas): <strong>{{ mensalidades_recebidas|brl }}</strong></p>
     <div class="quick-actions mt"><a class="btn btn-small" href="?{{ query }}&exportar=cobrancas">{% include "_icone.html" with nome="down" tamanho=15 %}Exportar mensalidades (CSV)</a></div>
 </section>
 <div class="two-cols">

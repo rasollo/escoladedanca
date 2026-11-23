@@ -7,13 +7,14 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from escoladedanca.utils import ler_mes, redirecionar
+from escoladedanca.utils import ler_data, ler_mes, redirecionar
 
 from .forms import (CalculoSalarioForm, CancelamentoCobrancaForm, EntradaForm, EstornoForm,
                     FiltroMovimentacoesForm, MensalidadeForm, RecebimentoForm, SaidaForm)
 from .models import Cobranca, Movimentacao
 from .services import (balanco_mensal, calcular_salario, calcular_saldo, estornar,
-                       filtrar_movimentacoes, gerar_cobrancas, receber, resumir_cobrancas)
+                       filtrar_movimentacoes, gerar_cobrancas, periodo_do_mes, receber,
+                       resumir_cobrancas)
 
 MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
          "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
@@ -140,26 +141,63 @@ def _competencia(request):
 
 
 def mensalidades(request):
-    """RF11 — cobranças de mensalidade da competência (situação informativa, RN08)."""
-    competencia = _competencia(request)
+    """RF11 — cobranças de mensalidade (situação informativa, RN08).
+
+    Filtra por competência (mês) ou por período de vencimento (de/até, usado
+    pelos links do Relatório) e por situação; os atalhos de situação mostram
+    a contagem de cada uma no recorte escolhido.
+    """
+    from urllib.parse import urlencode
     hoje = timezone.localdate()
-    qs = (Cobranca.objects.filter(competencia=competencia).com_totais()
-          .select_related("aluno", "matricula__turma__modalidade"))
+    competencia = _competencia(request)
+    try:
+        inicio = ler_data(request.GET.get("inicio", ""))
+        fim = ler_data(request.GET.get("fim", ""))
+    except ValueError:
+        messages.error(request, "Data inválida no período; mostrando a competência.")
+        inicio = fim = None
+    por_periodo = bool(inicio and fim and inicio <= fim)
+    qs = Cobranca.objects.com_totais().select_related("aluno", "matricula__turma__modalidade")
+    if por_periodo:
+        qs = qs.filter(vencimento__range=(inicio, fim)).order_by("vencimento", "aluno__nome")
+    else:
+        qs = qs.filter(competencia=competencia)
+        _, ultimo = periodo_do_mes(competencia.year, competencia.month)
+        inicio, fim = competencia, ultimo
     aluno_id = request.GET.get("aluno", "")
     if aluno_id.isdigit():
         qs = qs.filter(aluno_id=aluno_id)
-    cobrancas = list(qs)
-    situacao = request.GET.get("situacao", "")
-    resumo = resumir_cobrancas(cobrancas, hoje)
-    if situacao in Cobranca.Situacao.values:
-        cobrancas = [c for c in cobrancas if c.situacao(hoje) == situacao]
-    for c in cobrancas:
+    todas = list(qs)
+    for c in todas:
         c.situacao_atual = c.situacao(hoje)
+    resumo = resumir_cobrancas(todas, hoje)
+    contagem = {v: 0 for v in Cobranca.Situacao.values}
+    for c in todas:
+        contagem[c.situacao_atual] += 1
+    situacao = request.GET.get("situacao", "")
+    cobrancas = [c for c in todas if c.situacao_atual == situacao] if situacao in contagem else todas
+
+    base = {"aluno": aluno_id} if aluno_id.isdigit() else {}
+    if por_periodo:
+        base.update(inicio=f"{inicio:%d/%m/%Y}", fim=f"{fim:%d/%m/%Y}")
+    else:
+        base["mes"] = f"{competencia:%m/%Y}"
+    atalhos = [{"valor": "", "rotulo": "Todas", "qtd": len(todas), "url": "?" + urlencode(base)}]
+    for valor, rotulo in Cobranca.Situacao.choices:
+        atalhos.append({"valor": valor, "rotulo": rotulo, "qtd": contagem[valor],
+                        "url": "?" + urlencode({**base, "situacao": valor})})
+    exportar = {"inicio": f"{inicio:%d/%m/%Y}", "fim": f"{fim:%d/%m/%Y}", "exportar": "cobrancas"}
+    if situacao in contagem:
+        exportar["situacao"] = situacao
+    if aluno_id.isdigit():
+        exportar["aluno"] = aluno_id
     return render(request, "financeiro/mensalidades.html", {
-        "cobrancas": cobrancas, "resumo": resumo, "situacao": situacao,
-        "situacoes": Cobranca.Situacao.choices, "aluno_id": aluno_id,
+        "cobrancas": cobrancas, "resumo": resumo, "situacao": situacao, "atalhos": atalhos,
+        "aluno_id": aluno_id, "por_periodo": por_periodo,
+        "inicio": inicio, "fim": fim,
         "competencia": competencia, "mes_valor": f"{competencia:%m/%Y}",
         "mes_nome": f"{MESES[competencia.month - 1]} de {competencia.year}",
+        "url_exportar": reverse("consultas:relatorios") + "?" + urlencode(exportar),
     })
 
 

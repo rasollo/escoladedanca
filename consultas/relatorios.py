@@ -65,6 +65,9 @@ def relatorios(request):
             .select_related("aluno", "professor"))
 
     exportar = request.GET.get("exportar")
+    filtro_situacao = request.GET.get("situacao", "")
+    if request.GET.get("aluno", "").isdigit():
+        cobrancas = cobrancas.filter(aluno_id=request.GET["aluno"])
     if exportar == "presencas":
         return _csv(f"presencas_{sufixo}.csv",
                     ["Data", "Aula", "Professor", "Aluno", "Situação"],
@@ -72,12 +75,13 @@ def relatorios(request):
                       p.aluno.nome, "Presente" if p.presente else "Falta"]
                      for p in presencas.order_by("data", "turma_id", "aluno__nome")))
     if exportar == "cobrancas":
-        return _csv(f"cobrancas_{sufixo}.csv",
+        return _csv(f"mensalidades_{filtro_situacao + '_' if filtro_situacao else ''}{sufixo}.csv",
                     ["Competência", "Vencimento", "Aluno", "Aula", "Valor", "Recebido", "Saldo", "Situação"],
                     ([f"{c.competencia:%m/%Y}", f"{c.vencimento:%d/%m/%Y}", c.aluno.nome,
                       c.matricula.turma.nome or c.matricula.turma.modalidade, _br(c.valor),
                       _br(c.recebido), _br(c.saldo), c.get_situacao_display()]
-                     for c in cobrancas.order_by("vencimento", "aluno__nome")))
+                     for c in cobrancas.order_by("vencimento", "aluno__nome")
+                     if not filtro_situacao or c.situacao(hoje) == filtro_situacao))
     if exportar == "movimentacoes":
         return _csv(f"movimentacoes_{sufixo}.csv",
                     ["Data", "Tipo", "Classificação", "Forma", "Valor", "Aluno/Professor", "Descrição"],
