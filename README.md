@@ -258,7 +258,7 @@ No final, esperamos ter um sistema **simples, funcional e seguro**, que possa aj
 
 ## Versão 2.0 (22/11/2026)
 
-* **Relatório final atualizado:** `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.pdf` (e `.docx`), com 39 requisitos funcionais, 20 regras de negócio, rastreabilidade e o print de cada tela. Também pode ser baixado pelo menu **Documentação** do sistema.
+* **Relatório final atualizado:** `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.pdf` (e `.docx`), com 39 requisitos funcionais, 20 regras de negócio, rastreabilidade, os 26 fluxogramas da versão 2.0 e o print de cada tela. Também pode ser baixado pelo menu **Documentação** do sistema. Para gerá-lo de novo (por exemplo, depois de mudar os fluxogramas): `python3 docs/relatorio/gerar_relatorio.py` — usa `docs/relatorio/fonte/` (modelo da equipe e telas) e o PDF dos fluxogramas; requer `pdftoppm`, `zip` e LibreOffice.
 * **Novidades:**
   * visual baseado no protótipo v3, com modo escuro;
   * perfis Administrativo, Professor e Aluno, com mais de um papel na mesma conta e "Trocar ambiente";
