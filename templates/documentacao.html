@@ -3,7 +3,10 @@
 {% block content %}
 <section class="page-header">
     <div><span class="section-label">Documentação do projeto</span><h1>{{ titulo }}</h1></div>
-    <a href="{% url 'relatorio_pdf' %}" class="btn btn-primary" target="_blank" rel="noopener">{% include "_icone.html" with nome="doc" tamanho=16 %}Relatório final (PDF)</a>
+    <div class="actions">
+        <a href="{% url 'fluxogramas_pdf' %}" class="btn" target="_blank" rel="noopener">{% include "_icone.html" with nome="doc" tamanho=16 %}Fluxogramas (PDF)</a>
+        <a href="{% url 'relatorio_pdf' %}" class="btn btn-primary" target="_blank" rel="noopener">{% include "_icone.html" with nome="doc" tamanho=16 %}Relatório final (PDF)</a>
+    </div>
 </section>
 <nav class="tabs" aria-label="Documentos">
     {% for s, t in documentos %}<a href="{% url 'documentacao_doc' s %}" class="{% if s == slug %}active{% endif %}" {% if s == slug %}aria-current="page"{% endif %}>{{ t }}</a>{% endfor %}

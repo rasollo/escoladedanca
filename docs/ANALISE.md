@@ -1,6 +1,6 @@
 # Portal da Dança — Análise, revisão dos fluxogramas e implementação
 
-Versão 1.0 (10/11/2026). A seção 2 descreve os problemas dos fluxogramas da versão preliminar, já corrigidos em `docs/fluxogramas/` (numerados de 00 a 17). Relatório final: `docs/relatorio/Relatorio_Portal_da_Danca_v1.0.docx` (e `.pdf`).
+Versão 1.0 (10/11/2026). A seção 2 descreve os problemas dos fluxogramas da versão preliminar, já corrigidos em `docs/fluxogramas/`. Na versão 2.0 dos fluxogramas (22/11/2026) são 26 fluxos, de 00 a 25, atualizados com as funções RF25–RF39. Relatório final: `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.docx` (e `.pdf`).
 
 ## 1. Observações da professora (versão anotada) e como foram tratadas
 

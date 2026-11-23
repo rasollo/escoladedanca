@@ -33,10 +33,10 @@ Quem adotar o sistema em outra escola deve revisar as regras configuráveis e cu
 ## Versão 1.0 (10/11/2026)
 
 - **Relatório final (v2.0):** `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.docx` e `.pdf`, também disponível no botão "Relatório final (PDF)" desta tela. Traz RF01–RF39, RNF01–RNF08 e RN01–RN20, a rastreabilidade, o print de cada tela e a verificação: 233 testes aprovados e Semgrep (268 regras) com 27 alertas revisados, todos falsos positivos.
-- **Fluxogramas:** `docs/fluxogramas/Portal_da_Danca_Fluxogramas_v1.0.drawio` (editável) e `.pdf`, numerados de 00 a 17. Para regerar: `python3 docs/fluxogramas/gerar_fluxogramas.py`.
+- **Fluxogramas (v2.0, 22/11/2026):** `docs/fluxogramas/Portal_da_Danca_Fluxogramas_v2.0.drawio` (editável) e `.pdf`, numerados de 00 a 25, também no botão "Fluxogramas (PDF)" desta tela. Atualizados: 00 (papéis, ambiente e 1º acesso), 04 (vários dias e vigência), 05 (desconto, suspensão, cancelamento e reativação), 06 (situação da chamada), 10 (cobranças, recebimento parcial, estorno e cancelamento) e 17 (RF27). Novos: 18 comunicados, 19 solicitações, 20 relatórios, 21 backup, 22 aniversariantes, 23 alunos do professor, 24 usuários padrão e 25 preferências da conta. Para regerar: `python3 docs/fluxogramas/gerar_fluxogramas.py`.
 - **Salário por matrícula:** alunos inscritos nas aulas do professor no mês × valor por aluno. Cada par aluno–aula conta uma vez; alunos avulsos não contam; faltas não reduzem o valor (RN07, RN16).
 - **Matrícula com histórico:** inscrever um aluno numa aula abre uma matrícula com data de início; desinscrever encerra com data de fim. O histórico aparece na tela de cada aula.
-- **Consulta de frequência e oportunidades** (menu 🌡️ Consultas; RF25, RN17): para o proprietário, mostra as aulas mais frequentadas e onde vale fazer promoção. Detalhes na seção 5 da Análise.
+- **Consulta de frequência e oportunidades** (menu 🌡️ Consultas; RF27, RN17): para o proprietário, mostra as aulas mais frequentadas e onde vale fazer promoção. Detalhes na seção 5 da Análise.
 - **Auditoria:** quem acessou, de qual IP e o que alterou fica em `logs/`; resumo com `python manage.py relatorio_acessos`.
 - **Implantação:** o sistema roda como serviço (gunicorn e systemd) na porta 3010; veja "Como rodar".
 

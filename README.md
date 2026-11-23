@@ -278,7 +278,7 @@ No final, esperamos ter um sistema **simples, funcional e seguro**, que possa aj
 O sistema está implementado e documentado:
 
 * **Relatório final da v1.0:** substituído pela versão 2.0 (a v1.0 continua no histórico do git).
-* **Fluxogramas:** `docs/fluxogramas/Portal_da_Danca_Fluxogramas_v1.0.pdf` (e `.drawio`, editável).
+* **Fluxogramas (v2.0):** `docs/fluxogramas/Portal_da_Danca_Fluxogramas_v2.0.pdf` (e `.drawio`, editável), 26 fluxos numerados de 00 a 25, também no botão "Fluxogramas (PDF)" da tela Documentação. Para regerar: `python3 docs/fluxogramas/gerar_fluxogramas.py`.
 * **Resumo e análise:** `docs/RESUMO.md` e `docs/ANALISE.md`, também disponíveis no menu Documentação do sistema.
 * **Como instalar:** veja "Como instalar e testar", acima.
 

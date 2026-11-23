@@ -2,13 +2,17 @@
   {
     "numero": "00",
     "titulo": "Acesso ao sistema",
-    "situacao": "Novo",
+    "situacao": "Atualizado",
     "requisitos": [
       "RF22",
       "RF24",
-      "RNF03"
+      "RF25",
+      "RF31",
+      "RF37",
+      "RNF03",
+      "RN17"
     ],
-    "mudancas": "Fluxo novo: login obrigatório (RNF03), registro de login, falha e logout com usuário e IP."
+    "mudancas": "v2.0: conta bloqueada não entra; troca de senha obrigatória no primeiro acesso (RF37); escolha do ambiente quando a conta tem vários papéis (RF31); cada página é negada por padrão e liberada só ao papel ativo (RF25, RN17). Mantidos o login obrigatório e os registros de login, falha, acesso e logout."
   },
   {
     "numero": "01",
@@ -45,43 +49,50 @@
   {
     "numero": "04",
     "titulo": "Agendamento de aulas",
-    "situacao": "Corrigido",
+    "situacao": "Atualizado",
     "requisitos": [
       "RF19",
       "RF20",
+      "RF36",
       "RN09",
       "RN10",
       "RN13",
       "RN14",
-      "RN15"
+      "RN15",
+      "RN17"
     ],
-    "mudancas": "Correção: verifica horário de funcionamento, choque de sala e de professor e capacidade; o ramo de erro volta para revisão; incluídos alterar, desativar e remover."
+    "mudancas": "v2.0: a aula pode acontecer em vários dias da semana no mesmo horário, com vigência opcional (RF36); os conflitos de sala e professor são verificados em todos os dias escolhidos; o professor só agenda e altera as próprias aulas, e desativar ou remover é exclusivo do Administrativo (RN17)."
   },
   {
     "numero": "05",
     "titulo": "Matrícula de alunos nas aulas",
-    "situacao": "Novo",
+    "situacao": "Atualizado",
     "requisitos": [
       "RF20",
       "RF21",
       "RF24",
+      "RF32",
       "RN07",
       "RN08",
-      "RN09"
+      "RN09",
+      "RN18",
+      "RN20"
     ],
-    "mudancas": "Fluxo novo: a inscrição abre uma matrícula com data de início; a saída encerra a matrícula com data de fim. É a base do salário (fluxo 11). Não é exigida para participar (RN08)."
+    "mudancas": "v2.0: a matrícula copia a mensalidade da aula e aceita desconto percentual ou fixo (RN18); o Administrativo pode suspender ou cancelar com motivo e reativar a suspensa, respeitando a lotação (RF32, RN20). Matrículas encerradas não geram novas cobranças, mas contam no salário do mês em que estiveram ativas."
   },
   {
     "numero": "06",
     "titulo": "Registro de presença e faltas",
-    "situacao": "Corrigido",
+    "situacao": "Atualizado",
     "requisitos": [
       "RF03",
       "RF04",
       "RF21",
-      "RN08"
+      "RF33",
+      "RN08",
+      "RN19"
     ],
-    "mudancas": "Correção: incluídos os alunos avulsos (sem matrícula), vários de uma vez, com opção de retirar um incluído por engano; validação do dia da aula e da capacidade. A consulta passou para o fluxo 07."
+    "mudancas": "v2.0: a chamada de cada aula e data fica aberta, concluída ou cancelada (RF33). O professor registra e conclui a chamada das próprias aulas; uma chamada concluída só é corrigida pela administração, com motivo; a aula só é cancelada sem registros e com motivo (RN19). Mantidos os avulsos, o dia da aula e a capacidade."
   },
   {
     "numero": "07",
@@ -125,18 +136,22 @@
   },
   {
     "numero": "10",
-    "titulo": "Mensalidades",
-    "situacao": "Corrigido",
+    "titulo": "Cobranças de mensalidade",
+    "situacao": "Atualizado",
     "requisitos": [
       "RF10",
       "RF11",
+      "RF23",
+      "RF34",
       "RN02",
       "RN04",
       "RN06",
       "RN08",
-      "RN12"
+      "RN12",
+      "RN18",
+      "RN20"
     ],
-    "mudancas": "Correção: pede forma de pagamento e validade; registrar e consultar viraram opções; situação é só informativa (RN08)."
+    "mudancas": "v2.0: a mensalidade passou a ser uma cobrança mensal por matrícula ativa (mensalidade − desconto, vencimento no dia 5), que não altera o caixa. O recebimento pode ser parcial, até o saldo devedor, e entra como entrada; a correção é por estorno com motivo (saída vinculada); a cobrança só é cancelada sem recebimentos. A situação (pendente, parcial, atrasada ou paga) segue informativa (RN08)."
   },
   {
     "numero": "11",
@@ -208,13 +223,98 @@
   {
     "numero": "17",
     "titulo": "Consulta de frequência e oportunidades",
+    "situacao": "Atualizado",
+    "requisitos": [
+      "RF27",
+      "RN08",
+      "RN09",
+      "RN17"
+    ],
+    "mudancas": "Fluxo novo: ocupação real (presentes ÷ capacidade), temperatura da aula e sugestão de promoção para o proprietário. v2.0: requisito corrigido para RF27 (o RF25 passou a ser o controle de acesso)."
+  },
+  {
+    "numero": "18",
+    "titulo": "Comunicados por aula",
     "situacao": "Novo",
     "requisitos": [
-      "RF25",
-      "RN17",
-      "RN08",
-      "RN09"
+      "RF28",
+      "RN17"
     ],
-    "mudancas": "Fluxo novo: ocupação real (presentes ÷ capacidade), temperatura da aula e sugestão de promoção para o proprietário."
+    "mudancas": "Fluxo novo (v2.0): o Administrativo publica em qualquer aula ativa e o professor só nas próprias; o aluno vê apenas os comunicados das aulas em que está matriculado."
+  },
+  {
+    "numero": "19",
+    "titulo": "Solicitações dos alunos",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF29",
+      "RN17"
+    ],
+    "mudancas": "Fluxo novo (v2.0): o aluno registra o pedido e acompanha a resposta; o Administrativo muda a situação e responde. Concluir ou recusar exige resposta, e nenhum dado é alterado automaticamente."
+  },
+  {
+    "numero": "20",
+    "titulo": "Relatórios do período",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF34",
+      "RN08",
+      "RN18"
+    ],
+    "mudancas": "Fluxo novo (v2.0): indicadores do período e quadro de mensalidades; cada situação abre a lista de mensalidades já filtrada, e os dados podem ser exportados em CSV."
+  },
+  {
+    "numero": "21",
+    "titulo": "Backup e restauração dos dados",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF35",
+      "RF24",
+      "RNF04"
+    ],
+    "mudancas": "Fluxo novo (v2.0): só o superusuário exporta e restaura. A restauração exige digitar RESTAURAR, valida o arquivo e roda em transação única: qualquer erro desfaz tudo. As duas operações ficam na auditoria."
+  },
+  {
+    "numero": "22",
+    "titulo": "Aniversariantes do mês",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF26",
+      "RNF04",
+      "RN17"
+    ],
+    "mudancas": "Fluxo novo (v2.0): lista alunos e professores ativos que fazem aniversário no mês. O ano de nascimento nunca é exibido; a idade a completar aparece só para o Administrativo e o Professor."
+  },
+  {
+    "numero": "23",
+    "titulo": "Alunos do professor",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF38",
+      "RN17"
+    ],
+    "mudancas": "Fluxo novo (v2.0): o professor vê só os alunos matriculados nas próprias aulas, com contato e frequência nessas aulas."
+  },
+  {
+    "numero": "24",
+    "titulo": "Criação dos usuários padrão",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF39",
+      "RF25",
+      "RF37",
+      "RN17"
+    ],
+    "mudancas": "Fluxo novo (v2.0): comando de terminal que cria o responsavel (Administrativo) e um acesso de professor e um de aluno ligados a cadastros existentes. Não apaga nem duplica dados e pode rodar de novo."
+  },
+  {
+    "numero": "25",
+    "titulo": "Preferências da conta",
+    "situacao": "Novo",
+    "requisitos": [
+      "RF30",
+      "RF37"
+    ],
+    "mudancas": "Fluxo novo (v2.0): qualquer usuário troca a própria senha (senha atual e regras de senha forte) e alterna o tema claro/escuro, guardado no navegador."
   }
 ]

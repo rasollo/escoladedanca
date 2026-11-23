@@ -64,16 +64,26 @@ DOCUMENTOS = {
 
 
 RELATORIO_PDF = "Relatorio_Portal_da_Danca_v2.0.pdf"
+FLUXOGRAMAS_PDF = "Portal_da_Danca_Fluxogramas_v2.0.pdf"
+
+
+def _pdf(pasta, arquivo, erro):
+    from django.http import FileResponse
+    caminho = settings.BASE_DIR / "docs" / pasta / arquivo
+    if not caminho.exists():
+        raise Http404(erro)
+    return FileResponse(open(caminho, "rb"), content_type="application/pdf",
+                        filename=arquivo, as_attachment=False)
 
 
 def relatorio_pdf(request):
     """Relatório final do projeto (PDF), para quem tem acesso à Documentação."""
-    from django.http import FileResponse
-    caminho = settings.BASE_DIR / "docs" / "relatorio" / RELATORIO_PDF
-    if not caminho.exists():
-        raise Http404("Relatório não encontrado.")
-    return FileResponse(open(caminho, "rb"), content_type="application/pdf",
-                        filename=RELATORIO_PDF, as_attachment=False)
+    return _pdf("relatorio", RELATORIO_PDF, "Relatório não encontrado.")
+
+
+def fluxogramas_pdf(request):
+    """Fluxogramas do sistema (PDF, versão 2.0), para quem tem acesso à Documentação."""
+    return _pdf("fluxogramas", FLUXOGRAMAS_PDF, "Fluxogramas não encontrados.")
 
 
 def documentacao(request, slug="resumo"):

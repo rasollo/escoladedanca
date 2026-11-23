@@ -1,63 +1,121 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="867" height="1351" viewBox="0 0 867 1351" font-family="Liberation Sans, Arial, sans-serif">
-<rect x="0" y="0" width="867" height="1351" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1367" height="1467" viewBox="0 0 1367 1467" font-family="Liberation Sans, Arial, sans-serif">
+<rect x="0" y="0" width="1367" height="1467" fill="#ffffff"/>
 <text x="36" y="46" font-size="22" font-weight="bold" fill="#22202a">Fluxo 05 — Matrícula de alunos nas aulas</text>
-<text x="36" y="72" font-size="12.5" fill="#5a5768">Requisitos: RF20, RF21, RF24, RN07, RN08, RN09   ·   Situação: Novo</text>
-<polyline points="465.0,197.0 465.0,264.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
-<polygon points="465.0,264.0 460.5,255.0 469.5,255.0" fill="#55536a"/>
-<polyline points="465.0,320.0 465.0,380.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<text x="36" y="72" font-size="12.5" fill="#5a5768">Requisitos: RF20, RF21, RF24, RF32, RN07, RN08, RN09, RN18, RN20   ·   Situação: Atualizado</text>
+<polyline points="465.0,197.0 465.0,248.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,248.0 460.5,239.0 469.5,239.0" fill="#55536a"/>
+<polyline points="465.0,336.0 465.0,380.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
 <polygon points="465.0,380.0 460.5,371.0 469.5,371.0" fill="#55536a"/>
+<polyline points="572.0,292.0 965.0,292.0 965.0,380.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,380.0 960.5,371.0 969.5,371.0" fill="#55536a"/>
 <polyline points="465.0,436.0 465.0,496.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
 <polygon points="465.0,496.0 460.5,487.0 469.5,487.0" fill="#55536a"/>
-<polyline points="465.0,552.0 465.0,596.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
-<polygon points="465.0,596.0 460.5,587.0 469.5,587.0" fill="#55536a"/>
-<polyline points="572.0,640.0 613.0,640.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
-<polygon points="613.0,640.0 604.0,635.5 604.0,644.5" fill="#55536a"/>
-<polyline points="715.0,612.0 715.0,524.0 572.0,524.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
-<polygon points="572.0,524.0 581.0,519.5 581.0,528.5" fill="#55536a"/>
-<polyline points="465.0,684.0 465.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
-<polygon points="465.0,728.0 460.5,719.0 469.5,719.0" fill="#55536a"/>
-<polyline points="465.0,784.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polyline points="465.0,552.0 465.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,612.0 460.5,603.0 469.5,603.0" fill="#55536a"/>
+<polyline points="465.0,668.0 465.0,712.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,712.0 460.5,703.0 469.5,703.0" fill="#55536a"/>
+<polyline points="358.0,756.0 317.0,756.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="317.0,756.0 326.0,751.5 326.0,760.5" fill="#55536a"/>
+<polyline points="215.0,728.0 215.0,640.0 358.0,640.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="358.0,640.0 349.0,635.5 349.0,644.5" fill="#55536a"/>
+<polyline points="465.0,800.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
 <polygon points="465.0,844.0 460.5,835.0 469.5,835.0" fill="#55536a"/>
 <polyline points="465.0,900.0 465.0,960.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
 <polygon points="465.0,960.0 460.5,951.0 469.5,951.0" fill="#55536a"/>
 <polyline points="465.0,1016.0 465.0,1076.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
 <polygon points="465.0,1076.0 460.5,1067.0 469.5,1067.0" fill="#55536a"/>
-<polyline points="465.0,1132.0 465.0,1199.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
-<polygon points="465.0,1199.0 460.5,1190.0 469.5,1190.0" fill="#55536a"/>
+<polyline points="465.0,1132.0 465.0,1192.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1192.0 460.5,1183.0 469.5,1183.0" fill="#55536a"/>
+<polyline points="465.0,1248.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="965.0,436.0 965.0,480.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,480.0 960.5,471.0 969.5,471.0" fill="#55536a"/>
+<polyline points="858.0,524.0 715.0,524.0 715.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,612.0 710.5,603.0 719.5,603.0" fill="#55536a"/>
+<polyline points="965.0,568.0 965.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,612.0 960.5,603.0 969.5,603.0" fill="#55536a"/>
+<polyline points="1072.0,524.0 1215.0,524.0 1215.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="1215.0,612.0 1210.5,603.0 1219.5,603.0" fill="#55536a"/>
+<polyline points="965.0,668.0 965.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,728.0 960.5,719.0 969.5,719.0" fill="#55536a"/>
+<polyline points="1215.0,668.0 1215.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="1215.0,728.0 1210.5,719.0 1219.5,719.0" fill="#55536a"/>
+<polyline points="715.0,668.0 715.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="965.0,784.0 965.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="1215.0,784.0 1215.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
 <ellipse cx="465.0" cy="176.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
 <text x="465.0" y="180.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Início</text>
-<polygon points="374.0,264.0 572.0,264.0 556.0,320.0 358.0,320.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
-<text x="465.0" y="296.0" font-size="11.5" text-anchor="middle" fill="#22202a">Selecionar aula agendada</text>
+<polygon points="465.0,248.0 572.0,292.0 465.0,336.0 358.0,292.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="282.5" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Vincular alunos ou</text>
+<text x="465.0" y="296.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">gerenciar uma</text>
+<text x="465.0" y="309.5" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">matrícula?</text>
 <polygon points="374.0,380.0 572.0,380.0 556.0,436.0 358.0,436.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
-<text x="465.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a">Exibir inscritos, capacidade</text>
-<text x="465.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a">da sala e vagas</text>
+<text x="465.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a">Selecionar aula agendada</text>
+<text x="465.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a">(professor: só as próprias)</text>
 <polygon points="374.0,496.0 572.0,496.0 556.0,552.0 358.0,552.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
-<text x="465.0" y="521.3" font-size="11.5" text-anchor="middle" fill="#22202a">Marcar alunos a inscrever e</text>
-<text x="465.0" y="534.8" font-size="11.5" text-anchor="middle" fill="#22202a">desmarcar os que saíram</text>
-<polygon points="465.0,596.0 572.0,640.0 465.0,684.0 358.0,640.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
-<text x="465.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Total de inscritos ≤</text>
-<text x="465.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">capacidade da sala?</text>
-<rect x="613.0" y="612.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
-<text x="715.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Revisar seleção ou organizar</text>
-<text x="715.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">outra turma</text>
-<rect x="363.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
-<text x="465.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Abrir matrícula (início = hoje)</text>
-<text x="465.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">de cada aluno marcado</text>
+<text x="465.0" y="521.3" font-size="11.5" text-anchor="middle" fill="#22202a">Exibir inscritos, capacidade</text>
+<text x="465.0" y="534.8" font-size="11.5" text-anchor="middle" fill="#22202a">da sala e vagas</text>
+<polygon points="374.0,612.0 572.0,612.0 556.0,668.0 358.0,668.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Marcar alunos a inscrever e</text>
+<text x="465.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">desmarcar os que saíram</text>
+<polygon points="465.0,712.0 572.0,756.0 465.0,800.0 358.0,756.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Total de inscritos ≤</text>
+<text x="465.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">capacidade da sala?</text>
+<rect x="113.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="215.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Revisar seleção ou organizar</text>
+<text x="215.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">outra turma</text>
 <rect x="363.0" y="844.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
-<text x="465.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Encerrar matrícula (fim = hoje)</text>
-<text x="465.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">de cada aluno desmarcado</text>
+<text x="465.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Abrir matrícula (início = hoje,</text>
+<text x="465.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">mensalidade da aula)</text>
 <rect x="363.0" y="960.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
-<text x="465.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar a alteração na</text>
-<text x="465.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a">auditoria</text>
-<polygon points="374.0,1076.0 572.0,1076.0 556.0,1132.0 358.0,1132.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
-<text x="465.0" y="1101.3" font-size="11.5" text-anchor="middle" fill="#22202a">Matrículas disponíveis para o</text>
-<text x="465.0" y="1114.8" font-size="11.5" text-anchor="middle" fill="#22202a">cálculo do salário (fluxo 11)</text>
-<ellipse cx="465.0" cy="1220.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
-<text x="465.0" y="1224.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Fim</text>
-<rect x="585.7" y="623.0" width="24.6" height="14" fill="#ffffff"/>
-<text x="598.0" y="634.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
-<rect x="470.0" y="693.0" width="24.6" height="14" fill="#ffffff"/>
-<text x="473.0" y="704.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
-<text x="36" y="1314" font-size="11.5" fill="#5a5768">O que mudou: Fluxo novo: a inscrição abre uma matrícula com data de início; a saída encerra a matrícula com data de fim. É a</text>
-<text x="36" y="1329" font-size="11.5" fill="#5a5768">base do salário (fluxo 11). Não é exigida para participar (RN08).</text>
+<text x="465.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a">Encerrar matrícula (fim = hoje)</text>
+<text x="465.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a">dos desmarcados</text>
+<rect x="363.0" y="1076.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="1101.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar a alteração na</text>
+<text x="465.0" y="1114.8" font-size="11.5" text-anchor="middle" fill="#22202a">auditoria</text>
+<polygon points="374.0,1192.0 572.0,1192.0 556.0,1248.0 358.0,1248.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="1210.5" font-size="11.5" text-anchor="middle" fill="#22202a">Matrículas usadas nas</text>
+<text x="465.0" y="1224.0" font-size="11.5" text-anchor="middle" fill="#22202a">cobranças (fluxo 10) e no</text>
+<text x="465.0" y="1237.5" font-size="11.5" text-anchor="middle" fill="#22202a">salário (fluxo 11)</text>
+<polygon points="874.0,380.0 1072.0,380.0 1056.0,436.0 858.0,436.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="965.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a">Abrir a matrícula no cadastro</text>
+<text x="965.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a">do aluno (Administrativo)</text>
+<polygon points="965.0,480.0 1072.0,524.0 965.0,568.0 858.0,524.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="965.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Qual ação?</text>
+<polygon points="624.0,612.0 822.0,612.0 806.0,668.0 608.0,668.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="715.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Ajustar mensalidade e desconto</text>
+<text x="715.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">(% ou valor fixo)</text>
+<polygon points="874.0,612.0 1072.0,612.0 1056.0,668.0 858.0,668.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="965.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Escolher suspender ou cancelar</text>
+<text x="965.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">e informar o motivo</text>
+<rect x="863.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="965.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Encerrar a matrícula (fim =</text>
+<text x="965.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">hoje), sem novas cobranças</text>
+<rect x="1113.0" y="612.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="1215.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Conferir se está suspensa, se a</text>
+<text x="1215.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">aula está ativa e se há vaga</text>
+<rect x="1113.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="1215.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Nova matrícula (início = hoje)</text>
+<text x="1215.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">com a mesma mensalidade</text>
+<ellipse cx="465.0" cy="1336.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="1340.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Fim</text>
+<rect x="470.0" y="345.0" width="55.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="356.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Vincular</text>
+<rect x="567.1" y="275.0" width="61.8" height="14" fill="#ffffff"/>
+<text x="598.0" y="286.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Gerenciar</text>
+<rect x="319.7" y="739.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="750.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="809.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="820.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="788.7" y="507.0" width="86.6" height="14" fill="#ffffff"/>
+<text x="832.0" y="518.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Ajustar valor</text>
+<rect x="970.0" y="577.0" width="55.6" height="14" fill="#ffffff"/>
+<text x="973.0" y="588.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Encerrar</text>
+<rect x="1070.2" y="507.0" width="55.6" height="14" fill="#ffffff"/>
+<text x="1098.0" y="518.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Reativar</text>
+<text x="36" y="1430" font-size="11.5" fill="#5a5768">O que mudou: v2.0: a matrícula copia a mensalidade da aula e aceita desconto percentual ou fixo (RN18); o Administrativo pode suspender ou cancelar com motivo e reativar a suspensa, respeitando a</text>
+<text x="36" y="1445" font-size="11.5" fill="#5a5768">lotação (RF32, RN20). Matrículas encerradas não geram novas cobranças, mas contam no salário do mês em que estiveram ativas.</text>
 </svg>

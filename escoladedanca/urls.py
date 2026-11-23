@@ -3,8 +3,8 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
 from .rbac import qualquer_usuario
-from .views import (ambiente, aniversariantes, documentacao, index, relatorio_pdf,
-                    trocar_senha)
+from .views import (ambiente, aniversariantes, documentacao, fluxogramas_pdf, index,
+                    relatorio_pdf, trocar_senha)
 
 urlpatterns = [
     path("", index, name="index"),
@@ -14,6 +14,7 @@ urlpatterns = [
     path("ambiente/", ambiente, name="ambiente"),
     path("documentacao/", documentacao, name="documentacao"),
     path("documentacao/relatorio.pdf", relatorio_pdf, name="relatorio_pdf"),
+    path("documentacao/fluxogramas.pdf", fluxogramas_pdf, name="fluxogramas_pdf"),
     path("documentacao/<slug:slug>/", documentacao, name="documentacao_doc"),
     path("sair/", qualquer_usuario(auth_views.LogoutView.as_view()), name="logout"),
     path("admin/", admin.site.urls),

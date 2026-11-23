@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1122" height="1467" viewBox="0 0 1122 1467" font-family="Liberation Sans, Arial, sans-serif">
+<rect x="0" y="0" width="1122" height="1467" fill="#ffffff"/>
+<text x="36" y="46" font-size="22" font-weight="bold" fill="#22202a">Fluxo 21 — Backup e restauração dos dados</text>
+<text x="36" y="72" font-size="12.5" fill="#5a5768">Requisitos: RF35, RF24, RNF04   ·   Situação: Novo</text>
+<polyline points="465.0,197.0 465.0,264.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,264.0 460.5,255.0 469.5,255.0" fill="#55536a"/>
+<polyline points="465.0,320.0 465.0,364.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,364.0 460.5,355.0 469.5,355.0" fill="#55536a"/>
+<polyline points="572.0,408.0 965.0,408.0 965.0,496.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="965.0,496.0 960.5,487.0 969.5,487.0" fill="#55536a"/>
+<polyline points="465.0,452.0 465.0,480.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,480.0 460.5,471.0 469.5,471.0" fill="#55536a"/>
+<polyline points="965.0,552.0 965.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="358.0,524.0 215.0,524.0 215.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="215.0,612.0 210.5,603.0 219.5,603.0" fill="#55536a"/>
+<polyline points="465.0,568.0 465.0,612.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,612.0 460.5,603.0 469.5,603.0" fill="#55536a"/>
+<polyline points="215.0,668.0 215.0,728.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="215.0,728.0 210.5,719.0 219.5,719.0" fill="#55536a"/>
+<polyline points="215.0,784.0 215.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="215.0,844.0 210.5,835.0 219.5,835.0" fill="#55536a"/>
+<polyline points="215.0,900.0 215.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="465.0,668.0 465.0,712.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,712.0 460.5,703.0 469.5,703.0" fill="#55536a"/>
+<polyline points="572.0,756.0 715.0,756.0 715.0,960.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="715.0,960.0 710.5,951.0 719.5,951.0" fill="#55536a"/>
+<polyline points="465.0,800.0 465.0,844.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,844.0 460.5,835.0 469.5,835.0" fill="#55536a"/>
+<polyline points="465.0,900.0 465.0,944.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,944.0 460.5,935.0 469.5,935.0" fill="#55536a"/>
+<polyline points="572.0,988.0 608.0,988.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="608.0,988.0 599.0,983.5 599.0,992.5" fill="#55536a"/>
+<polyline points="465.0,1032.0 465.0,1076.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1076.0 460.5,1067.0 469.5,1067.0" fill="#55536a"/>
+<polyline points="465.0,1132.0 465.0,1192.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1192.0 460.5,1183.0 469.5,1183.0" fill="#55536a"/>
+<polyline points="465.0,1248.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<polyline points="715.0,1016.0 715.0,1295.0 465.0,1295.0 465.0,1315.0" fill="none" stroke="#55536a" stroke-width="1.4"/>
+<polygon points="465.0,1315.0 460.5,1306.0 469.5,1306.0" fill="#55536a"/>
+<ellipse cx="465.0" cy="176.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="180.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Início</text>
+<rect x="363.0" y="264.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="296.0" font-size="11.5" text-anchor="middle" fill="#22202a">Acessar Acessos (Administração)</text>
+<polygon points="465.0,364.0 572.0,408.0 465.0,452.0 358.0,408.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="405.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Usuário é</text>
+<text x="465.0" y="418.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">superusuário?</text>
+<polygon points="874.0,496.0 1072.0,496.0 1056.0,552.0 858.0,552.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="965.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a">Exibir acesso negado</text>
+<polygon points="465.0,480.0 572.0,524.0 465.0,568.0 358.0,524.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="528.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Exportar ou restaurar?</text>
+<rect x="113.0" y="612.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="215.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Gerar arquivo JSON com todos os</text>
+<text x="215.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">dados</text>
+<rect x="113.0" y="728.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="215.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar BACKUP_EXPORTADO na</text>
+<text x="215.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a">auditoria</text>
+<polygon points="124.0,844.0 322.0,844.0 306.0,900.0 108.0,900.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="215.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Baixar o arquivo (contém dados</text>
+<text x="215.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">pessoais: guardar com cuidado)</text>
+<polygon points="374.0,612.0 572.0,612.0 556.0,668.0 358.0,668.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="637.3" font-size="11.5" text-anchor="middle" fill="#22202a">Enviar o arquivo .json e</text>
+<text x="465.0" y="650.8" font-size="11.5" text-anchor="middle" fill="#22202a">digitar RESTAURAR</text>
+<polygon points="465.0,712.0 572.0,756.0 465.0,800.0 358.0,756.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="753.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Confirmação e arquivo</text>
+<text x="465.0" y="766.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">válidos (até 50 MB)?</text>
+<rect x="363.0" y="844.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="869.3" font-size="11.5" text-anchor="middle" fill="#22202a">Substituir os dados em transação</text>
+<text x="465.0" y="882.8" font-size="11.5" text-anchor="middle" fill="#22202a">única</text>
+<polygon points="465.0,944.0 572.0,988.0 465.0,1032.0 358.0,988.0" fill="#fff4dc" stroke="#a8761a" stroke-width="1.5"/>
+<text x="465.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Restauração concluída</text>
+<text x="465.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">sem erro?</text>
+<polygon points="624.0,960.0 822.0,960.0 806.0,1016.0 608.0,1016.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="715.0" y="985.3" font-size="11.5" text-anchor="middle" fill="#22202a">Exibir o erro; nenhum dado é</text>
+<text x="715.0" y="998.8" font-size="11.5" text-anchor="middle" fill="#22202a">alterado</text>
+<rect x="363.0" y="1076.0" width="204" height="56" fill="#eef1fa" stroke="#4a5a8c" stroke-width="1.5"/>
+<text x="465.0" y="1101.3" font-size="11.5" text-anchor="middle" fill="#22202a">Registrar BACKUP_RESTAURADO e</text>
+<text x="465.0" y="1114.8" font-size="11.5" text-anchor="middle" fill="#22202a">encerrar a sessão</text>
+<polygon points="374.0,1192.0 572.0,1192.0 556.0,1248.0 358.0,1248.0" fill="#f5effb" stroke="#6a4a8c" stroke-width="1.5"/>
+<text x="465.0" y="1224.0" font-size="11.5" text-anchor="middle" fill="#22202a">Entrar novamente</text>
+<ellipse cx="465.0" cy="1336.0" rx="60.0" ry="21.0" fill="#e3f2ea" stroke="#2f7a55" stroke-width="1.5"/>
+<text x="465.0" y="1340.0" font-size="11.5" text-anchor="middle" fill="#22202a" font-weight="bold">Fim</text>
+<rect x="585.7" y="391.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="598.0" y="402.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="461.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="472.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="304.2" y="507.0" width="55.6" height="14" fill="#ffffff"/>
+<text x="332.0" y="518.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Exportar</text>
+<rect x="470.0" y="577.0" width="61.8" height="14" fill="#ffffff"/>
+<text x="473.0" y="588.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Restaurar</text>
+<rect x="585.7" y="739.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="598.0" y="750.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="809.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="820.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<rect x="585.7" y="971.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="598.0" y="982.0" font-size="11" text-anchor="middle" fill="#3a3850" font-style="italic">Não</text>
+<rect x="470.0" y="1041.0" width="24.6" height="14" fill="#ffffff"/>
+<text x="473.0" y="1052.0" font-size="11" text-anchor="start" fill="#3a3850" font-style="italic">Sim</text>
+<text x="36" y="1430" font-size="11.5" fill="#5a5768">O que mudou: Fluxo novo (v2.0): só o superusuário exporta e restaura. A restauração exige digitar RESTAURAR, valida o arquivo e roda em transação única: qualquer</text>
+<text x="36" y="1445" font-size="11.5" fill="#5a5768">erro desfaz tudo. As duas operações ficam na auditoria.</text>
+</svg>

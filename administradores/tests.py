@@ -108,6 +108,16 @@ class DocumentacaoTests(LogadoTestCase):
         self.assertContains(resp, "<table>")
         self.assertContains(resp, "Rastreabilidade")
 
+    def test_pdfs_relatorio_e_fluxogramas(self):
+        resp = self.client.get(reverse("documentacao"))
+        self.assertContains(resp, reverse("fluxogramas_pdf"))
+        self.assertContains(resp, reverse("relatorio_pdf"))
+        for nome in ("fluxogramas_pdf", "relatorio_pdf"):
+            resp = self.client.get(reverse(nome))
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp["Content-Type"], "application/pdf")
+            self.assertTrue(b"".join(resp.streaming_content).startswith(b"%PDF"))
+
     def test_slug_desconhecido_404(self):
         for slug in ["nao-existe", "settings", "RESUMO"]:
             self.assertEqual(self.client.get(f"/documentacao/{slug}/").status_code, 404)

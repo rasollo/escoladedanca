@@ -1,9 +1,9 @@
-"""Gera os fluxogramas do Portal da Dança (versão 1.0).
+"""Gera os fluxogramas do Portal da Dança (versão 2.0).
 
 Uma única descrição de cada fluxo produz:
-  * Portal_da_Danca_Fluxogramas_v1.0.drawio  — uma aba por fluxo, editável no draw.io
+  * Portal_da_Danca_Fluxogramas_v2.0.drawio  — uma aba por fluxo, editável no draw.io
   * svg/NN.svg                             — desenho de cada fluxo
-  * Portal_da_Danca_Fluxogramas_v1.0.pdf     — via LibreOffice + pdfunite (se disponíveis)
+  * Portal_da_Danca_Fluxogramas_v2.0.pdf     — via LibreOffice + pdfunite (se disponíveis)
 
 Uso:  python3 docs/fluxogramas/gerar_fluxogramas.py
 Somente biblioteca padrão.
@@ -142,24 +142,33 @@ def fluxo(numero, titulo, requisitos, situacao, mudancas):
     return registrar
 
 
-@fluxo("00", "Acesso ao sistema", "RF22, RF24, RNF03", "Novo",
-       "Fluxo novo: login obrigatório (RNF03), registro de login, falha e logout com usuário e IP.")
+@fluxo("00", "Acesso ao sistema", "RF22, RF24, RF25, RF31, RF37, RNF03, RN17", "Atualizado",
+       "v2.0: conta bloqueada não entra; troca de senha obrigatória no primeiro acesso (RF37); escolha do ambiente quando a conta tem vários papéis (RF31); cada página é negada por padrão e liberada só ao papel ativo (RF25, RN17). Mantidos o login obrigatório e os registros de login, falha, acesso e logout.")
 def _(n, e):
     n("i", "start", "Início", 1, 0)
     n("a", "proc", "Acessar uma página do sistema", 1, 1)
     n("d1", "dec", "Usuário já autenticado?", 1, 2)
     n("u", "io", "Informar usuário e senha", 2, 3)
-    n("d2", "dec", "Usuário e senha válidos?", 2, 4)
+    n("d2", "dec", "Senha válida e conta ativa?", 2, 4)
     n("f", "proc", "Registrar LOGIN_FALHOU e exibir aviso", 3, 4)
     n("ok", "proc", "Registrar LOGIN_OK (usuário e IP)", 2, 5)
-    n("p", "io", "Exibir página solicitada", 1, 6)
-    n("r", "proc", "Registrar acesso (usuário, IP, página)", 1, 7)
-    n("d3", "dec", "Clicou em Sair?", 1, 8)
-    n("lo", "proc", "Registrar LOGOUT e encerrar sessão", 1, 9)
-    n("fim", "end", "Fim", 1, 10)
-    e("i", "a"); e("a", "d1"); e("d1", "p", "Sim"); e("d1", "u", "Não"); e("u", "d2")
-    e("d2", "f", "Não"); e("f", "u"); e("d2", "ok", "Sim"); e("ok", "p"); e("p", "r")
-    e("r", "d3"); e("d3", "a", "Não", "L"); e("d3", "lo", "Sim"); e("lo", "fim")
+    n("d3", "dec", "Troca de senha pendente (1º acesso)?", 1, 6)
+    n("ts", "io", "Trocar a senha provisória (demais páginas bloqueadas)", 2, 7)
+    n("d4", "dec", "Conta tem mais de um papel?", 1, 8)
+    n("amb", "io", "Escolher o ambiente (papel ativo da sessão)", 2, 9)
+    n("d5", "dec", "Papel ativo pode ver a página?", 1, 10)
+    n("neg", "io", "Exibir acesso negado (403)", 2, 11)
+    n("p", "io", "Exibir página solicitada", 1, 11)
+    n("r", "proc", "Registrar acesso (usuário, IP, página)", 1, 12)
+    n("d6", "dec", "Clicou em Sair?", 1, 13)
+    n("lo", "proc", "Registrar LOGOUT e encerrar sessão", 1, 14)
+    n("fim", "end", "Fim", 1, 15)
+    e("i", "a"); e("a", "d1"); e("d1", "d3", "Sim"); e("d1", "u", "Não"); e("u", "d2")
+    e("d2", "f", "Não"); e("f", "u"); e("d2", "ok", "Sim"); e("ok", "d3")
+    e("d3", "ts", "Sim"); e("d3", "d4", "Não"); e("ts", "d4")
+    e("d4", "amb", "Sim"); e("d4", "d5", "Não"); e("amb", "d5")
+    e("d5", "p", "Sim"); e("d5", "neg", "Não"); e("neg", "fim"); e("p", "r")
+    e("r", "d6"); e("d6", "a", "Não", "L"); e("d6", "lo", "Sim"); e("lo", "fim")
 
 
 @fluxo("01", "Cadastro e consulta de alunos", "RF01, RF02, RN08", "Corrigido",
@@ -230,26 +239,26 @@ def _(n, e):
     e("m3", "fim"); e("m5", "fim"); e("m6", "fim")
 
 
-@fluxo("04", "Agendamento de aulas", "RF19, RF20, RN09, RN10, RN13, RN14, RN15", "Corrigido",
-       "Correção: verifica horário de funcionamento, choque de sala e de professor e capacidade; o ramo de erro volta para revisão; incluídos alterar, desativar e remover.")
+@fluxo("04", "Agendamento de aulas", "RF19, RF20, RF36, RN09, RN10, RN13, RN14, RN15, RN17", "Atualizado",
+       "v2.0: a aula pode acontecer em vários dias da semana no mesmo horário, com vigência opcional (RF36); os conflitos de sala e professor são verificados em todos os dias escolhidos; o professor só agenda e altera as próprias aulas, e desativar ou remover é exclusivo do Administrativo (RN17).")
 def _(n, e):
     n("i", "start", "Início", 1, 0)
     n("a", "proc", "Acessar agenda de aulas", 1, 1)
     n("d", "dec", "Nova aula ou aula existente?", 1, 2)
-    n("nv", "proc", "Iniciar novo agendamento", 0, 3)
-    n("ex", "io", "Selecionar aula existente", 2, 3)
+    n("nv", "proc", "Iniciar novo agendamento (professor: aula fica em seu nome)", 0, 3)
+    n("ex", "io", "Selecionar aula existente (professor: só as próprias)", 2, 3)
     n("op", "dec", "Alterar, desativar ou remover?", 2, 4)
-    n("dados", "io", "Informar modalidade, dia, horário, sala e professor", 1, 4)
-    n("v1", "dec", "Entre 18h e 22h e término após o início?", 1, 5)
-    n("v2", "dec", "Sala e professor livres no horário?", 1, 6)
+    n("dados", "io", "Informar modalidade, dias da semana, horário, sala, professor, mensalidade e vigência", 1, 4)
+    n("v1", "dec", "Entre 18h e 22h, término após o início e vigência coerente?", 1, 5)
+    n("v2", "dec", "Sala e professor livres em todos os dias escolhidos?", 1, 6)
     n("v3", "dec", "Inscritos cabem na sala (até 40)?", 1, 7)
     n("rev", "proc", "Revisar dados ou organizar outra turma", 0, 6)
     n("sv", "proc", "Salvar agendamento", 1, 8)
-    n("ag", "io", "Aula disponível na agenda", 1, 9)
-    n("des", "proc", "Desativar aula e encerrar as matrículas", 2, 5)
+    n("ag", "io", "Aula disponível na agenda em cada dia escolhido", 1, 9)
+    n("des", "proc", "Desativar aula e encerrar as matrículas (só Administrativo)", 2, 5)
     n("rm", "dec", "Aula tem presenças ou matrículas?", 3, 5)
     n("rm1", "io", "Orientar a desativar (histórico protegido)", 3, 6)
-    n("rm2", "proc", "Remover aula", 4, 6)
+    n("rm2", "proc", "Remover aula (só Administrativo)", 4, 6)
     n("fim", "end", "Fim", 1, 10)
     e("i", "a"); e("a", "d"); e("d", "nv", "Nova"); e("d", "ex", "Existente")
     e("nv", "dados"); e("ex", "op"); e("op", "dados", "Alterar")
@@ -261,42 +270,68 @@ def _(n, e):
     e("des", "fim"); e("rm1", "fim"); e("rm2", "fim")
 
 
-@fluxo("05", "Matrícula de alunos nas aulas", "RF20, RF21, RF24, RN07, RN08, RN09", "Novo",
-       "Fluxo novo: a inscrição abre uma matrícula com data de início; a saída encerra a matrícula com data de fim. É a base do salário (fluxo 11). Não é exigida para participar (RN08).")
+@fluxo("05", "Matrícula de alunos nas aulas", "RF20, RF21, RF24, RF32, RN07, RN08, RN09, RN18, RN20", "Atualizado",
+       "v2.0: a matrícula copia a mensalidade da aula e aceita desconto percentual ou fixo (RN18); o Administrativo pode suspender ou cancelar com motivo e reativar a suspensa, respeitando a lotação (RF32, RN20). Matrículas encerradas não geram novas cobranças, mas contam no salário do mês em que estiveram ativas.")
 def _(n, e):
     n("i", "start", "Início", 1, 0)
-    n("a", "io", "Selecionar aula agendada", 1, 1)
-    n("b", "io", "Exibir inscritos, capacidade da sala e vagas", 1, 2)
-    n("c", "io", "Marcar alunos a inscrever e desmarcar os que saíram", 1, 3)
-    n("d", "dec", "Total de inscritos ≤ capacidade da sala?", 1, 4)
-    n("r", "proc", "Revisar seleção ou organizar outra turma", 2, 4)
-    n("m1", "proc", "Abrir matrícula (início = hoje) de cada aluno marcado", 1, 5)
-    n("m2", "proc", "Encerrar matrícula (fim = hoje) de cada aluno desmarcado", 1, 6)
-    n("au", "proc", "Registrar a alteração na auditoria", 1, 7)
-    n("s", "io", "Matrículas disponíveis para o cálculo do salário (fluxo 11)", 1, 8)
-    n("fim", "end", "Fim", 1, 9)
-    e("i", "a"); e("a", "b"); e("b", "c"); e("c", "d"); e("d", "r", "Não"); e("r", "c")
+    n("d0", "dec", "Vincular alunos ou gerenciar uma matrícula?", 1, 1)
+    n("a", "io", "Selecionar aula agendada (professor: só as próprias)", 1, 2)
+    n("b", "io", "Exibir inscritos, capacidade da sala e vagas", 1, 3)
+    n("c", "io", "Marcar alunos a inscrever e desmarcar os que saíram", 1, 4)
+    n("d", "dec", "Total de inscritos ≤ capacidade da sala?", 1, 5)
+    n("r", "proc", "Revisar seleção ou organizar outra turma", 0, 5)
+    n("m1", "proc", "Abrir matrícula (início = hoje, mensalidade da aula)", 1, 6)
+    n("m2", "proc", "Encerrar matrícula (fim = hoje) dos desmarcados", 1, 7)
+    n("au", "proc", "Registrar a alteração na auditoria", 1, 8)
+    n("s", "io", "Matrículas usadas nas cobranças (fluxo 10) e no salário (fluxo 11)", 1, 9)
+    n("g", "io", "Abrir a matrícula no cadastro do aluno (Administrativo)", 3, 2)
+    n("g2", "dec", "Qual ação?", 3, 3)
+    n("ed", "io", "Ajustar mensalidade e desconto (% ou valor fixo)", 2, 4)
+    n("en", "io", "Escolher suspender ou cancelar e informar o motivo", 3, 4)
+    n("en2", "proc", "Encerrar a matrícula (fim = hoje), sem novas cobranças", 3, 5)
+    n("re", "proc", "Conferir se está suspensa, se a aula está ativa e se há vaga", 4, 4)
+    n("re2", "proc", "Nova matrícula (início = hoje) com a mesma mensalidade", 4, 5)
+    n("fim", "end", "Fim", 1, 10)
+    e("i", "d0"); e("d0", "a", "Vincular"); e("d0", "g", "Gerenciar")
+    e("a", "b"); e("b", "c"); e("c", "d"); e("d", "r", "Não"); e("r", "c")
     e("d", "m1", "Sim"); e("m1", "m2"); e("m2", "au"); e("au", "s"); e("s", "fim")
+    e("g", "g2"); e("g2", "ed", "Ajustar valor"); e("g2", "en", "Encerrar"); e("g2", "re", "Reativar")
+    e("en", "en2"); e("re", "re2"); e("ed", "fim"); e("en2", "fim"); e("re2", "fim")
 
 
-@fluxo("06", "Registro de presença e faltas", "RF03, RF04, RF21, RN08", "Corrigido",
-       "Correção: incluídos os alunos avulsos (sem matrícula), vários de uma vez, com opção de retirar um incluído por engano; validação do dia da aula e da capacidade. A consulta passou para o fluxo 07.")
+@fluxo("06", "Registro de presença e faltas", "RF03, RF04, RF21, RF33, RN08, RN19", "Atualizado",
+       "v2.0: a chamada de cada aula e data fica aberta, concluída ou cancelada (RF33). O professor registra e conclui a chamada das próprias aulas; uma chamada concluída só é corrigida pela administração, com motivo; a aula só é cancelada sem registros e com motivo (RN19). Mantidos os avulsos, o dia da aula e a capacidade.")
 def _(n, e):
     n("i", "start", "Início", 1, 0)
-    n("a", "io", "Selecionar aula agendada e data", 1, 1)
-    n("d1", "dec", "Data cai no dia da semana da aula?", 1, 2)
+    n("a", "io", "Selecionar aula e data (professor: só as próprias)", 1, 1)
+    n("d1", "dec", "A aula acontece nessa data (dia e vigência)?", 1, 2)
     n("x", "proc", "Informar o dia correto da aula", 2, 2)
-    n("b", "io", "Exibir alunos inscritos na aula", 1, 3)
-    n("c", "io", "Marcar presente ou falta para cada aluno", 1, 4)
-    n("d2", "dec", "Há alunos avulsos (sem matrícula)?", 1, 5)
-    n("av", "io", "Adicionar um ou mais avulsos (botão +) ou retirar um incluído por engano", 2, 6)
-    n("d3", "dec", "Presentes ≤ capacidade da sala?", 1, 7)
-    n("rv", "proc", "Revisar marcações", 0, 7)
-    n("s", "proc", "Salvar registros da aula (um por aluno e data)", 1, 8)
-    n("fim", "end", "Fim", 1, 9)
-    e("i", "a"); e("a", "d1"); e("d1", "x", "Não"); e("x", "a"); e("d1", "b", "Sim")
-    e("b", "c"); e("c", "d2"); e("d2", "av", "Sim"); e("d2", "d3", "Não"); e("av", "d3")
-    e("d3", "rv", "Não"); e("rv", "c", "", "L"); e("d3", "s", "Sim"); e("s", "fim")
+    n("st", "dec", "Situação da chamada?", 1, 3)
+    n("ca", "io", "Exibir aula cancelada e o motivo", 0, 4)
+    n("co", "dec", "Usuário é da administração?", 2, 4)
+    n("mo", "io", "Informar o motivo da correção", 2, 5)
+    n("vi", "io", "Somente consultar a chamada concluída", 3, 5)
+    n("b", "io", "Exibir inscritos e avulsos já registrados", 1, 4)
+    n("ac", "dec", "Cancelar a aula nesta data?", 1, 5)
+    n("cs", "proc", "Cancelar com motivo (só sem registros)", 0, 6)
+    n("c", "io", "Marcar presente ou falta para cada aluno", 1, 6)
+    n("d2", "dec", "Há alunos avulsos (sem matrícula)?", 1, 7)
+    n("av", "io", "Adicionar um ou mais avulsos ou retirar um incluído por engano", 2, 8)
+    n("d3", "dec", "Presentes ≤ capacidade da sala?", 1, 9)
+    n("rv", "proc", "Revisar marcações", 2, 9)
+    n("s", "proc", "Salvar registros da aula (um por aluno e data)", 1, 10)
+    n("cc", "dec", "Concluir a chamada?", 1, 11)
+    n("ab", "proc", "Chamada continua aberta", 2, 12)
+    n("cn", "proc", "Chamada concluída (correção: motivo registrado)", 1, 12)
+    n("fim", "end", "Fim", 1, 13)
+    e("i", "a"); e("a", "d1"); e("d1", "x", "Não"); e("x", "a"); e("d1", "st", "Sim")
+    e("st", "ca", "Cancelada"); e("st", "co", "Concluída"); e("st", "b", "Aberta")
+    e("co", "mo", "Sim"); e("co", "vi", "Não"); e("mo", "c")
+    e("b", "ac"); e("ac", "cs", "Sim"); e("ac", "c", "Não")
+    e("c", "d2"); e("d2", "av", "Sim"); e("d2", "d3", "Não"); e("av", "d3")
+    e("d3", "rv", "Não"); e("rv", "c", "", "R"); e("d3", "s", "Sim"); e("s", "cc")
+    e("cc", "cn", "Sim"); e("cc", "ab", "Não"); e("cn", "fim"); e("ab", "fim")
+    e("ca", "fim", "", "L"); e("cs", "fim"); e("vi", "fim")
 
 
 @fluxo("07", "Consulta de presenças e faltas", "RF04", "Novo",
@@ -357,26 +392,35 @@ def _(n, e):
     e("m", "fim"); e("sal", "fim")
 
 
-@fluxo("10", "Mensalidades", "RF10, RF11, RN02, RN04, RN06, RN08, RN12", "Corrigido",
-       "Correção: pede forma de pagamento e validade; registrar e consultar viraram opções; situação é só informativa (RN08).")
+@fluxo("10", "Cobranças de mensalidade", "RF10, RF11, RF23, RF34, RN02, RN04, RN06, RN08, RN12, RN18, RN20", "Atualizado",
+       "v2.0: a mensalidade passou a ser uma cobrança mensal por matrícula ativa (mensalidade − desconto, vencimento no dia 5), que não altera o caixa. O recebimento pode ser parcial, até o saldo devedor, e entra como entrada; a correção é por estorno com motivo (saída vinculada); a cobrança só é cancelada sem recebimentos. A situação (pendente, parcial, atrasada ou paga) segue informativa (RN08).")
 def _(n, e):
     n("i", "start", "Início", 1, 0)
     n("a", "proc", "Acessar mensalidades", 1, 1)
-    n("d", "dec", "Registrar ou consultar?", 1, 2)
-    n("r1", "io", "Selecionar aluno", 0, 3)
-    n("r2", "io", "Informar valor, data, forma de pagamento e validade (sugestão: 1 mês)", 0, 4)
-    n("r3", "dec", "Dados válidos?", 0, 5)
-    n("r4", "proc", "Corrigir dados", 1, 5)
-    n("r5", "proc", "Registrar como entrada (origem = mensalidade)", 0, 6)
-    n("c1", "io", "Selecionar aluno (opcional)", 2, 3)
-    n("c2", "dec", "Há mensalidade registrada?", 2, 4)
-    n("c3", "io", "Exibir pagamentos e situação (informativa)", 2, 5)
-    n("c4", "io", "Exibir ausência de registro", 3, 5)
-    n("fim", "end", "Fim", 1, 8)
-    e("i", "a"); e("a", "d"); e("d", "r1", "Registrar"); e("d", "c1", "Consultar")
-    e("r1", "r2"); e("r2", "r3"); e("r3", "r4", "Não"); e("r4", "r2"); e("r3", "r5", "Sim")
-    e("r5", "fim"); e("c1", "c2"); e("c2", "c3", "Sim"); e("c2", "c4", "Não")
-    e("c3", "fim"); e("c4", "fim")
+    n("b", "io", "Escolher mês ou período e situação; exibir cobranças, totais e contagem por situação", 1, 2)
+    n("d", "dec", "Qual operação?", 1, 3)
+    n("g1", "proc", "Gerar 1 cobrança por matrícula ativa sem cobrança no mês (o caixa não muda)", 0, 4)
+    n("x", "io", "Exportar CSV com os filtros escolhidos", 2, 4)
+    n("c", "io", "Abrir a cobrança do aluno", 1, 4)
+    n("c2", "dec", "Receber, estornar ou cancelar?", 1, 5)
+    n("e1", "io", "Selecionar recebimento e informar o motivo do estorno", 0, 6)
+    n("e2", "proc", "Registrar saída de estorno vinculada ao recebimento", 0, 7)
+    n("r1", "io", "Informar valor, data e forma de pagamento", 1, 6)
+    n("r2", "dec", "0 < valor ≤ saldo devedor?", 1, 7)
+    n("r3", "proc", "Corrigir o valor", 2, 7)
+    n("r4", "proc", "Registrar entrada (origem = mensalidade) vinculada à cobrança", 1, 8)
+    n("r5", "proc", "Atualizar saldo e situação: pendente, parcial, atrasada ou paga", 1, 9)
+    n("k1", "dec", "Cobrança tem recebimentos ativos?", 3, 6)
+    n("k2", "io", "Orientar a estornar antes de cancelar", 4, 7)
+    n("k3", "proc", "Cancelar a cobrança com motivo", 3, 7)
+    n("fim", "end", "Fim", 1, 10)
+    e("i", "a"); e("a", "b"); e("b", "d")
+    e("d", "g1", "Gerar"); e("d", "c", "Abrir cobrança"); e("d", "x", "Exportar")
+    e("g1", "fim", "", "L"); e("x", "fim", "", "R")
+    e("c", "c2"); e("c2", "e1", "Estornar"); e("c2", "r1", "Receber"); e("c2", "k1", "Cancelar")
+    e("e1", "e2"); e("e2", "r5")
+    e("r1", "r2"); e("r2", "r3", "Não"); e("r3", "r1"); e("r2", "r4", "Sim"); e("r4", "r5"); e("r5", "fim")
+    e("k1", "k3", "Não"); e("k1", "k2", "Sim"); e("k3", "fim"); e("k2", "fim")
 
 
 @fluxo("11", "Cálculo e pagamento do salário dos professores", "RF07, RF13, RN07, RN16", "Novo",
@@ -492,8 +536,8 @@ def _(n, e):
     e("f", "fim"); e("u", "fim")
 
 
-@fluxo("17", "Consulta de frequência e oportunidades", "RF25, RN17, RN08, RN09", "Novo",
-       "Fluxo novo: ocupação real (presentes ÷ capacidade), temperatura da aula e sugestão de promoção para o proprietário.")
+@fluxo("17", "Consulta de frequência e oportunidades", "RF27, RN08, RN09, RN17", "Atualizado",
+       "Fluxo novo: ocupação real (presentes ÷ capacidade), temperatura da aula e sugestão de promoção para o proprietário. v2.0: requisito corrigido para RF27 (o RF25 passou a ser o controle de acesso).")
 def _(n, e):
     n("i", "start", "Início", 1, 0)
     n("a", "proc", "Acessar Consultas", 1, 1)
@@ -511,6 +555,170 @@ def _(n, e):
     e("i", "a"); e("a", "b"); e("b", "c"); e("c", "d"); e("d", "o", "Sim"); e("d", "sd", "Não")
     e("o", "d2"); e("d2", "q", "Sim"); e("d2", "f", "Não"); e("q", "t"); e("f", "t")
     e("t", "r"); e("sd", "r"); e("r", "fim")
+
+
+@fluxo("18", "Comunicados por aula", "RF28, RN17", "Novo",
+       "Fluxo novo (v2.0): o Administrativo publica em qualquer aula ativa e o professor só nas próprias; o aluno vê apenas os comunicados das aulas em que está matriculado.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "proc", "Acessar Comunicados", 1, 1)
+    n("d", "dec", "Papel ativo?", 1, 2)
+    n("p1", "io", "Escolher a aula (professor: só as próprias) e escrever título e mensagem", 0, 3)
+    n("p2", "dec", "Aula permitida e campos preenchidos?", 0, 4)
+    n("p3", "proc", "Exibir erro e corrigir", 1, 4)
+    n("p4", "proc", "Publicar o comunicado com autor e data", 0, 5)
+    n("p5", "io", "Comunicado visível aos alunos matriculados na aula", 0, 6)
+    n("al1", "proc", "Buscar comunicados das aulas em que o aluno está matriculado", 2, 3)
+    n("al2", "io", "Exibir comunicados, do mais recente ao mais antigo", 2, 4)
+    n("fim", "end", "Fim", 1, 7)
+    e("i", "a"); e("a", "d"); e("d", "p1", "Administrativo / Professor"); e("d", "al1", "Aluno")
+    e("p1", "p2"); e("p2", "p3", "Não"); e("p3", "p1"); e("p2", "p4", "Sim"); e("p4", "p5"); e("p5", "fim")
+    e("al1", "al2"); e("al2", "fim")
+
+
+@fluxo("19", "Solicitações dos alunos", "RF29, RN17", "Novo",
+       "Fluxo novo (v2.0): o aluno registra o pedido e acompanha a resposta; o Administrativo muda a situação e responde. Concluir ou recusar exige resposta, e nenhum dado é alterado automaticamente.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "proc", "Acessar Solicitações", 1, 1)
+    n("d", "dec", "Papel ativo?", 1, 2)
+    n("s1", "io", "Escolher o tipo (cadastro, frequência, matrícula ou mensalidade) e descrever", 0, 3)
+    n("s2", "dec", "Descrição informada?", 0, 4)
+    n("s3", "proc", "Pedir a descrição", 1, 4)
+    n("s4", "proc", "Registrar a solicitação como pendente", 0, 5)
+    n("s5", "io", "Acompanhar a situação e a resposta", 0, 6)
+    n("r1", "io", "Filtrar por situação e abrir a solicitação", 2, 3)
+    n("r2", "io", "Escolher a situação (em análise, concluída ou recusada) e responder", 2, 4)
+    n("r3", "dec", "Concluída ou recusada sem resposta?", 2, 5)
+    n("r4", "proc", "Exigir a resposta", 3, 5)
+    n("r5", "proc", "Salvar situação e resposta (sem alterar outros dados)", 2, 6)
+    n("r6", "io", "Aluno vê a resposta em Solicitações", 2, 7)
+    n("fim", "end", "Fim", 1, 8)
+    e("i", "a"); e("a", "d"); e("d", "s1", "Aluno"); e("d", "r1", "Administrativo")
+    e("s1", "s2"); e("s2", "s3", "Não"); e("s3", "s1"); e("s2", "s4", "Sim"); e("s4", "s5"); e("s5", "fim")
+    e("r1", "r2"); e("r2", "r3"); e("r3", "r4", "Sim"); e("r4", "r2"); e("r3", "r5", "Não")
+    e("r5", "r6"); e("r6", "fim")
+
+
+@fluxo("20", "Relatórios do período", "RF34, RN08, RN18", "Novo",
+       "Fluxo novo (v2.0): indicadores do período e quadro de mensalidades; cada situação abre a lista de mensalidades já filtrada, e os dados podem ser exportados em CSV.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "proc", "Acessar Relatórios (Administrativo)", 1, 1)
+    n("b", "io", "Informar o período (de/até) ou usar um atalho", 1, 2)
+    n("d1", "dec", "Data inicial ≤ data final?", 1, 3)
+    n("x", "proc", "Avisar período inválido", 2, 3)
+    n("c", "proc", "Calcular frequência, chamadas, matrículas encerradas, entradas e saídas", 1, 4)
+    n("m", "proc", "Calcular mensalidades: previsto, recebido, em aberto, saldo vencido e quantidade por situação", 1, 5)
+    n("r", "io", "Exibir indicadores e quadro de mensalidades", 1, 6)
+    n("d2", "dec", "Próxima ação?", 1, 7)
+    n("l", "io", "Abrir a lista de mensalidades do período na situação clicada", 0, 8)
+    n("ex", "io", "Baixar CSV de presenças, mensalidades ou movimentações", 2, 8)
+    n("fim", "end", "Fim", 1, 9)
+    e("i", "a"); e("a", "b"); e("b", "d1"); e("d1", "x", "Não"); e("x", "b"); e("d1", "c", "Sim")
+    e("c", "m"); e("m", "r"); e("r", "d2")
+    e("d2", "l", "Clicar numa situação"); e("d2", "ex", "Exportar"); e("d2", "fim", "Concluir")
+    e("l", "fim"); e("ex", "fim")
+
+
+@fluxo("21", "Backup e restauração dos dados", "RF35, RF24, RNF04", "Novo",
+       "Fluxo novo (v2.0): só o superusuário exporta e restaura. A restauração exige digitar RESTAURAR, valida o arquivo e roda em transação única: qualquer erro desfaz tudo. As duas operações ficam na auditoria.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "proc", "Acessar Acessos (Administração)", 1, 1)
+    n("d", "dec", "Usuário é superusuário?", 1, 2)
+    n("n", "io", "Exibir acesso negado", 3, 3)
+    n("o", "dec", "Exportar ou restaurar?", 1, 3)
+    n("e1", "proc", "Gerar arquivo JSON com todos os dados", 0, 4)
+    n("e2", "proc", "Registrar BACKUP_EXPORTADO na auditoria", 0, 5)
+    n("e3", "io", "Baixar o arquivo (contém dados pessoais: guardar com cuidado)", 0, 6)
+    n("r1", "io", "Enviar o arquivo .json e digitar RESTAURAR", 1, 4)
+    n("r2", "dec", "Confirmação e arquivo válidos (até 50 MB)?", 1, 5)
+    n("r4", "proc", "Substituir os dados em transação única", 1, 6)
+    n("r5", "dec", "Restauração concluída sem erro?", 1, 7)
+    n("r3", "io", "Exibir o erro; nenhum dado é alterado", 2, 7)
+    n("r7", "proc", "Registrar BACKUP_RESTAURADO e encerrar a sessão", 1, 8)
+    n("r8", "io", "Entrar novamente", 1, 9)
+    n("fim", "end", "Fim", 1, 10)
+    e("i", "a"); e("a", "d"); e("d", "n", "Não"); e("d", "o", "Sim"); e("n", "fim")
+    e("o", "e1", "Exportar"); e("o", "r1", "Restaurar"); e("e1", "e2"); e("e2", "e3"); e("e3", "fim")
+    e("r1", "r2"); e("r2", "r3", "Não"); e("r2", "r4", "Sim"); e("r4", "r5")
+    e("r5", "r3", "Não"); e("r5", "r7", "Sim"); e("r7", "r8"); e("r8", "fim"); e("r3", "fim")
+
+
+@fluxo("22", "Aniversariantes do mês", "RF26, RNF04, RN17", "Novo",
+       "Fluxo novo (v2.0): lista alunos e professores ativos que fazem aniversário no mês. O ano de nascimento nunca é exibido; a idade a completar aparece só para o Administrativo e o Professor.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "proc", "Acessar Aniversariantes", 1, 1)
+    n("b", "io", "Escolher o mês (padrão: mês atual)", 1, 2)
+    n("c", "proc", "Buscar alunos e professores ativos nascidos nesse mês", 1, 3)
+    n("d", "dec", "Há aniversariantes?", 1, 4)
+    n("v", "io", "Informar que não há aniversariantes", 3, 5)
+    n("o", "proc", "Ordenar por dia e destacar o aniversário de hoje", 1, 5)
+    n("p", "dec", "Papel é Administrativo ou Professor?", 1, 6)
+    n("id", "io", "Exibir dia, nome e idade a completar", 0, 7)
+    n("si", "io", "Exibir dia e nome, sem a idade", 2, 7)
+    n("fim", "end", "Fim", 1, 8)
+    e("i", "a"); e("a", "b"); e("b", "c"); e("c", "d"); e("d", "v", "Não"); e("d", "o", "Sim")
+    e("o", "p"); e("p", "id", "Sim"); e("p", "si", "Não"); e("id", "fim"); e("si", "fim"); e("v", "fim")
+
+
+@fluxo("23", "Alunos do professor", "RF38, RN17", "Novo",
+       "Fluxo novo (v2.0): o professor vê só os alunos matriculados nas próprias aulas, com contato e frequência nessas aulas.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "proc", "Acessar Meus alunos (Professor)", 1, 1)
+    n("d", "dec", "Usuário vinculado a um professor ativo?", 1, 2)
+    n("n", "io", "Exibir acesso negado (vincular em Acessos)", 3, 3)
+    n("b", "proc", "Buscar matrículas ativas nas aulas do professor", 1, 3)
+    n("c", "proc", "Calcular a frequência de cada aluno nessas aulas", 1, 4)
+    n("d2", "dec", "Há alunos matriculados?", 1, 5)
+    n("v", "io", "Informar que não há alunos", 2, 6)
+    n("s", "io", "Exibir aluno, contato, aulas e frequência", 1, 6)
+    n("fim", "end", "Fim", 1, 7)
+    e("i", "a"); e("a", "d"); e("d", "n", "Não"); e("d", "b", "Sim"); e("n", "fim")
+    e("b", "c"); e("c", "d2"); e("d2", "v", "Não"); e("d2", "s", "Sim"); e("s", "fim"); e("v", "fim")
+
+
+@fluxo("24", "Criação dos usuários padrão", "RF39, RF25, RF37, RN17", "Novo",
+       "Fluxo novo (v2.0): comando de terminal que cria o responsavel (Administrativo) e um acesso de professor e um de aluno ligados a cadastros existentes. Não apaga nem duplica dados e pode rodar de novo.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "io", "Rodar portal.py usuarios (opções: --senha, --trocar-senha)", 1, 1)
+    n("b", "dec", "Senha informada?", 1, 2)
+    n("g", "proc", "Gerar senha aleatória (exibida uma vez)", 2, 3)
+    n("v", "proc", "Validar senha forte (aviso se fraca)", 1, 3)
+    n("c", "dec", "Usuário responsavel já existe?", 1, 4)
+    n("cr", "proc", "Criar responsavel (Administrativo, superusuário)", 0, 5)
+    n("ma", "proc", "Manter (senha só muda com --redefinir)", 1, 5)
+    n("p", "proc", "Para Professor e Aluno: escolher o cadastro ativo (ou o informado)", 1, 6)
+    n("d2", "dec", "Cadastro já tem acesso?", 1, 7)
+    n("k", "io", "Manter o acesso existente", 2, 8)
+    n("cu", "proc", "Criar usuário com o papel, vincular ao cadastro e marcar troca de senha se pedido", 1, 8)
+    n("r", "io", "Exibir login, papel, cadastro e situação de cada usuário", 1, 9)
+    n("fim", "end", "Fim", 1, 10)
+    e("i", "a"); e("a", "b"); e("b", "g", "Não"); e("b", "v", "Sim"); e("g", "c"); e("v", "c")
+    e("c", "cr", "Não"); e("c", "ma", "Sim"); e("cr", "p"); e("ma", "p"); e("p", "d2")
+    e("d2", "k", "Sim"); e("d2", "cu", "Não"); e("k", "r"); e("cu", "r"); e("r", "fim")
+
+
+@fluxo("25", "Preferências da conta", "RF30, RF37", "Novo",
+       "Fluxo novo (v2.0): qualquer usuário troca a própria senha (senha atual e regras de senha forte) e alterna o tema claro/escuro, guardado no navegador.")
+def _(n, e):
+    n("i", "start", "Início", 1, 0)
+    n("a", "dec", "Alterar senha ou tema?", 1, 1)
+    n("t1", "proc", "Alternar tema claro/escuro (guardado neste navegador)", 0, 2)
+    n("s1", "io", "Informar senha atual, nova senha e confirmação", 1, 2)
+    n("s2", "dec", "Senha atual correta?", 1, 3)
+    n("s3", "dec", "Nova senha forte e confirmação igual?", 1, 4)
+    n("er", "proc", "Exibir erro e corrigir", 2, 4)
+    n("s4", "proc", "Salvar a nova senha, manter a sessão e liberar o 1º acesso", 1, 5)
+    n("s5", "io", "Confirmar a troca da senha", 1, 6)
+    n("fim", "end", "Fim", 1, 7)
+    e("i", "a"); e("a", "t1", "Tema"); e("a", "s1", "Senha"); e("t1", "fim")
+    e("s1", "s2"); e("s2", "er", "Não"); e("s2", "s3", "Sim"); e("s3", "er", "Não"); e("er", "s1")
+    e("s3", "s4", "Sim"); e("s4", "s5"); e("s5", "fim")
 
 
 # ---------------------------------------------------------------------------
@@ -600,24 +808,25 @@ def svg_fluxo(f):
 def svg_indice():
     t = html.escape
     linhas_y = 150
-    out = ['<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800" '
-           'font-family="Liberation Sans, Arial, sans-serif">', '<rect width="1000" height="800" fill="#ffffff"/>',
+    alt = linhas_y + len(FLUXOS) * 33 + 70
+    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="{alt}" viewBox="0 0 1000 {alt}" '
+           'font-family="Liberation Sans, Arial, sans-serif">', f'<rect width="1000" height="{alt}" fill="#ffffff"/>',
            f'<text x="50" y="62" font-size="28" font-weight="bold" fill="{TINTA}">Portal da Dança — Fluxogramas</text>',
-           '<text x="50" y="92" font-size="14" fill="#5a5768">Versão 1.0 · 10/11/2026 · revisada conforme as observações da professora e o sistema implementado</text>',
+           '<text x="50" y="92" font-size="14" fill="#5a5768">Versão 2.0 · 22/11/2026 · atualizada com as funções da versão 3 do sistema (RF25–RF39)</text>',
            f'<text x="50" y="{linhas_y - 12}" font-size="12" font-weight="bold" fill="#5a5768">Nº</text>',
            f'<text x="100" y="{linhas_y - 12}" font-size="12" font-weight="bold" fill="#5a5768">FLUXO</text>',
-           f'<text x="520" y="{linhas_y - 12}" font-size="12" font-weight="bold" fill="#5a5768">REQUISITOS</text>',
-           f'<text x="860" y="{linhas_y - 12}" font-size="12" font-weight="bold" fill="#5a5768">SITUAÇÃO</text>']
-    cores = {"Novo": "#2f7a55", "Corrigido": "#a8461a", "Ajustado": "#a8761a", "Mantido": "#5a5768"}
+           f'<text x="455" y="{linhas_y - 12}" font-size="12" font-weight="bold" fill="#5a5768">REQUISITOS</text>',
+           f'<text x="880" y="{linhas_y - 12}" font-size="12" font-weight="bold" fill="#5a5768">SITUAÇÃO</text>']
+    cores = {"Atualizado": "#3157d5", "Novo": "#2f7a55", "Corrigido": "#a8461a", "Ajustado": "#a8761a", "Mantido": "#5a5768"}
     for i, f in enumerate(FLUXOS):
         y = linhas_y + 10 + i * 33
         if i % 2 == 0:
             out.append(f'<rect x="40" y="{y - 21}" width="920" height="33" fill="#f4f3f8"/>')
         out.append(f'<text x="50" y="{y}" font-size="14" font-weight="bold" fill="{TINTA}">{f["numero"]}</text>')
         out.append(f'<text x="100" y="{y}" font-size="14" fill="{TINTA}">{t(f["titulo"])}</text>')
-        out.append(f'<text x="520" y="{y}" font-size="12" fill="#5a5768">{t(f["requisitos"])}</text>')
-        out.append(f'<text x="860" y="{y}" font-size="13" font-weight="bold" fill="{cores[f["situacao"]]}">{f["situacao"]}</text>')
-    out.append('<text x="50" y="780" font-size="12" fill="#5a5768">Legenda: elipse = início/fim · retângulo = processo · '
+        out.append(f'<text x="455" y="{y}" font-size="11" fill="#5a5768">{t(f["requisitos"])}</text>')
+        out.append(f'<text x="880" y="{y}" font-size="13" font-weight="bold" fill="{cores[f["situacao"]]}">{f["situacao"]}</text>')
+    out.append(f'<text x="50" y="{alt - 20}" font-size="12" fill="#5a5768">Legenda: elipse = início/fim · retângulo = processo · '
                'paralelogramo = entrada/saída de dados · losango = decisão.</text>')
     out.append("</svg>")
     return "\n".join(out)
@@ -675,7 +884,7 @@ def main():
         p = svg_dir / f'{f["numero"]}.svg'
         p.write_text(svg_fluxo(f), encoding="utf-8")
         arquivos.append(p)
-    (PASTA / "Portal_da_Danca_Fluxogramas_v1.0.drawio").write_text(drawio(), encoding="utf-8")
+    (PASTA / "Portal_da_Danca_Fluxogramas_v2.0.drawio").write_text(drawio(), encoding="utf-8")
     # Lista usada pelo relatório para montar a rastreabilidade (requisito → fluxos)
     (PASTA / "fluxos.json").write_text(json.dumps([
         {"numero": f["numero"], "titulo": f["titulo"], "situacao": f["situacao"],
@@ -691,7 +900,7 @@ def main():
         subprocess.run([soffice, "--headless", "--convert-to", "pdf:draw_pdf_Export", "--outdir", tmp,
                         *map(str, arquivos)], check=True, capture_output=True)
         pdfs = [str(Path(tmp) / (a.stem + ".pdf")) for a in arquivos]
-        destino = PASTA / "Portal_da_Danca_Fluxogramas_v1.0.pdf"
+        destino = PASTA / "Portal_da_Danca_Fluxogramas_v2.0.pdf"
         subprocess.run([pdfunite, *pdfs, str(destino)], check=True)
     print(f"PDF: {destino}")
 
