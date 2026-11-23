@@ -90,6 +90,12 @@ def relatorios(request):
     entradas = movs.filter(tipo="entrada").aggregate(t=Sum("valor"))["t"] or 0
     saidas = movs.filter(tipo="saida").aggregate(t=Sum("valor"))["t"] or 0
     chamadas = Chamada.objects.filter(data__range=(inicio, fim))
+    lista_cobrancas = list(cobrancas)
+    situacoes = {s: 0 for s in Cobranca.Situacao.values}
+    for c in lista_cobrancas:
+        situacoes[c.situacao(hoje)] += 1
+    mensalidades_recebidas = (movs.filter(tipo="entrada", origem="mensalidade")
+                              .aggregate(t=Sum("valor"))["t"] or 0)
     return render(request, "consultas/relatorios.html", {
         "form": form, "inicio": inicio, "fim": fim,
         "alunos_ativos": Aluno.objects.filter(ativo=True).count(),
@@ -101,6 +107,8 @@ def relatorios(request):
         "chamadas_concluidas": chamadas.filter(situacao="concluida").count(),
         "aulas_canceladas": chamadas.filter(situacao="cancelada").count(),
         "entradas": entradas, "saidas": saidas, "resultado": entradas - saidas,
-        "cobrancas": resumir_cobrancas(list(cobrancas), hoje),
+        "cobrancas": resumir_cobrancas(lista_cobrancas, hoje),
+        "situacoes": situacoes,
+        "mensalidades_recebidas": mensalidades_recebidas,
         "query": f"inicio={inicio:%d/%m/%Y}&fim={fim:%d/%m/%Y}",
     })

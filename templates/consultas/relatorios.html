@@ -17,6 +17,24 @@
     <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="check" %}</span><div><span>Frequência</span><strong>{% if frequencia is not None %}{{ frequencia }}%{% else %}—{% endif %}</strong></div></div>
     <div class="summary-card"><span class="summary-icon" aria-hidden="true">{% include "_icone.html" with nome="finance" %}</span><div><span>Resultado</span><strong class="{% if resultado < 0 %}neg{% else %}pos{% endif %}">{{ resultado|brl }}</strong></div></div>
 </section>
+<section class="panel">
+    <div class="panel-header"><h2>Mensalidades</h2><span class="muted">Cobranças com vencimento no período · situação informativa (RN08)</span></div>
+    <dl class="stats stats-4">
+        <div><dt>Previsto</dt><dd>{{ cobrancas.previsto|brl }}</dd></div>
+        <div><dt>Recebido das cobranças</dt><dd class="pos">{{ cobrancas.recebido|brl }}</dd></div>
+        <div><dt>Em aberto</dt><dd>{{ cobrancas.em_aberto|brl }}</dd></div>
+        <div><dt>Em atraso</dt><dd class="neg">{{ cobrancas.atrasado|brl }}</dd></div>
+    </dl>
+    <p class="muted">
+        <span class="badge badge-green">{{ situacoes.paga }} paga{{ situacoes.paga|pluralize }}</span>
+        <span class="badge badge-yellow">{{ situacoes.parcial }} parcia{{ situacoes.parcial|pluralize:"l,is" }}</span>
+        <span class="badge badge-yellow">{{ situacoes.pendente }} pendente{{ situacoes.pendente|pluralize }}</span>
+        <span class="badge badge-red">{{ situacoes.atrasada }} atrasada{{ situacoes.atrasada|pluralize }}</span>
+        <span class="badge">{{ situacoes.cancelada }} cancelada{{ situacoes.cancelada|pluralize }}</span>
+        · Mensalidades recebidas no período (data do pagamento, inclusive avulsas): <strong>{{ mensalidades_recebidas|brl }}</strong>
+    </p>
+    <div class="quick-actions mt"><a class="btn btn-small" href="?{{ query }}&exportar=cobrancas">{% include "_icone.html" with nome="down" tamanho=15 %}Exportar mensalidades (CSV)</a></div>
+</section>
 <div class="two-cols">
     <section class="panel">
         <div class="panel-header"><h2>Aulas e frequência</h2></div>
@@ -35,11 +53,10 @@
         <dl class="stats">
             <div><dt>Entradas</dt><dd class="pos">{{ entradas|brl }}</dd></div>
             <div><dt>Saídas</dt><dd class="neg">{{ saidas|brl }}</dd></div>
-            <div><dt>Cobranças previstas</dt><dd>{{ cobrancas.previsto|brl }}</dd></div>
-            <div><dt>Em atraso</dt><dd class="neg">{{ cobrancas.atrasado|brl }}</dd></div>
+            <div><dt>Resultado</dt><dd class="{% if resultado < 0 %}neg{% else %}pos{% endif %}">{{ resultado|brl }}</dd></div>
+            <div><dt>Mensalidades recebidas</dt><dd class="pos">{{ mensalidades_recebidas|brl }}</dd></div>
         </dl>
         <div class="quick-actions">
-            <a class="btn btn-small" href="?{{ query }}&exportar=cobrancas">{% include "_icone.html" with nome="down" tamanho=15 %}Cobranças (CSV)</a>
             <a class="btn btn-small" href="?{{ query }}&exportar=movimentacoes">{% include "_icone.html" with nome="down" tamanho=15 %}Movimentações (CSV)</a>
         </div>
     </section>
