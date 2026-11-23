@@ -138,6 +138,22 @@ def senha(args):
         manage("changepassword", args.usuario)
 
 
+def usuarios(args):
+    exigir_instalacao()
+    extra = []
+    if args.senha:
+        extra += ["--senha", args.senha]
+    if args.professor:
+        extra += ["--professor", args.professor]
+    if args.aluno:
+        extra += ["--aluno", args.aluno]
+    if args.trocar_senha:
+        extra.append("--trocar-senha")
+    if args.redefinir:
+        extra.append("--redefinir")
+    manage("criar_usuarios_padrao", *extra)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="portal.py", description="Portal da Dança — instalação e execução.",
@@ -162,6 +178,14 @@ def main():
     p.add_argument("--usuario", default="responsavel", help="padrão: responsavel")
     p.add_argument("--novo", action="store_true", help="cria um novo usuário administrador")
     p.set_defaults(func=senha)
+
+    p = sub.add_parser("usuarios", help="cria os usuários padrão (administrativo, professor e aluno)")
+    p.add_argument("--senha", help="senha dos usuários criados (padrão: gerada e exibida)")
+    p.add_argument("--professor", help="nome do professor a vincular (padrão: o primeiro ativo)")
+    p.add_argument("--aluno", help="nome do aluno a vincular (padrão: o primeiro matriculado)")
+    p.add_argument("--trocar-senha", action="store_true", help="exige troca de senha no 1º acesso")
+    p.add_argument("--redefinir", action="store_true", help="redefine a senha do responsavel se já existir")
+    p.set_defaults(func=usuarios)
 
     args = parser.parse_args()
     if not args.comando:

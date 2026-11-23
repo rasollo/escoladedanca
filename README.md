@@ -161,6 +161,7 @@ No Windows, use `py` no lugar de `python3`.
 | `python3 portal.py iniciar --rede` | permite o acesso de outros computadores da rede, pelo IP desta máquina |
 | `python3 portal.py senha` | troca a senha do usuário `responsavel` |
 | `python3 portal.py senha --novo` | cria um novo usuário administrador |
+| `python3 portal.py usuarios --senha MINHA_SENHA` | cria os usuários padrão (`responsavel` e um acesso de professor e um de aluno, vinculados a cadastros existentes) sem mexer nos dados; pode rodar de novo |
 | `python3 portal.py testar` | roda os testes automatizados |
 
 ### Atualizar para uma versão nova
@@ -257,7 +258,7 @@ No final, esperamos ter um sistema **simples, funcional e seguro**, que possa aj
 
 ## Versão 2.0 (22/11/2026)
 
-* **Relatório final atualizado:** `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.pdf` (e `.docx`), com 38 requisitos funcionais, 20 regras de negócio, rastreabilidade e o print de cada tela. Também pode ser baixado pelo menu **Documentação** do sistema.
+* **Relatório final atualizado:** `docs/relatorio/Relatorio_Portal_da_Danca_v2.0.pdf` (e `.docx`), com 39 requisitos funcionais, 20 regras de negócio, rastreabilidade e o print de cada tela. Também pode ser baixado pelo menu **Documentação** do sistema.
 * **Novidades:**
   * visual baseado no protótipo v3, com modo escuro;
   * perfis Administrativo, Professor e Aluno, com mais de um papel na mesma conta e "Trocar ambiente";
@@ -269,6 +270,7 @@ No final, esperamos ter um sistema **simples, funcional e seguro**, que possa aj
   * relatórios em CSV, com o quadro de mensalidades por situação (cada situação abre a lista filtrada), e backup em JSON;
   * troca de senha no primeiro acesso;
   * lista de alunos para o professor;
+  * comando `portal.py usuarios` para criar os usuários padrão;
   * aniversariantes do mês.
 
 ## Versão 1.0 (10/11/2026)
